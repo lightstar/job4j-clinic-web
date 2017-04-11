@@ -1,0 +1,28 @@
+table.form {
+    line-height: 1.5em;
+}
+
+table.form td {
+    padding: 2px 0;
+    text-align: left;
+}
+
+table.form td:first-child {
+    padding-right: .5em;
+}
+
+table.list {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+table.list td,
+table.list th {
+    border: 1px solid black;
+    padding: 5px;
+    text-align: center;
+}
+
+.error {
+    color: red;
+}

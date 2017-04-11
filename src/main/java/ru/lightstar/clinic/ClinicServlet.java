@@ -240,7 +240,7 @@ public class ClinicServlet extends HttpServlet {
     private String viewAddClientForm(final HttpServletRequest request) {
         return "<p>Add client:" +
                 "<form action='" +
-                request.getContextPath() + "/' method='post'>" +
+                request.getContextPath() + request.getServletPath() + "' method='post'>" +
                 "Name: <input type='text' name='name'> " +
                 "Position: <input type='text' name='position'> " +
                 "<input type='hidden' name ='action' value='add'>" +
@@ -257,7 +257,10 @@ public class ClinicServlet extends HttpServlet {
     private String viewSetClientPetForm(final HttpServletRequest request) {
         final StringBuilder builder = new StringBuilder();
         builder.append("<p>Set client's pet:");
-        builder.append("<form action='").append(request.getContextPath()).append("/' method='post'>");
+        builder.append("<form action='")
+                .append(request.getContextPath())
+                .append(request.getServletPath())
+                .append("' method='post'>");
         builder.append("Name: <input type='text' name='name'> ");
         builder.append("Pet type: <select name='pettype'>");
         for (final String petType : this.clinicService.getKnownPetTypes()) {
@@ -279,7 +282,7 @@ public class ClinicServlet extends HttpServlet {
      */
     private String viewDelClientForm(final HttpServletRequest request) {
         return "<p>Delete client:" +
-                "<form action='" + request.getContextPath() + "/' method='post'>" +
+                "<form action='" + request.getContextPath() + request.getServletPath() + "' method='post'>" +
                 "Name: <input type='text' name='name'> " +
                 "<input type='hidden' name ='action' value='delclient'>" +
                 "<input type='submit' value='Submit'>" +
@@ -294,7 +297,7 @@ public class ClinicServlet extends HttpServlet {
      */
     private String viewDelClientPetForm(final HttpServletRequest request) {
         return "<p>Delete client's pet:" +
-                "<form action='" + request.getContextPath() + "/' method='post'>" +
+                "<form action='" + request.getContextPath() + request.getServletPath() + "' method='post'>" +
                 "Name: <input type='text' name='name'> " +
                 "<input type='hidden' name ='action' value='delclientpet'>" +
                 "<input type='submit' value='Submit'>" +
@@ -309,7 +312,7 @@ public class ClinicServlet extends HttpServlet {
      */
     private String viewUpdateClientNameForm(final HttpServletRequest request) {
         return "<p>Update client's name:" +
-                "<form action='" + request.getContextPath() + "/' method='post'>" +
+                "<form action='" + request.getContextPath() + request.getServletPath() + "' method='post'>" +
                 "Name: <input type='text' name='name'> " +
                 "New name: <input type='text' name='newname'> " +
                 "<input type='hidden' name ='action' value='upclientname'>" +
@@ -325,7 +328,7 @@ public class ClinicServlet extends HttpServlet {
      */
     private String viewUpdateClientPetNameForm(final HttpServletRequest request) {
         return "<p>Update client pet's name:" +
-                "<form action='" + request.getContextPath() + "/' method='post'>" +
+                "<form action='" + request.getContextPath() + request.getServletPath() + "' method='post'>" +
                 "Name: <input type='text' name='name'> " +
                 "Pet's new name: <input type='text' name='petname'> " +
                 "<input type='hidden' name ='action' value='upclientpetname'>" +
@@ -377,7 +380,10 @@ public class ClinicServlet extends HttpServlet {
 
         builder.append("<p>Filter clients:</p>");
 
-        builder.append("<form action='").append(request.getContextPath()).append("/' method='get'>");
+        builder.append("<form action='")
+                .append(request.getContextPath())
+                .append(request.getServletPath())
+                .append("' method='get'>");
         builder.append("By name: ").append("<input type='text' name='filter_name' value='");
         if (request.getParameterMap().containsKey("filter_name") &&
                 !request.getParameter("filter_name").isEmpty()) {
@@ -387,7 +393,10 @@ public class ClinicServlet extends HttpServlet {
         builder.append("<input type='submit' value='Submit'>");
         builder.append("</form>");
 
-        builder.append("<form action='").append(request.getContextPath()).append("/' method='get'>");
+        builder.append("<form action='")
+                .append(request.getContextPath())
+                .append(request.getServletPath())
+                .append("' method='get'>");
         builder.append("By pet's name: ").append("<input type='text' name='filter_petname' value='");
         if (request.getParameterMap().containsKey("filter_petname") &&
                 !request.getParameter("filter_petname").isEmpty()) {

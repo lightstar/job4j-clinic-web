@@ -1,12 +1,24 @@
-<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
-    version="2.4">
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_0.xsd"
+    version="3.0">
 
     <display-name>Pet's clinic</display-name>
     <description>
         This is web version of pet's clinic.
     </description>
+
+    <!-- serving static content with default container servlet -->
+
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.css</url-pattern>
+        <url-pattern>*.js</url-pattern>
+        <url-pattern>*.png</url-pattern>
+        <url-pattern>*.jpg</url-pattern>
+    </servlet-mapping>
+
+    <!-- the first (old) clinic servlet which didn't use jsp -->
 
     <servlet>
         <servlet-name>ClinicServlet</servlet-name>
@@ -15,7 +27,98 @@
 
     <servlet-mapping>
         <servlet-name>ClinicServlet</servlet-name>
+        <url-pattern>/old/</url-pattern>
+    </servlet-mapping>
+
+    <!-- clinic servlets -->
+
+    <servlet>
+        <servlet-name>ShowClients</servlet-name>
+        <servlet-class>ru.lightstar.clinic.servlet.ShowClients</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ShowClients</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>AddClient</servlet-name>
+        <servlet-class>ru.lightstar.clinic.servlet.AddClient</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>AddClient</servlet-name>
+        <url-pattern>/client/add</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>UpdateClientName</servlet-name>
+        <servlet-class>ru.lightstar.clinic.servlet.UpdateClientName</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>UpdateClientName</servlet-name>
+        <url-pattern>/client/update</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>SetClientPet</servlet-name>
+        <servlet-class>ru.lightstar.clinic.servlet.SetClientPet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>SetClientPet</servlet-name>
+        <url-pattern>/client/pet/set</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>UpdateClientPetName</servlet-name>
+        <servlet-class>ru.lightstar.clinic.servlet.UpdateClientPetName</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>UpdateClientPetName</servlet-name>
+        <url-pattern>/client/pet/update</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DeleteClientPet</servlet-name>
+        <servlet-class>ru.lightstar.clinic.servlet.DeleteClientPet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>DeleteClientPet</servlet-name>
+        <url-pattern>/client/pet/delete</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DeleteClient</servlet-name>
+        <servlet-class>ru.lightstar.clinic.servlet.DeleteClient</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>DeleteClient</servlet-name>
+        <url-pattern>/client/delete</url-pattern>
+    </servlet-mapping>
+
+    <!-- filters -->
+
+    <filter>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <filter-class>ru.lightstar.clinic.filter.CharacterEncodingFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!-- context listener executed on application startup -->
+
+    <listener>
+        <listener-class>
+            ru.lightstar.clinic.ClinicContextListener
+        </listener-class>
+    </listener>
 </web-app>
