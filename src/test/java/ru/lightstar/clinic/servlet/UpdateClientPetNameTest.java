@@ -31,7 +31,7 @@ public class UpdateClientPetNameTest extends Mockito {
         final ClinicService clinicService = mock(ClinicService.class);
 
         when(request.getParameter("name")).thenReturn("Vasya");
-        when(request.getParameter("petName")).thenReturn("Murka");
+        when(request.getParameter("newName")).thenReturn("Murka");
         when(request.getContextPath()).thenReturn("/context");
 
         new UpdateClientPetName(clinicService).doPost(request, response);
@@ -72,7 +72,7 @@ public class UpdateClientPetNameTest extends Mockito {
         final ClinicService clinicService = mock(ClinicService.class);
 
         when(request.getParameter("name")).thenReturn("Vasya");
-        when(request.getParameter("petName")).thenReturn("Murka");
+        when(request.getParameter("newName")).thenReturn("Murka");
         when(request.getRequestDispatcher("/WEB-INF/view/UpdateClientPetName.jsp")).thenReturn(dispatcher);
         doThrow(new ServiceException("Test error")).when(clinicService).updateClientPetName("Vasya", "Murka");
 

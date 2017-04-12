@@ -59,7 +59,7 @@ public class UpdateClientPetName extends HttpServlet {
         String errorString = "";
         try {
             this.checkParameters(request);
-            this.clinicService.updateClientPetName(request.getParameter("name"), request.getParameter("petName"));
+            this.clinicService.updateClientPetName(request.getParameter("name"), request.getParameter("newName"));
         } catch (NullPointerException e) {
             errorString = "Invalid request parameters";
         } catch (NameException | ServiceException e) {
@@ -80,7 +80,7 @@ public class UpdateClientPetName extends HttpServlet {
      * @param request user's request.
      */
     private void checkParameters(final HttpServletRequest request) {
-        if (request.getParameter("name") == null || request.getParameter("petName") == null) {
+        if (request.getParameter("name") == null || request.getParameter("newName") == null) {
             throw new NullPointerException();
         }
     }

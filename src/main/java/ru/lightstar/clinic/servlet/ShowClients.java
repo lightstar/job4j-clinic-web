@@ -48,17 +48,17 @@ public class ShowClients extends HttpServlet {
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
 
+        final String filterType = request.getParameter("filterType");
+        final String filterName = request.getParameter("filterName");
         Client[] clients;
-        if (request.getParameterMap().containsKey("filterName") &&
-                !request.getParameter("filterName").isEmpty()) {
+        if (filterType != null && filterType.equals("client") && filterName != null && !filterName.isEmpty()) {
             try {
-                clients = new Client[]{this.clinicService.findClientByName(request.getParameter("filterName"))};
+                clients = new Client[]{this.clinicService.findClientByName(filterName)};
             } catch(ServiceException e) {
                 clients = new Client[]{};
             }
-        } else if (request.getParameterMap().containsKey("filterPetName") &&
-                !request.getParameter("filterPetName").isEmpty()) {
-            clients = this.clinicService.findClientsByPetName(request.getParameter("filterPetName"));
+        } else if (filterType != null && filterType.equals("pet") && filterName != null && !filterName.isEmpty()) {
+            clients = this.clinicService.findClientsByPetName(filterName);
         } else {
             clients = this.clinicService.getAllClients();
         }

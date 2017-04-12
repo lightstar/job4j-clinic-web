@@ -10,42 +10,42 @@
     <meta charset="utf-8">
     <title>Pet clinic</title>
     <link rel="stylesheet" type="text/css" href="<c:url value='/css/clinic.css'/>">
+    <script type="text/javascript" src="<c:url value='/js/jquery-3.2.1.min.js'/>"></script>
+    <script type="text/javascript" src="<c:url value='/js/jquery.color.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/js/clinic.js'/>"></script>
 </head>
 <body>
+<div class="content">
 
-<h2>Update client's name</h2>
+    <h2>Update client's name</h2>
 
-<c:if test="${error != null}">
-    <p class="error"><c:out value="${error}"/></p>
-</c:if>
+    <c:if test="${error != null}">
+        <p class="error"><c:out value="${error}"/></p>
+    </c:if>
 
-<c:url value='/client/update' var="action">
-    <c:param name="name" value="${param.name}"/>
-</c:url>
-<form action="${action}" method="post">
-    <table class="form">
-        <tr>
-            <td>
-                Name:
-            </td>
-            <td>
-                <b>
-                    <c:out value="${param.name}"/>
-                </b>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label for="newName">New name:</label>
-            </td>
-            <td>
-                <input type="text" id="newName" name="newName" value="<c:out value='${param.newName}'/>">
-            </td>
-        </tr>
-    </table>
-    <input type="hidden" name="name" value="<c:out value='${param.name}'/>">
-    <input type="submit" value="Update">
-</form>
+    <c:url value='/client/update' var="action">
+        <c:param name="name" value="${param.name}"/>
+    </c:url>
+    <form action="${action}" method="post" class="form" onsubmit="return validateForm(this);">
+        <div>
+            <label class="element">Name:</label>
+            <p class="element"><c:out value="${param.name}"/></p>
+        </div>
+
+        <div>
+            <label for="newName" class="element">New name:</label>
+            <span class="element">
+                <input type="text" class="text" id="newName" name="newName" value="<c:out value='${param.newName}'/>">
+            </span>
+        </div>
+
+        <div>
+            <input type="submit" class="button" value="Update">
+            <input type="button" class="button" value="Cancel" onclick="document.location.href='<c:url value="/"/>';">
+        </div>
+
+        <input type="hidden" name="name" value="<c:out value='${param.name}'/>">
+    </form>
+</div>
 </body>
 </html>

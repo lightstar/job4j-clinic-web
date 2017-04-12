@@ -1,28 +1,105 @@
-table.form {
-    line-height: 1.5em;
+body {
+    background-color: antiquewhite;
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    font-size: 15px;
 }
 
-table.form td {
+.content {
+    width: 800px;
+    margin: 0 auto;
+}
+
+h2 {
+    text-align: center;
     padding: 2px 0;
-    text-align: left;
+    background-color: burlywood;
+    font-size: 22px;
 }
 
-table.form td:first-child {
-    padding-right: .5em;
-}
-
-table.list {
-    border: 1px solid black;
-    border-collapse: collapse;
-}
-
-table.list td,
-table.list th {
-    border: 1px solid black;
-    padding: 5px;
+p {
+    margin: 0;
     text-align: center;
 }
 
 .error {
     color: red;
+}
+
+form.filter {
+    text-align: center;
+    background-color: bisque;
+    padding: 5px 0;
+    margin: 0 auto;
+    width: 500px;
+}
+
+form.filter input.text {
+    background-color: white;
+}
+
+form.filter input.button {
+    width: 70px;
+    height: 25px;
+}
+
+table.client-list {
+    border: 1px solid black;
+    border-collapse: collapse;
+    margin: 5px auto;
+    width: 500px;
+}
+
+table.client-list tr:nth-child(2n) {
+    background-color: blanchedalmond;
+}
+
+table.client-list tr:nth-child(2n+1) {
+    background-color: antiquewhite;
+}
+
+table.client-list th {
+    background-color: cadetblue;
+}
+
+table.client-list td,
+table.client-list th {
+    border: 1px solid black;
+    padding: 5px;
+    text-align: center;
+}
+
+table.client-list td:nth-child(4) {
+    text-align: left;
+}
+
+form.form {
+    background-color: bisque;
+    padding: 5px;
+}
+
+form.form div {
+    text-align: center;
+}
+
+form.form .element {
+    display: inline-block;
+    text-align: left;
+    width: 120px;
+}
+
+form.form .element input.text {
+    width: 100%;
+    background-color: white;
+}
+
+form.form p.element {
+    font-weight: bold;
+}
+
+form.form input.button {
+    margin: 10px 0 0;
+    display: inline-block;
+    text-align: center;
+    width: 100px;
+    height: 30px;
 }

@@ -10,41 +10,42 @@
     <meta charset="utf-8">
     <title>Pet clinic</title>
     <link rel="stylesheet" type="text/css" href="<c:url value='/css/clinic.css'/>">
+    <script type="text/javascript" src="<c:url value='/js/jquery-3.2.1.min.js'/>"></script>
+    <script type="text/javascript" src="<c:url value='/js/jquery.color.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/js/clinic.js'/>"></script>
 </head>
 <body>
-<h2>Add client</h2>
+<div class="content">
 
-<c:if test="${error != null}">
-    <p class="error"><c:out value="${error}"/></p>
-</c:if>
+    <h2>Add client</h2>
 
-<c:url value='/client/add' var="action">
-    <c:param name="pos" value="${param.pos}"/>
-</c:url>
-<form action="${action}" method="post">
-    <table class="form">
-        <tr>
-            <td>
-                Position:
-            </td>
-            <td>
-                <b>
-                    <c:out value="${param.pos}"/>
-                </b>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label for="name">Name:</label>
-            </td>
-            <td>
-                <input type="text" id="name" name="name" value="<c:out value='${param.name}'/>">
-            </td>
-        </tr>
-    </table>
-    <input type="hidden" name="pos" value="<c:out value='${param.pos}'/>">
-    <input type="submit" value="Add">
-</form>
+    <c:if test="${error != null}">
+        <p class="error"><c:out value="${error}"/></p>
+    </c:if>
+
+    <c:url value='/client/add' var="action">
+        <c:param name="pos" value="${param.pos}"/>
+    </c:url>
+    <form action="${action}" method="post" class="form" onsubmit="return validateForm(this);">
+        <div>
+            <label class="element">Position:</label>
+            <p class="element"><c:out value="${param.pos}"/></p>
+        </div>
+
+        <div>
+            <label for="name" class="element">Name:</label>
+            <span class="element">
+                <input type="text" class="text" id="name" name="name" value="<c:out value='${param.name}'/>">
+            </span>
+        </div>
+
+        <div>
+            <input type="submit" class="button" value="Add">
+            <input type="button" class="button" value="Cancel" onclick="document.location.href='<c:url value="/"/>';">
+        </div>
+
+        <input type="hidden" name="pos" value="<c:out value='${param.pos}'/>">
+    </form>
+</div>
 </body>
 </html>

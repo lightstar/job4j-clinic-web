@@ -57,7 +57,7 @@ public class ShowClientsTest extends Mockito {
         final ClinicService clinicService = mock(ClinicService.class);
         final Client client = new Client("Vasya", Pet.NONE, 1);
 
-        when(request.getParameterMap()).thenReturn(Collections.singletonMap("filterName", new String[]{"Vasya"}));
+        when(request.getParameter("filterType")).thenReturn("client");
         when(request.getParameter("filterName")).thenReturn("Vasya");
         when(request.getRequestDispatcher("/WEB-INF/view/ShowClients.jsp")).thenReturn(dispatcher);
         when(clinicService.findClientByName("Vasya")).thenReturn(client);
@@ -80,7 +80,7 @@ public class ShowClientsTest extends Mockito {
         final RequestDispatcher dispatcher = mock(RequestDispatcher.class);
         final ClinicService clinicService = mock(ClinicService.class);
 
-        when(request.getParameterMap()).thenReturn(Collections.singletonMap("filterName", new String[]{"Vasya"}));
+        when(request.getParameter("filterType")).thenReturn("client");
         when(request.getParameter("filterName")).thenReturn("Vasya");
         when(request.getRequestDispatcher("/WEB-INF/view/ShowClients.jsp")).thenReturn(dispatcher);
         when(clinicService.findClientByName("Vasya")).thenThrow(new ServiceException("Client not found"));
@@ -105,8 +105,8 @@ public class ShowClientsTest extends Mockito {
         final Client client = new Client("Vasya", pet, 1);
         final Client[] clients = new Client[]{client};
 
-        when(request.getParameterMap()).thenReturn(Collections.singletonMap("filterPetName", new String[]{"Murka"}));
-        when(request.getParameter("filterPetName")).thenReturn("Murka");
+        when(request.getParameter("filterType")).thenReturn("pet");
+        when(request.getParameter("filterName")).thenReturn("Murka");
         when(request.getRequestDispatcher("/WEB-INF/view/ShowClients.jsp")).thenReturn(dispatcher);
         when(clinicService.findClientsByPetName("Murka")).thenReturn(clients);
 
