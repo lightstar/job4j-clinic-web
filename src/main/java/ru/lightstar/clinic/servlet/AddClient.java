@@ -22,7 +22,24 @@ public class AddClient extends HttpServlet {
     /**
      * Global clinic service used by all servlets.
      */
-    private final ClinicService clinicService = ClinicCache.getService();
+    private final ClinicService clinicService;
+
+    /**
+     * Constructs <code>AddClient</code> servlet.
+     */
+    public AddClient() {
+        this(ClinicCache.getService());
+    }
+
+    /**
+     * Constructs <code>AddClient</code> servlet using pre-defined clinic service (used in tests).
+     *
+     * @param clinicService pre-defined clinic service.
+     */
+    AddClient(final ClinicService clinicService) {
+        super();
+        this.clinicService = clinicService;
+    }
 
     /**
      * {@inheritDoc}
@@ -42,6 +59,7 @@ public class AddClient extends HttpServlet {
 
         String errorString = "";
         try {
+            this.checkParameters(request);
             this.clinicService.addClient(Integer.valueOf(request.getParameter("pos")) - 1,
                     request.getParameter("name"));
         } catch (NullPointerException | NumberFormatException e) {
@@ -55,6 +73,17 @@ public class AddClient extends HttpServlet {
         } else {
             request.setAttribute("error", errorString);
             this.doGet(request, response);
+        }
+    }
+
+    /**
+     * Check that needed parameters are not null.
+     *
+     * @param request user's request.
+     */
+    private void checkParameters(final HttpServletRequest request) {
+        if (request.getParameter("pos") == null || request.getParameter("name") == null) {
+            throw new NullPointerException();
         }
     }
 }

@@ -60,7 +60,6 @@ public class ClinicServlet extends HttpServlet {
         writer.append(this.viewClients(request));
         writer.append("</body></html>");
         writer.flush();
-
     }
 
     /**

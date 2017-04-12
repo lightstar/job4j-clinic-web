@@ -22,7 +22,24 @@ public class UpdateClientPetName extends HttpServlet {
     /**
      * Global clinic service used by all servlets.
      */
-    private final ClinicService clinicService = ClinicCache.getService();
+    private final ClinicService clinicService;
+
+    /**
+     * Constructs <code>UpdateClientPetName</code> servlet.
+     */
+    public UpdateClientPetName() {
+        this(ClinicCache.getService());
+    }
+
+    /**
+     * Constructs <code>UpdateClientPetName</code> servlet using pre-defined clinic service (used in tests).
+     *
+     * @param clinicService pre-defined clinic service.
+     */
+    UpdateClientPetName(final ClinicService clinicService) {
+        super();
+        this.clinicService = clinicService;
+    }
 
     /**
      * {@inheritDoc}
@@ -41,8 +58,9 @@ public class UpdateClientPetName extends HttpServlet {
             throws ServletException, IOException {
         String errorString = "";
         try {
+            this.checkParameters(request);
             this.clinicService.updateClientPetName(request.getParameter("name"), request.getParameter("petName"));
-        } catch (NullPointerException | NumberFormatException e) {
+        } catch (NullPointerException e) {
             errorString = "Invalid request parameters";
         } catch (NameException | ServiceException e) {
             errorString = e.getMessage();
@@ -53,6 +71,17 @@ public class UpdateClientPetName extends HttpServlet {
         } else {
             request.setAttribute("error", errorString);
             this.doGet(request, response);
+        }
+    }
+
+    /**
+     * Check that needed parameters are not null.
+     *
+     * @param request user's request.
+     */
+    private void checkParameters(final HttpServletRequest request) {
+        if (request.getParameter("name") == null || request.getParameter("petName") == null) {
+            throw new NullPointerException();
         }
     }
 }

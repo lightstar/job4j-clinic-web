@@ -22,7 +22,24 @@ public class ShowClients extends HttpServlet {
     /**
      * Global clinic service used by all servlets.
      */
-    private final ClinicService clinicService = ClinicCache.getService();
+    private final ClinicService clinicService;
+
+    /**
+     * Constructs <code>ShowClients</code> servlet.
+     */
+    public ShowClients() {
+        this(ClinicCache.getService());
+    }
+
+    /**
+     * Constructs <code>ShowClients</code> servlet using pre-defined clinic service (used in tests).
+     *
+     * @param clinicService pre-defined clinic service.
+     */
+    ShowClients(final ClinicService clinicService) {
+        super();
+        this.clinicService = clinicService;
+    }
 
     /**
      * {@inheritDoc}

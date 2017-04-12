@@ -59,68 +59,68 @@
     </p>
 </c:if>
 <c:if test="${fn:length(clients) > 0}">
-<table class="list">
-    <tr>
-        <th>#</th>
-        <th>Client</th>
-        <th>Pet</th>
-        <th>&nbsp;</th>
-    </tr>
-    <c:forEach items="${clients}" var="client" varStatus="status">
+    <table class="list">
         <tr>
-            <td>
-                    ${client == null ? status.count : client.position + 1}
-            </td>
-            <td>
+            <th>#</th>
+            <th>Client</th>
+            <th>Pet</th>
+            <th>&nbsp;</th>
+        </tr>
+        <c:forEach items="${clients}" var="client" varStatus="status">
+            <tr>
+                <td>
+                        ${client == null ? status.count : client.position + 1}
+                </td>
+                <td>
+                        <c:if test="${client == null}">
+                            NONE
+                        </c:if>
+                        <c:if test="${client != null}">
+                            <c:out value="${client.name}"/>
+                        </c:if>
+                </td>
+                <td>
+                        <c:if test="${client == null || client.pet.name == ''}">
+                            NONE
+                        </c:if>
+                        <c:if test="${client != null && client.pet.name != ''}">
+                            <c:out value="${client.pet}"/>
+                        </c:if>
+                </td>
+                <td>
                     <c:if test="${client == null}">
-                        NONE
+                        <c:url value='/client/add' var="addUrl">
+                            <c:param name="pos" value="${status.count}"/>
+                        </c:url>
+                        <a href="${addUrl}">Add</a>
                     </c:if>
+
                     <c:if test="${client != null}">
-                        <c:out value="${client.name}"/>
-                    </c:if>
-            </td>
-            <td>
-                    <c:if test="${client == null || client.pet.name == ''}">
-                        NONE
-                    </c:if>
-                    <c:if test="${client != null && client.pet.name != ''}">
-                        <c:out value="${client.pet}"/>
-                    </c:if>
-            </td>
-            <td>
-                <c:if test="${client == null}">
-                    <c:url value='/client/add' var="addUrl">
-                        <c:param name="pos" value="${status.count}"/>
-                    </c:url>
-                    <a href="${addUrl}">Add</a>
-                </c:if>
-
-                <c:if test="${client != null}">
-                    <c:url value='/client/update' var="updateUrl">
-                        <c:param name="name" value="${client.name}"/>
-                    </c:url>
-                    <a href="${updateUrl}">Update name</a>
-
-                    <c:url value='/client/pet/set' var="setPetUrl">
-                        <c:param name="name" value="${client.name}"/>
-                    </c:url>
-                    <a href="${setPetUrl}">Set pet</a>
-
-                    <c:if test="${client.pet.name != ''}">
-                        <c:url value='/client/pet/update' var="updatePetUrl">
+                        <c:url value='/client/update' var="updateUrl">
                             <c:param name="name" value="${client.name}"/>
                         </c:url>
-                        <a href="${updatePetUrl}">Update pet's name</a>
+                        <a href="${updateUrl}">Update name</a>
 
-                        <a href="#" onclick="deleteClientPet('<c:out value="${client.name}"/>', '<c:out value="${pageContext.request.contextPath}"/>'); return false;">Delete pet</a>
+                        <c:url value='/client/pet/set' var="setPetUrl">
+                            <c:param name="name" value="${client.name}"/>
+                        </c:url>
+                        <a href="${setPetUrl}">Set pet</a>
+
+                        <c:if test="${client.pet.name != ''}">
+                            <c:url value='/client/pet/update' var="updatePetUrl">
+                                <c:param name="name" value="${client.name}"/>
+                            </c:url>
+                            <a href="${updatePetUrl}">Update pet's name</a>
+
+                            <a href="#" onclick="deleteClientPet('<c:out value="${client.name}"/>', '<c:out value="${pageContext.request.contextPath}"/>'); return false;">Delete pet</a>
+                        </c:if>
+
+                        <a href="#" onclick="deleteClient('<c:out value="${client.name}"/>', '<c:out value="${pageContext.request.contextPath}"/>'); return false;">Delete</a>
                     </c:if>
-
-                    <a href="#" onclick="deleteClient('<c:out value="${client.name}"/>', '<c:out value="${pageContext.request.contextPath}"/>'); return false;">Delete</a>
-                </c:if>
-            </td>
-        </tr>
-    </c:forEach>
-</table>
+                </td>
+            </tr>
+        </c:forEach>
+    </table>
 </c:if>
 </body>
 </html>

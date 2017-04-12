@@ -21,7 +21,24 @@ public class DeleteClientPet extends HttpServlet {
     /**
      * Global clinic service used by all servlets.
      */
-    private final ClinicService clinicService = ClinicCache.getService();
+    private final ClinicService clinicService;
+
+    /**
+     * Constructs <code>DeleteClientPet</code> servlet.
+     */
+    public DeleteClientPet() {
+        this(ClinicCache.getService());
+    }
+
+    /**
+     * Constructs <code>DeleteClientPet</code> servlet using pre-defined clinic service (used in tests).
+     *
+     * @param clinicService pre-defined clinic service.
+     */
+    DeleteClientPet(final ClinicService clinicService) {
+        super();
+        this.clinicService = clinicService;
+    }
 
     /**
      * {@inheritDoc}
@@ -31,8 +48,9 @@ public class DeleteClientPet extends HttpServlet {
             throws ServletException, IOException {
         String errorString = "";
         try {
+            this.checkParameters(request);
             this.clinicService.deleteClientPet(request.getParameter("name"));
-        } catch (NullPointerException | NumberFormatException e) {
+        } catch (NullPointerException e) {
             errorString = "Invalid request parameters";
         } catch (ServiceException e) {
             errorString = e.getMessage();
@@ -43,6 +61,17 @@ public class DeleteClientPet extends HttpServlet {
         } else {
             request.setAttribute("error", errorString);
             request.getRequestDispatcher("/").forward(request, response);
+        }
+    }
+
+    /**
+     * Check that needed parameters are not null.
+     *
+     * @param request user's request.
+     */
+    private void checkParameters(final HttpServletRequest request) {
+        if (request.getParameter("name") == null) {
+            throw new NullPointerException();
         }
     }
 }
