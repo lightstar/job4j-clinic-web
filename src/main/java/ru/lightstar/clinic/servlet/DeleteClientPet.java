@@ -2,10 +2,8 @@ package ru.lightstar.clinic.servlet;
 
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.exception.ServiceException;
-import ru.lightstar.clinic.store.ClinicCache;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -16,28 +14,20 @@ import java.io.IOException;
  * @author LightStar
  * @since 0.0.1
  */
-public class DeleteClientPet extends HttpServlet {
+public class DeleteClientPet extends ClinicServlet {
 
     /**
-     * Global clinic service used by all servlets.
-     */
-    private final ClinicService clinicService;
-
-    /**
-     * Constructs <code>DeleteClientPet</code> servlet.
+     * {@inheritDoc}
      */
     public DeleteClientPet() {
-        this(ClinicCache.getService());
+        super();
     }
 
     /**
-     * Constructs <code>DeleteClientPet</code> servlet using pre-defined clinic service (used in tests).
-     *
-     * @param clinicService pre-defined clinic service.
+     * {@inheritDoc}
      */
     DeleteClientPet(final ClinicService clinicService) {
-        super();
-        this.clinicService = clinicService;
+        super(clinicService);
     }
 
     /**

@@ -12,7 +12,7 @@ CREATE TABLE `client` (
   `position` int(10) unsigned NOT NULL,
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL DEFAULT '',
-  `phone` varchar(255) NOT NULL,
+  `phone` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `position` (`position`),
   UNIQUE KEY `name` (`name`)
@@ -23,11 +23,11 @@ CREATE TABLE `pet` (
   `client_id` int(10) unsigned NOT NULL,
   `type` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `age` int(10) unsigned NOT NULL,
-  `sex` enum('m','f') DEFAULT NULL,
+  `age` int(10) unsigned NOT NULL DEFAULT '0',
+  `sex` enum('m','f') NOT NULL DEFAULT 'm',
   PRIMARY KEY (`id`),
-  KEY `client_id` (`client_id`),
-  CONSTRAINT `pet_ibfk_1` FOREIGN KEY (`client_id`) REFERENCES `client` (`id`)
+  UNIQUE KEY `client_id` (`client_id`),
+  CONSTRAINT `pet_ibfk_1` FOREIGN KEY (`client_id`) REFERENCES `client` (`id`) ON DELETE CASCADE
 );
 
 CREATE TABLE `drug` (
