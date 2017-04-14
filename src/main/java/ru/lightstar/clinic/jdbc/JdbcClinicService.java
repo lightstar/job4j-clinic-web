@@ -8,6 +8,7 @@ import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.io.DummyOutput;
 import ru.lightstar.clinic.io.IteratorInput;
 import ru.lightstar.clinic.pet.Pet;
+import ru.lightstar.clinic.pet.Sex;
 
 import javax.servlet.ServletContext;
 import java.sql.*;
@@ -24,29 +25,34 @@ public class JdbcClinicService extends ClinicService {
      * SQL used to load all client data from database.
      */
     public static final String LOAD_SQL =
-            "SELECT client.id, client.position, client.name, " +
-                    "pet.id AS petId, pet.type AS petType, pet.name AS petName " +
+            "SELECT client.id, client.position, client.name, client.email, client.phone, " +
+                    "pet.id AS petId, pet.type AS petType, pet.name AS petName, pet.age AS petAge," +
+                    "pet.sex AS petSex " +
                     "FROM client LEFT JOIN pet ON client.id = pet.client_id";
 
     /**
      * SQL used to add new client to database.
      */
-    public static final String ADD_CLIENT_SQL = "INSERT INTO client (`position`, `name`) VALUES (?,?)";
+    public static final String ADD_CLIENT_SQL = "INSERT INTO client (`position`, `name`,`email`,`phone`) " +
+            "VALUES (?,?,?,?)";
 
     /**
      * SQL used to set client's pet in database.
      */
-    public static final String SET_CLIENT_PET_SQL = "REPLACE INTO pet (`client_id`, `type`, `name`) VALUES (?,?,?)";
+    public static final String SET_CLIENT_PET_SQL = "REPLACE INTO pet (`client_id`, `type`, `name`,`age`,`sex`) " +
+            "VALUES (?,?,?,?,?)";
 
     /**
-     * SQL used to update client's name in database.
+     * SQL used to update client in database.
      */
-    public static final String UPDATE_CLIENT_NAME_SQL = "UPDATE client SET name = ? WHERE name = ?";
+    public static final String UPDATE_CLIENT_SQL = "UPDATE client SET name = ?, email = ?, phone = ? " +
+            "WHERE name = ?";
 
     /**
-     * SQL used to update client pet's name in database.
+     * SQL used to update client's pet in database.
      */
-    public static final String UPDATE_CLIENT_PET_NAME_SQL = "UPDATE pet SET name = ? WHERE client_id = ?";
+    public static final String UPDATE_CLIENT_PET_SQL = "UPDATE pet SET name = ?, age = ?, sex = ? " +
+            "WHERE client_id = ?";
 
     /**
      * SQL used to delete client's pet from database.
@@ -80,21 +86,31 @@ public class JdbcClinicService extends ClinicService {
     /**
      * Load all data from database to inner clinic object.
      */
-    public void loadClinic() {
+    public synchronized void loadClinic() {
         try (final Statement statement = this.connection.createStatement()) {
             try (final ResultSet rs = statement.executeQuery(LOAD_SQL)) {
                 while (rs.next()) {
                     final int id = rs.getInt("id");
                     final int position = rs.getInt("position") - 1;
                     final String name = rs.getString("name");
+                    final String email = rs.getString("email");
+                    final String phone = rs.getString("phone");
                     final int petId = rs.getInt("petId");
                     final String petType = rs.getString("petType");
                     final String petName = rs.getString("petName");
+                    final int petAge = rs.getInt("petAge");
+                    final String petSex = rs.getString("petSex");
 
                     final Pet pet = petType != null ? this.getPetFactory().create(petType, petName) : Pet.NONE;
-                    pet.setId(petId);
+                    if (pet != Pet.NONE) {
+                        pet.setId(petId);
+                        pet.setAge(petAge);
+                        pet.setSex(petSex.toLowerCase().equals("m") ? Sex.M : Sex.F);
+                    }
                     final Client client = new Client(name, pet, position);
                     client.setId(id);
+                    client.setEmail(email);
+                    client.setPhone(phone);
 
                     this.getClinic().addClient(position, client);
                     if (pet != Pet.NONE) {
@@ -111,14 +127,16 @@ public class JdbcClinicService extends ClinicService {
      * {@inheritDoc}
      */
     @Override
-    public synchronized Client addClient(int position, String name)
+    public synchronized Client addClient(final int position, final String name, final String email, final String phone)
             throws ServiceException, NameException {
-        final Client client = super.addClient(position, name);
+        final Client client = super.addClient(position, name, email, phone);
 
         try (final PreparedStatement statement = this.connection.prepareStatement(ADD_CLIENT_SQL,
                 Statement.RETURN_GENERATED_KEYS)) {
             statement.setInt(1, client.getPosition() + 1);
             statement.setString(2, client.getName());
+            statement.setString(3, client.getEmail());
+            statement.setString(4, client.getPhone());
             statement.executeUpdate();
 
             try (final ResultSet generatedKeys = statement.getGeneratedKeys()) {
@@ -138,17 +156,20 @@ public class JdbcClinicService extends ClinicService {
      * {@inheritDoc}
      */
     @Override
-    public synchronized Pet setClientPet(String name, String petType, String petName)
+    public synchronized Pet setClientPet(final String name, final String petType, final String petName,
+                                         final int petAge, final Sex petSex)
             throws ServiceException, NameException {
         final Client client = this.findClientByName(name);
         final Pet oldPet = client.getPet();
-        final Pet pet = super.setClientPet(client, petType, petName);
+        final Pet pet = super.setClientPet(client, petType, petName, petAge, petSex);
 
         try (final PreparedStatement statement = this.connection.prepareStatement(SET_CLIENT_PET_SQL,
                 Statement.RETURN_GENERATED_KEYS)) {
             statement.setInt(1, client.getId());
             statement.setString(2, pet.getType());
             statement.setString(3, pet.getName());
+            statement.setInt(4, pet.getAge());
+            statement.setString(5, pet.getSex() == Sex.M ? "m" : "f");
             statement.executeUpdate();
 
             try (final ResultSet generatedKeys = statement.getGeneratedKeys()) {
@@ -172,16 +193,22 @@ public class JdbcClinicService extends ClinicService {
      * {@inheritDoc}
      */
     @Override
-    public synchronized void updateClientName(String name, String newName) throws ServiceException, NameException {
+    public synchronized void updateClient(final String name, final String newName,
+                                          final String newEmail, final String newPhone)
+            throws ServiceException, NameException {
         final Client client = this.findClientByName(name);
-        super.updateClientName(client, newName);
+        final String oldEmail = client.getEmail();
+        final String oldPhone = client.getPhone();
+        super.updateClient(client, newName, newEmail, newPhone);
 
-        try (final PreparedStatement statement = this.connection.prepareStatement(UPDATE_CLIENT_NAME_SQL)) {
+        try (final PreparedStatement statement = this.connection.prepareStatement(UPDATE_CLIENT_SQL)) {
             statement.setString(1, newName);
-            statement.setString(2, name);
+            statement.setString(2, newEmail);
+            statement.setString(3, newPhone);
+            statement.setString(4, name);
             statement.executeUpdate();
         } catch (SQLException e) {
-            super.updateClientName(client, name);
+            super.updateClient(client, name, oldEmail, oldPhone);
             throw new ServiceException(String.format("Can't update client's name in database: %s", e.getMessage()));
         }
     }
@@ -190,17 +217,24 @@ public class JdbcClinicService extends ClinicService {
      * {@inheritDoc}
      */
     @Override
-    public synchronized void updateClientPetName(String name, String petName) throws ServiceException, NameException {
+    public synchronized void updateClientPet(final String name, final String petName,
+                                             final int petAge, final Sex petSex)
+            throws ServiceException, NameException {
         final Client client = this.findClientByName(name);
-        final String oldPetName = client.getPet().getName();
-        super.updateClientPetName(client, petName);
+        final Pet pet = client.getPet();
+        final String oldPetName = pet.getName();
+        final int oldPetAge = pet.getAge();
+        final Sex oldPetSex = pet.getSex();
+        super.updateClientPet(client, petName, petAge, petSex);
 
-        try (final PreparedStatement statement = this.connection.prepareStatement(UPDATE_CLIENT_PET_NAME_SQL)) {
+        try (final PreparedStatement statement = this.connection.prepareStatement(UPDATE_CLIENT_PET_SQL)) {
             statement.setString(1, petName);
-            statement.setInt(2, client.getId());
+            statement.setInt(2, petAge);
+            statement.setString(3, petSex == Sex.M ? "m" : "f");
+            statement.setInt(4, client.getId());
             statement.executeUpdate();
         } catch (SQLException e) {
-            super.updateClientPetName(client, oldPetName);
+            super.updateClientPet(client, oldPetName, oldPetAge, oldPetSex);
             throw new ServiceException(String.format("Can't update client pet's name in database: %s", e.getMessage()));
         }
     }
@@ -209,7 +243,7 @@ public class JdbcClinicService extends ClinicService {
      * {@inheritDoc}
      */
     @Override
-    public synchronized void deleteClientPet(String name) throws ServiceException {
+    public synchronized void deleteClientPet(final String name) throws ServiceException {
         final Client client = this.findClientByName(name);
         final Pet oldPet = client.getPet();
         super.deleteClientPet(client);
@@ -227,7 +261,7 @@ public class JdbcClinicService extends ClinicService {
      * {@inheritDoc}
      */
     @Override
-    public synchronized void deleteClient(String name) throws ServiceException {
+    public synchronized void deleteClient(final String name) throws ServiceException {
         final Client client = this.findClientByName(name);
         final Pet oldPet = client.getPet();
         super.deleteClient(client);

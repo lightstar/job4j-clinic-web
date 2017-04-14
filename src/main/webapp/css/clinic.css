@@ -1,3 +1,7 @@
+*, *:before, *:after {
+    box-sizing: border-box;
+}
+
 body {
     background-color: antiquewhite;
     font-family: "Comic Sans MS", cursive, sans-serif;
@@ -70,6 +74,7 @@ table.client-list th {
 
 table.client-list td:nth-child(4) {
     text-align: left;
+    min-width: 280px;
 }
 
 form.form {
@@ -84,11 +89,11 @@ form.form div {
 form.form .element {
     display: inline-block;
     text-align: left;
-    width: 120px;
+    width: 150px;
+    margin: 2px 0;
 }
 
-form.form .element input.text {
-    width: 100%;
+form.form input.element {
     background-color: white;
 }
 

@@ -81,19 +81,20 @@
                             <c:url value='/client/update' var="updateUrl">
                                 <c:param name="name" value="${client.name}"/>
                             </c:url>
-                            <a href="${updateUrl}">Update name</a>
+                            <a href="${updateUrl}">Update</a>
 
-                            <c:url value='/client/pet/set' var="setPetUrl">
-                                <c:param name="name" value="${client.name}"/>
-                            </c:url>
-                            <a href="${setPetUrl}">Set pet</a>
+                            <c:if test="${client.pet.name == ''}">
+                                <c:url value='/client/pet/set' var="setPetUrl">
+                                    <c:param name="name" value="${client.name}"/>
+                                </c:url>
+                                <a href="${setPetUrl}">Set pet</a>
+                            </c:if>
 
                             <c:if test="${client.pet.name != ''}">
                                 <c:url value='/client/pet/update' var="updatePetUrl">
                                     <c:param name="name" value="${client.name}"/>
-                                    <c:param name="petName" value="${client.pet.name}"/>
                                 </c:url>
-                                <a href="${updatePetUrl}">Update pet's name</a>
+                                <a href="${updatePetUrl}">Update pet</a>
 
                                 <a href="#" onclick="deleteClientPet('<c:out value="${client.name}"/>');">Delete pet</a>
                             </c:if>

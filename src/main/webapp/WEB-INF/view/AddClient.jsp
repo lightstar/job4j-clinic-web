@@ -34,9 +34,17 @@
 
         <div>
             <label for="name" class="element">Name:</label>
-            <span class="element">
-                <input type="text" class="text" id="name" name="name" value="<c:out value='${param.name}'/>">
-            </span>
+            <input type="text" class="element text" id="name" name="name" value="<c:out value='${param.name}'/>">
+        </div>
+
+        <div>
+            <label for="email" class="element">Email:</label>
+            <input type="text" class="element text" id="email" name="email" value="<c:out value='${param.email}'/>">
+        </div>
+
+        <div>
+            <label for="phone" class="element">Phone:</label>
+            <input type="text" class="element text" id="phone" name="phone" value="<c:out value='${param.phone}'/>">
         </div>
 
         <div>

@@ -48,8 +48,26 @@
 
         <div>
             <label for="petName" class="element">Pet's name:</label>
-            <span class="element">
-                <input type="text" class="text" id="petName" name="petName" value="<c:out value='${param.petName}'/>">
+            <input type="text" class="element text" id="petName" name="petName"
+                   value="<c:out value='${param.petName}'/>">
+        </div>
+
+        <div>
+            <label for="petAge" class="element">Pet's age:</label>
+            <input type="text" class="element text" id="petAge" name="petAge"
+                   value="<c:out value='${requestScope.petAge}'/>">
+        </div>
+
+        <div>
+            <label class="element">Pet's sex:</label>
+            <span class="element" id="petSex">
+                <label for="petSexM">Male</label>
+                <input type="radio" class="radio" id="petSexM" name="petSex" value="m"
+                       <c:if test="${requestScope.petSex == 'm'}">checked</c:if>/>
+
+                <label for="petSexF">Female</label>
+                <input type="radio" class="radio" id="petSexF" name="petSex" value="f"
+                       <c:if test="${requestScope.petSex == 'f'}">checked</c:if>/>
             </span>
         </div>
 

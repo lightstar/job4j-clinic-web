@@ -32,11 +32,14 @@ public class AddClientTest extends Mockito {
 
         when(request.getParameter("pos")).thenReturn("1");
         when(request.getParameter("name")).thenReturn("Vasya");
+        when(request.getParameter("email")).thenReturn("vasya@mail.ru");
+        when(request.getParameter("phone")).thenReturn("2323");
         when(request.getContextPath()).thenReturn("/context");
 
         new AddClient(clinicService).doPost(request, response);
 
-        verify(clinicService, times(1)).addClient(0, "Vasya");
+        verify(clinicService, times(1)).addClient(0, "Vasya",
+                "vasya@mail.ru", "2323");
         verify(response, atLeastOnce()).sendRedirect("/context/");
     }
 
@@ -93,12 +96,15 @@ public class AddClientTest extends Mockito {
 
         when(request.getParameter("pos")).thenReturn("1");
         when(request.getParameter("name")).thenReturn("Vasya");
+        when(request.getParameter("email")).thenReturn("vasya@mail.ru");
+        when(request.getParameter("phone")).thenReturn("2323");
         when(request.getRequestDispatcher("/WEB-INF/view/AddClient.jsp")).thenReturn(dispatcher);
-        when(clinicService.addClient(0, "Vasya")).thenThrow(new ServiceException("Test error"));
+        when(clinicService.addClient(0, "Vasya", "vasya@mail.ru", "2323"))
+                .thenThrow(new ServiceException("Test error"));
 
         new AddClient(clinicService).doPost(request, response);
 
-        verify(request, atLeastOnce()).setAttribute("error", "Test error");
+        verify(request, atLeastOnce()).setAttribute("error", "Test error.");
         verify(dispatcher, atLeastOnce()).forward(request, response);
     }
 }

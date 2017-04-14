@@ -25,10 +25,10 @@
 
 ![Screenshot](img/screenshot3.png)
 
-**Изменение имени клиента:**
+**Обновление параметров клиента:**
 
 ![Screenshot](img/screenshot4.png)
 
-**Изменение имени питомца:**
+**Обновление параметров питомца:**
 
 ![Screenshot](img/screenshot5.png)

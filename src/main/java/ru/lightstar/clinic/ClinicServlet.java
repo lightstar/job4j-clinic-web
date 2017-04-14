@@ -4,6 +4,7 @@ import ru.lightstar.clinic.exception.NameException;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.io.DummyOutput;
 import ru.lightstar.clinic.io.IteratorInput;
+import ru.lightstar.clinic.pet.Sex;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -55,8 +56,8 @@ public class ClinicServlet extends HttpServlet {
         writer.append(this.viewSetClientPetForm(request));
         writer.append(this.viewDelClientForm(request));
         writer.append(this.viewDelClientPetForm(request));
-        writer.append(this.viewUpdateClientNameForm(request));
-        writer.append(this.viewUpdateClientPetNameForm(request));
+        writer.append(this.viewUpdateClientForm(request));
+        writer.append(this.viewUpdateClientPetForm(request));
         writer.append(this.viewClients(request));
         writer.append("</body></html>");
         writer.flush();
@@ -74,20 +75,20 @@ public class ClinicServlet extends HttpServlet {
                 case "add":
                     this.addClient(request);
                     break;
-                case "setpet":
+                case "setPet":
                     this.setClientPet(request);
                     break;
-                case "delclient":
+                case "delClient":
                     this.deleteClient(request);
                     break;
-                case "delclientpet":
+                case "delClientPet":
                     this.deleteClientPet(request);
                     break;
-                case "upclientname":
-                    this.updateClientName(request);
+                case "upClient":
+                    this.updateClient(request);
                     break;
-                case "upclientpetname":
-                    this.updateClientPetName(request);
+                case "upClientPet":
+                    this.updateClientPet(request);
                     break;
                 default:
                     request.setAttribute("error",
@@ -106,7 +107,8 @@ public class ClinicServlet extends HttpServlet {
     private void addClient(final HttpServletRequest request) {
         try {
             this.clinicService.addClient(Integer.valueOf(request.getParameter("position")) - 1,
-                    request.getParameter("name"));
+                    request.getParameter("name"), request.getParameter("email"),
+                    request.getParameter("phone"));
             request.setAttribute("message", "Client added");
         } catch (NullPointerException e) {
             request.setAttribute("error", "Wrong parameters");
@@ -124,11 +126,14 @@ public class ClinicServlet extends HttpServlet {
      */
     private void setClientPet(final HttpServletRequest request) {
         try {
-            this.clinicService.setClientPet(request.getParameter("name"), request.getParameter("pettype"),
-                    request.getParameter("petname"));
+            this.clinicService.setClientPet(request.getParameter("name"), request.getParameter("petType"),
+                    request.getParameter("petName"), Integer.valueOf(request.getParameter("petAge")),
+                    request.getParameter("petSex").toLowerCase().equals("m") ? Sex.M : Sex.F);
             request.setAttribute("message", "Pet was set");
         } catch (NullPointerException e) {
             request.setAttribute("error", "Wrong parameters");
+        } catch (NumberFormatException e) {
+            request.setAttribute("error", "Age must be a number");
         } catch (ServiceException | NameException e) {
             request.setAttribute("error", e.getMessage());
         }
@@ -167,14 +172,15 @@ public class ClinicServlet extends HttpServlet {
     }
 
     /**
-     * Process update client's name action.
+     * Process update client's name, email and phone action.
      *
      * @param request user's request.
      */
-    private void updateClientName(final HttpServletRequest request) {
+    private void updateClient(final HttpServletRequest request) {
         try {
-            this.clinicService.updateClientName(request.getParameter("name"), request.getParameter("newname"));
-            request.setAttribute("message", "Client's name updated");
+            this.clinicService.updateClient(request.getParameter("name"), request.getParameter("newName"),
+                    request.getParameter("newEmail"), request.getParameter("newPhone"));
+            request.setAttribute("message", "Client updated");
         } catch (NullPointerException e) {
             request.setAttribute("error", "Wrong parameters");
         } catch (ServiceException | NameException e) {
@@ -183,16 +189,21 @@ public class ClinicServlet extends HttpServlet {
     }
 
     /**
-     * Process update client pet's name action.
+     * Process update client pet's name, age and sex action.
      *
      * @param request user's request.
      */
-    private void updateClientPetName(final HttpServletRequest request) {
+    private void updateClientPet(final HttpServletRequest request) {
         try {
-            this.clinicService.updateClientPetName(request.getParameter("name"), request.getParameter("petname"));
-            request.setAttribute("message", "Client pet's name updated");
+            this.clinicService.updateClientPet(request.getParameter("name"),
+                    request.getParameter("petname"),
+                    Integer.valueOf(request.getParameter("petAge")),
+                    request.getParameter("petSex").toLowerCase().equals("m") ? Sex.M : Sex.F);
+            request.setAttribute("message", "Client's pet updated");
         } catch (NullPointerException e) {
             request.setAttribute("error", "Wrong parameters");
+        } catch (NumberFormatException e) {
+            request.setAttribute("error", "Age must be a number");
         } catch (ServiceException | NameException e) {
             request.setAttribute("error", e.getMessage());
         }
@@ -240,8 +251,10 @@ public class ClinicServlet extends HttpServlet {
         return "<p>Add client:" +
                 "<form action='" +
                 request.getContextPath() + request.getServletPath() + "' method='post'>" +
-                "Name: <input type='text' name='name'> " +
                 "Position: <input type='text' name='position'> " +
+                "Name: <input type='text' name='name'> " +
+                "Email: <input type='text' name='email'> " +
+                "Phone: <input type='text' name='phone'> " +
                 "<input type='hidden' name ='action' value='add'>" +
                 "<input type='submit' value='Submit'>" +
                 "</form>";
@@ -261,13 +274,15 @@ public class ClinicServlet extends HttpServlet {
                 .append(request.getServletPath())
                 .append("' method='post'>");
         builder.append("Name: <input type='text' name='name'> ");
-        builder.append("Pet type: <select name='pettype'>");
+        builder.append("Pet's type: <select name='petType'>");
         for (final String petType : this.clinicService.getKnownPetTypes()) {
             builder.append("<option value='").append(petType).append("'>").append(petType).append("</option>");
         }
         builder.append("</select> ");
-        builder.append("Pet name: <input type='text' name='petname'> ");
-        builder.append("<input type='hidden' name ='action' value='setpet'>");
+        builder.append("Pet's name: <input type='text' name='petName'> ");
+        builder.append("Pet's age: <input type='text' name='petAge'> ");
+        builder.append("Pet's sex: <input type='text' name='petSex'> ");
+        builder.append("<input type='hidden' name ='action' value='setPet'>");
         builder.append("<input type='submit' value='Submit'>");
         builder.append("</form>");
         return builder.toString();
@@ -283,7 +298,7 @@ public class ClinicServlet extends HttpServlet {
         return "<p>Delete client:" +
                 "<form action='" + request.getContextPath() + request.getServletPath() + "' method='post'>" +
                 "Name: <input type='text' name='name'> " +
-                "<input type='hidden' name ='action' value='delclient'>" +
+                "<input type='hidden' name ='action' value='delClient'>" +
                 "<input type='submit' value='Submit'>" +
                 "</form>";
     }
@@ -298,39 +313,43 @@ public class ClinicServlet extends HttpServlet {
         return "<p>Delete client's pet:" +
                 "<form action='" + request.getContextPath() + request.getServletPath() + "' method='post'>" +
                 "Name: <input type='text' name='name'> " +
-                "<input type='hidden' name ='action' value='delclientpet'>" +
+                "<input type='hidden' name ='action' value='delClientPet'>" +
                 "<input type='submit' value='Submit'>" +
                 "</form>";
     }
 
     /**
-     * Build update client's name form.
+     * Build update client form.
      *
      * @param request user's request.
      * @return form's html.
      */
-    private String viewUpdateClientNameForm(final HttpServletRequest request) {
-        return "<p>Update client's name:" +
+    private String viewUpdateClientForm(final HttpServletRequest request) {
+        return "<p>Update client:" +
                 "<form action='" + request.getContextPath() + request.getServletPath() + "' method='post'>" +
                 "Name: <input type='text' name='name'> " +
-                "New name: <input type='text' name='newname'> " +
-                "<input type='hidden' name ='action' value='upclientname'>" +
+                "New name: <input type='text' name='newName'> " +
+                "New email: <input type='text' name='newEmail'> " +
+                "New phone: <input type='text' name='newPhone'> " +
+                "<input type='hidden' name ='action' value='upClient'>" +
                 "<input type='submit' value='Submit'>" +
                 "</form>";
     }
 
     /**
-     * Build update client pet's name form.
+     * Build update client's pet name form.
      *
      * @param request user's request.
      * @return form's html.
      */
-    private String viewUpdateClientPetNameForm(final HttpServletRequest request) {
-        return "<p>Update client pet's name:" +
+    private String viewUpdateClientPetForm(final HttpServletRequest request) {
+        return "<p>Update client's pet:" +
                 "<form action='" + request.getContextPath() + request.getServletPath() + "' method='post'>" +
                 "Name: <input type='text' name='name'> " +
-                "Pet's new name: <input type='text' name='petname'> " +
-                "<input type='hidden' name ='action' value='upclientpetname'>" +
+                "Pet's new name: <input type='text' name='petName'> " +
+                "Pet's new age: <input type='text' name='petAge'> " +
+                "Pet's new sex: <input type='text' name='petSex'> " +
+                "<input type='hidden' name ='action' value='upClientPet'>" +
                 "<input type='submit' value='Submit'>" +
                 "</form>";
     }
@@ -383,10 +402,10 @@ public class ClinicServlet extends HttpServlet {
                 .append(request.getContextPath())
                 .append(request.getServletPath())
                 .append("' method='get'>");
-        builder.append("By name: ").append("<input type='text' name='filter_name' value='");
-        if (request.getParameterMap().containsKey("filter_name") &&
-                !request.getParameter("filter_name").isEmpty()) {
-            builder.append(this.escapeHTML(request.getParameter("filter_name")));
+        builder.append("By name: ").append("<input type='text' name='filterName' value='");
+        if (request.getParameterMap().containsKey("filterName") &&
+                !request.getParameter("filterName").isEmpty()) {
+            builder.append(this.escapeHTML(request.getParameter("filterName")));
         }
         builder.append("'> ");
         builder.append("<input type='submit' value='Submit'>");
@@ -396,10 +415,10 @@ public class ClinicServlet extends HttpServlet {
                 .append(request.getContextPath())
                 .append(request.getServletPath())
                 .append("' method='get'>");
-        builder.append("By pet's name: ").append("<input type='text' name='filter_petname' value='");
-        if (request.getParameterMap().containsKey("filter_petname") &&
-                !request.getParameter("filter_petname").isEmpty()) {
-            builder.append(this.escapeHTML(request.getParameter("filter_petname")));
+        builder.append("By pet's name: ").append("<input type='text' name='filterPetName' value='");
+        if (request.getParameterMap().containsKey("filterPetName") &&
+                !request.getParameter("filterPetName").isEmpty()) {
+            builder.append(this.escapeHTML(request.getParameter("filterPetName")));
         }
         builder.append("'> ");
         builder.append("<input type='submit' value='Submit'>");
@@ -416,14 +435,14 @@ public class ClinicServlet extends HttpServlet {
      */
     private Client[] getFilteredClients(final HttpServletRequest request) {
         Client[] clients;
-        if (request.getParameterMap().containsKey("filter_name")) {
+        if (request.getParameterMap().containsKey("filterName")) {
             try {
-                clients = new Client[]{this.clinicService.findClientByName(request.getParameter("filter_name"))};
+                clients = new Client[]{this.clinicService.findClientByName(request.getParameter("filterName"))};
             } catch(ServiceException e) {
                 clients = new Client[]{};
             }
-        } else if (request.getParameterMap().containsKey("filter_petname")) {
-            clients = this.clinicService.findClientsByPetName(request.getParameter("filter_petname"));
+        } else if (request.getParameterMap().containsKey("filterPetName")) {
+            clients = this.clinicService.findClientsByPetName(request.getParameter("filterPetName"));
         } else {
             clients = this.clinicService.getAllClients();
         }

@@ -49,7 +49,7 @@ public class DeleteClient extends ClinicServlet {
         if (errorString.isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/");
         } else {
-            request.setAttribute("error", errorString);
+            request.setAttribute("error", String.format("%s.", errorString));
             request.getRequestDispatcher("/").forward(request, response);
         }
     }

@@ -3,6 +3,7 @@ package ru.lightstar.clinic.servlet;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.exception.NameException;
 import ru.lightstar.clinic.exception.ServiceException;
+import ru.lightstar.clinic.pet.Sex;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -50,8 +51,9 @@ public class SetClientPet extends ClinicServlet {
         try {
             this.checkParameters(request);
             this.clinicService.setClientPet(request.getParameter("name"), request.getParameter("petType"),
-                    request.getParameter("petName"));
-        } catch (NullPointerException e) {
+                    request.getParameter("petName"), Integer.valueOf(request.getParameter("petAge")),
+                    request.getParameter("petSex").toLowerCase().equals("m") ? Sex.M : Sex.F);
+        } catch (NullPointerException | NumberFormatException e) {
             errorString = "Invalid request parameters";
         } catch (NameException | ServiceException e) {
             errorString = e.getMessage();
@@ -60,7 +62,7 @@ public class SetClientPet extends ClinicServlet {
         if (errorString.isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/");
         } else {
-            request.setAttribute("error", errorString);
+            request.setAttribute("error", String.format("%s.", errorString));
             this.doGet(request, response);
         }
     }
@@ -72,7 +74,8 @@ public class SetClientPet extends ClinicServlet {
      */
     private void checkParameters(final HttpServletRequest request) {
         if (request.getParameter("name") == null || request.getParameter("petType") == null ||
-                request.getParameter("petName") == null) {
+                request.getParameter("petName") == null || request.getParameter("petAge") == null ||
+                request.getParameter("petSex") == null) {
             throw new NullPointerException();
         }
     }

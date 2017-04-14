@@ -5,6 +5,7 @@ import org.mockito.Mockito;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.exception.NameException;
 import ru.lightstar.clinic.exception.ServiceException;
+import ru.lightstar.clinic.pet.Sex;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -33,11 +34,14 @@ public class SetClientPetTest extends Mockito {
         when(request.getParameter("name")).thenReturn("Vasya");
         when(request.getParameter("petType")).thenReturn("cat");
         when(request.getParameter("petName")).thenReturn("Murka");
+        when(request.getParameter("petAge")).thenReturn("5");
+        when(request.getParameter("petSex")).thenReturn("f");
         when(request.getContextPath()).thenReturn("/context");
 
         new SetClientPet(clinicService).doPost(request, response);
 
-        verify(clinicService, times(1)).setClientPet("Vasya", "cat", "Murka");
+        verify(clinicService, times(1)).setClientPet("Vasya", "cat",
+                "Murka", 5, Sex.F);
         verify(response, atLeastOnce()).sendRedirect("/context/");
     }
 
@@ -75,13 +79,15 @@ public class SetClientPetTest extends Mockito {
         when(request.getParameter("name")).thenReturn("Vasya");
         when(request.getParameter("petType")).thenReturn("cat");
         when(request.getParameter("petName")).thenReturn("Murka");
+        when(request.getParameter("petAge")).thenReturn("5");
+        when(request.getParameter("petSex")).thenReturn("f");
         when(request.getRequestDispatcher("/WEB-INF/view/SetClientPet.jsp")).thenReturn(dispatcher);
         doThrow(new ServiceException("Test error")).when(clinicService).setClientPet("Vasya",
-                "cat", "Murka");
+                "cat", "Murka", 5, Sex.F);
 
         new SetClientPet(clinicService).doPost(request, response);
 
-        verify(request, atLeastOnce()).setAttribute("error", "Test error");
+        verify(request, atLeastOnce()).setAttribute("error", "Test error.");
         verify(dispatcher, atLeastOnce()).forward(request, response);
     }
 }

@@ -4,6 +4,7 @@ import ru.lightstar.clinic.ClinicService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Base class for all clinic servlets.
@@ -43,5 +44,21 @@ public abstract class ClinicServlet extends HttpServlet {
     public void init() throws ServletException {
         super.init();
         this.clinicService = (ClinicService) this.getServletContext().getAttribute("clinicService");
+    }
+
+    /**
+     * Set given request attribute to the corresponding request parameter with some default value if it is null.
+     *
+     * @param request user's request.
+     * @param name attribute's name.
+     * @param defaultValue attribute's default value.
+     */
+    protected void setAttributeFromParameter(final HttpServletRequest request, final String name,
+                                             final String defaultValue) {
+        if (request.getParameter(name) != null) {
+            request.setAttribute(name, request.getParameter(name));
+        } else {
+            request.setAttribute(name, defaultValue);
+        }
     }
 }

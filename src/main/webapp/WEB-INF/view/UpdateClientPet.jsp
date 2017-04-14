@@ -17,7 +17,7 @@
 <body>
 <div class="content">
 
-    <h2>Update client pet's name</h2>
+    <h2>Update client's pet</h2>
 
     <c:if test="${error != null}">
         <p class="error">${error}</p>
@@ -34,14 +34,27 @@
         </div>
 
         <div>
-            <label class="element">Pet's name:</label>
-            <p class="element"><c:out value="${param.petName}"/></p>
+            <label for="newName" class="element">Pet's new name:</label>
+            <input type="text" class="element text" id="newName" name="newName"
+                   value="<c:out value='${requestScope.newName}'/>">
         </div>
 
         <div>
-            <label for="newName" class="element">Pet's new name:</label>
-            <span class="element">
-                <input type="text" class="text" id="newName" name="newName" value="<c:out value='${param.newName}'/>">
+            <label for="newAge" class="element">Pet's new age:</label>
+            <input type="text" class="element text" id="newAge" name="newAge"
+                   value="<c:out value='${requestScope.newAge}'/>">
+        </div>
+
+        <div>
+            <label class="element">Pet's new sex:</label>
+            <span class="element" id="newSex">
+                <label for="newSexM">Male</label>
+                <input type="radio" class="radio" id="newSexM" name="newSex" value="m"
+                       <c:if test="${requestScope.newSex == 'm'}">checked</c:if>/>
+
+                <label for="newSexF">Female</label>
+                <input type="radio" class="radio" id="newSexF" name="newSex" value="f"
+                        <c:if test="${requestScope.newSex == 'f'}">checked</c:if>/>
             </span>
         </div>
 

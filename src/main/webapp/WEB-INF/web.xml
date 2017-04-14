@@ -54,7 +54,7 @@
 
     <servlet>
         <servlet-name>UpdateClientName</servlet-name>
-        <servlet-class>ru.lightstar.clinic.servlet.UpdateClientName</servlet-class>
+        <servlet-class>ru.lightstar.clinic.servlet.UpdateClient</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -74,7 +74,7 @@
 
     <servlet>
         <servlet-name>UpdateClientPetName</servlet-name>
-        <servlet-class>ru.lightstar.clinic.servlet.UpdateClientPetName</servlet-class>
+        <servlet-class>ru.lightstar.clinic.servlet.UpdateClientPet</servlet-class>
     </servlet>
 
     <servlet-mapping>

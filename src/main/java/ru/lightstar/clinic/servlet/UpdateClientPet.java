@@ -3,6 +3,8 @@ package ru.lightstar.clinic.servlet;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.exception.NameException;
 import ru.lightstar.clinic.exception.ServiceException;
+import ru.lightstar.clinic.pet.Pet;
+import ru.lightstar.clinic.pet.Sex;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -10,24 +12,24 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Servlet used to add client to clinic.
+ * Servlet used to update client pet's name, age and sex.
  *
  * @author LightStar
  * @since 0.0.1
  */
-public class AddClient extends ClinicServlet {
+public class UpdateClientPet extends ClinicServlet {
 
     /**
      * {@inheritDoc}
      */
-    public AddClient() {
+    public UpdateClientPet() {
         super();
     }
 
     /**
      * {@inheritDoc}
      */
-    public AddClient(final ClinicService clinicService) {
+    UpdateClientPet(final ClinicService clinicService) {
         super(clinicService);
     }
 
@@ -37,7 +39,22 @@ public class AddClient extends ClinicServlet {
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/view/AddClient.jsp").forward(request, response);
+        final Pet pet;
+        try {
+            final String name = request.getParameter("name");
+            if (name == null) {
+                throw new NullPointerException();
+            }
+            pet = this.clinicService.getClientPet(name);
+        } catch (ServiceException | NullPointerException e) {
+            response.sendRedirect(request.getContextPath() + "/");
+            return;
+        }
+
+        this.setAttributeFromParameter(request, "newName", pet.getName());
+        this.setAttributeFromParameter(request, "newAge", String.valueOf(pet.getAge()));
+        this.setAttributeFromParameter(request, "newSex", pet.getSex() == Sex.M ? "m" : "f");
+        request.getRequestDispatcher("/WEB-INF/view/UpdateClientPet.jsp").forward(request, response);
     }
 
     /**
@@ -46,12 +63,13 @@ public class AddClient extends ClinicServlet {
     @Override
     protected void doPost(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
-
         String errorString = "";
         try {
             this.checkParameters(request);
-            this.clinicService.addClient(Integer.valueOf(request.getParameter("pos")) - 1,
-                    request.getParameter("name"), request.getParameter("email"), request.getParameter("phone"));
+            this.clinicService.updateClientPet(request.getParameter("name"),
+                    request.getParameter("newName"),
+                    Integer.valueOf(request.getParameter("newAge")),
+                    request.getParameter("newSex").toLowerCase().equals("m") ? Sex.M : Sex.F);
         } catch (NullPointerException | NumberFormatException e) {
             errorString = "Invalid request parameters";
         } catch (NameException | ServiceException e) {
@@ -72,8 +90,8 @@ public class AddClient extends ClinicServlet {
      * @param request user's request.
      */
     private void checkParameters(final HttpServletRequest request) {
-        if (request.getParameter("pos") == null || request.getParameter("name") == null ||
-                request.getParameter("email") == null || request.getParameter("phone") == null) {
+        if (request.getParameter("name") == null || request.getParameter("newName") == null ||
+                request.getParameter("newAge") == null || request.getParameter("newSex") == null) {
             throw new NullPointerException();
         }
     }

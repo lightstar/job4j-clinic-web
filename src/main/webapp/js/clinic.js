@@ -5,17 +5,52 @@ function validateForm(form) {
 
     form.find(":input").each(function(index, element) {
         element = $(element);
-        if (element.attr("type") === "text" && element.val() === "") {
+
+        if (element.val() === "") {
             if (element.attr("name") === "name" || element.attr("name") === "newName") {
                 invalidField(errorElement, element, "Name is empty.");
                 isValid = false;
-            } else if  (element.attr("name") === "petName") {
+            } else if (element.attr("name") === "email" || element.attr("name") === "newEmail") {
+                invalidField(errorElement, element, "Email is empty.");
+                isValid = false;
+            } else if (element.attr("name") === "phone" || element.attr("name") === "newPhone") {
+                invalidField(errorElement, element, "Phone is empty.");
+                isValid = false;
+            } else if (element.attr("name") === "petName") {
                 invalidField(errorElement, element, "Pet name is empty.");
+                isValid = false;
+            } else if (element.attr("name") === "petAge" || element.attr("name") === "newAge") {
+                invalidField(errorElement, element, "Pet age is empty.");
+                isValid = false;
+            }
+        }
+
+        if (element.attr("name") === "petAge" || element.attr("name") === "newAge") {
+            if (element.val() !== "" && isNaN(parseInt(element.val())) || element.val() < 0) {
+                invalidField(errorElement, element, "Pet age is wrong.");
                 isValid = false;
             }
         }
     });
 
+    if (!validatePetSex(form, errorElement, "petSex")) {
+        isValid = false;
+    }
+    if (!validatePetSex(form, errorElement, "newSex")) {
+        isValid = false;
+    }
+
+    return isValid;
+}
+
+function validatePetSex(form, errorElement, name) {
+    var isValid = true;
+    if (form.find("input[name=" + name + "]").length > 0 &&
+        form.find("input[name=" + name + "]:checked").length === 0) {
+
+        invalidField(errorElement, $("#" + name), "Pet sex is not defined.");
+        isValid = false;
+    }
     return isValid;
 }
 
@@ -25,11 +60,12 @@ function initErrorElement(form) {
         errorElement = $("<p class='error'></p>");
         errorElement.insertBefore(form);
     }
+    errorElement.empty();
     return errorElement;
 }
 
 function invalidField(errorElement, element, message) {
-    errorElement.text(message);
+    errorElement.append("<p>" + message + "</p>");
 
     var initialColor = element.css("backgroundColor");
     element

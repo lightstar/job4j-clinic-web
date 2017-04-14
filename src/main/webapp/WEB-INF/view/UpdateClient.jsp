@@ -17,7 +17,7 @@
 <body>
 <div class="content">
 
-    <h2>Update client's name</h2>
+    <h2>Update client</h2>
 
     <c:if test="${error != null}">
         <p class="error"><c:out value="${error}"/></p>
@@ -34,9 +34,20 @@
 
         <div>
             <label for="newName" class="element">New name:</label>
-            <span class="element">
-                <input type="text" class="text" id="newName" name="newName" value="<c:out value='${param.newName}'/>">
-            </span>
+            <input type="text" class="element text" id="newName" name="newName"
+                   value="<c:out value='${requestScope.newName}'/>">
+        </div>
+
+        <div>
+            <label for="newEmail" class="element">New email:</label>
+            <input type="text" class="element text" id="newEmail" name="newEmail"
+                   value="<c:out value='${requestScope.newEmail}'/>">
+        </div>
+
+        <div>
+            <label for="newPhone" class="element">New phone:</label>
+            <input type="text" class="element text" id="newPhone" name="newPhone"
+                   value="<c:out value='${requestScope.newPhone}'/>">
         </div>
 
         <div>

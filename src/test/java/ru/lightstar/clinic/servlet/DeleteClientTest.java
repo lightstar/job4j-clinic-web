@@ -76,7 +76,7 @@ public class DeleteClientTest extends Mockito {
 
         new DeleteClient(clinicService).doPost(request, response);
 
-        verify(request, atLeastOnce()).setAttribute("error", "Test error");
+        verify(request, atLeastOnce()).setAttribute("error", "Test error.");
         verify(dispatcher, atLeastOnce()).forward(request, response);
     }
 }
