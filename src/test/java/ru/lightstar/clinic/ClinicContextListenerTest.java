@@ -19,6 +19,7 @@ public class ClinicContextListenerTest extends Mockito {
     /**
      * Tests correct setting of attributes in <code>contextInitialized</code> method and
      * correctness of <code>contextDestroyed</code> after that.
+     * It is integral test by nature so it will fail if there is no working database with proper schema.
      */
     @Test
     public void whenContextInitializedAndDestroyedThenResult() throws SQLException {

@@ -57,7 +57,7 @@ public class JdbcClinicService extends ClinicService {
     /**
      * SQL used to delete client's pet from database.
      */
-    public static final String DELETE_PET_SQL = "DELETE FROM pet WHERE client_id = ?";
+    public static final String DELETE_CLIENT_PET_SQL = "DELETE FROM pet WHERE client_id = ?";
 
     /**
      * SQL used to delete client from database.
@@ -248,7 +248,7 @@ public class JdbcClinicService extends ClinicService {
         final Pet oldPet = client.getPet();
         super.deleteClientPet(client);
 
-        try (final PreparedStatement statement = this.connection.prepareStatement(DELETE_PET_SQL)) {
+        try (final PreparedStatement statement = this.connection.prepareStatement(DELETE_CLIENT_PET_SQL)) {
             statement.setInt(1, client.getId());
             statement.executeUpdate();
         } catch (SQLException e) {
