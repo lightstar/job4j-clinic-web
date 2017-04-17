@@ -32,3 +32,15 @@
 **Обновление параметров питомца:**
 
 ![Screenshot](img/screenshot5.png)
+
+**Список всех питомцев:**
+
+![Screenshot](img/screenshot6.png)
+
+**Лекарства в клинике:**
+
+![Screenshot](img/screenshot7.png)
+
+**Выдача лекарства питомцу клиента:**
+
+![Screenshot](img/screenshot8.png)

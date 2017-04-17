@@ -35,6 +35,7 @@ public class ClinicContextListenerTest extends Mockito {
 
         verify(context, atLeastOnce()).setAttribute(eq("jdbcConnection"), any(Connection.class));
         verify(context, atLeastOnce()).setAttribute(eq("clinicService"), any(ClinicService.class));
+        verify(context, atLeastOnce()).setAttribute(eq("drugService"), any(DrugService.class));
 
         listener.contextDestroyed(event);
 

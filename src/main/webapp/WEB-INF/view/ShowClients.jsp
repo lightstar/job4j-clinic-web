@@ -5,9 +5,10 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <c:set var="title" value="Pet clinic" scope="page"/>
+<c:set var="current" value="main" scope="page"/>
 <%@include file="Header.jsp" %>
 
-<form action="" method="get" class="filter">
+<form action="" method="get" class="above-list">
     <select id="filterType" name="filterType">
         <option value="client" ${param.filterType == 'client' ? ' selected="selected"' : ''}>Client:</option>
         <option value="pet" ${param.filterType == 'pet' ? ' selected="selected"' : ''}>Pet:</option>
@@ -25,7 +26,7 @@
 </c:if>
 
 <c:if test="${fn:length(clients) > 0}">
-    <table class="client-list">
+    <table class="list client-list">
         <tr>
             <th>#</th>
             <th>Client</th>

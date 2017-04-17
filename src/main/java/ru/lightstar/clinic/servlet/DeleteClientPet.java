@@ -46,12 +46,7 @@ public class DeleteClientPet extends ClinicServlet {
             errorString = e.getMessage();
         }
 
-        if (errorString.isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/");
-        } else {
-            request.setAttribute("error", String.format("%s.", errorString));
-            request.getRequestDispatcher("/").forward(request, response);
-        }
+        this.finishUpdate(request, response, "Pet deleted", errorString, "/");
     }
 
     /**

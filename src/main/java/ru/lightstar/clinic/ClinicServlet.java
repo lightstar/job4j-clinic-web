@@ -196,7 +196,7 @@ public class ClinicServlet extends HttpServlet {
     private void updateClientPet(final HttpServletRequest request) {
         try {
             this.clinicService.updateClientPet(request.getParameter("name"),
-                    request.getParameter("petname"),
+                    request.getParameter("petName"),
                     Integer.valueOf(request.getParameter("petAge")),
                     request.getParameter("petSex").toLowerCase().equals("m") ? Sex.M : Sex.F);
             request.setAttribute("message", "Client's pet updated");

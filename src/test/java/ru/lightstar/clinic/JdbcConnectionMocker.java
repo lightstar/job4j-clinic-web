@@ -2,6 +2,7 @@ package ru.lightstar.clinic;
 
 import org.mockito.Mockito;
 import ru.lightstar.clinic.jdbc.JdbcClinicService;
+import ru.lightstar.clinic.jdbc.JdbcDrugService;
 
 import java.sql.*;
 
@@ -12,6 +13,16 @@ import java.sql.*;
  * @since 0.0.1
  */
 public class JdbcConnectionMocker extends Mockito {
+
+    /**
+     * Mocked result set for load clinic operation.
+     */
+    private ResultSet loadClinicResultSet;
+
+    /**
+     * Mocked result set for load drugs operation.
+     */
+    private ResultSet loadDrugsResultSet;
 
     /**
      * Mocked prepared statement for add client query.
@@ -54,6 +65,21 @@ public class JdbcConnectionMocker extends Mockito {
     private PreparedStatement deleteClientStatement;
 
     /**
+     * Mocked prepared statement for add drug query.
+     */
+    private PreparedStatement addDrugStatement;
+
+    /**
+     * Mocked result set for generated key for add drug query.
+     */
+    private ResultSet generatedKeyForAddDrugResultSet;
+
+    /**
+     * Mocked prepared statement for delete drug query.
+     */
+    private PreparedStatement deleteDrugStatement;
+
+    /**
      * Get mocked jdbc connection with test data.
      *
      * @return mocked jdbc connection.
@@ -69,6 +95,12 @@ public class JdbcConnectionMocker extends Mockito {
             this.mockUpdateClientPetQuery(connection);
             this.mockDeleteClientPetQuery(connection);
             this.mockDeleteClientQuery(connection);
+
+            this.mockLoadDrugsQuery(connection);
+            this.mockAddDrugQuery(connection);
+            this.mockDeleteDrugQuery(connection);
+
+            this.mockCreateStatement(connection);
         } catch (SQLException e) {
             throw new IllegalStateException(e);
         }
@@ -149,30 +181,74 @@ public class JdbcConnectionMocker extends Mockito {
     }
 
     /**
+     * Get mocked prepared statement for add drug query.
+     *
+     * @return mocked prepared statement.
+     */
+    public PreparedStatement getAddDrugStatement() {
+        return this.addDrugStatement;
+    }
+
+    /**
+     * Get mocked result set for generated key for add drug query.
+     *
+     * @return mocked result set.
+     */
+    public ResultSet getGeneratedKeyForAddDrugResultSet() {
+        return this.generatedKeyForAddDrugResultSet;
+    }
+
+    /**
+     * Get mocked prepared statement for delete drug query.
+     *
+     * @return mocked prepared statement.
+     */
+    public PreparedStatement getDeleteDrugStatement() {
+        return this.deleteDrugStatement;
+    }
+
+    /**
+     * Mocking <code>createStatement</code> method.
+     * @param connection mocked connection.
+     * @throws SQLException shouldn't be thrown.
+     */
+    private void mockCreateStatement(final Connection connection) throws SQLException {
+        final Statement statement = mock(Statement.class);
+        when(statement.executeQuery(JdbcClinicService.LOAD_SQL)).thenReturn(this.loadClinicResultSet);
+        when(statement.executeQuery(JdbcDrugService.LOAD_SQL)).thenReturn(this.loadDrugsResultSet);
+
+        when(connection.createStatement()).thenReturn(statement);
+    }
+
+    /**
      * Mocking load clinic query.
      *
      * @param connection mocked connection.
      * @throws SQLException shouldn't be thrown.
      */
     private void mockLoadClinicQuery(final Connection connection) throws SQLException {
-        final ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.next()).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(false);
-        when(resultSet.getInt("id")).thenReturn(1).thenReturn(2).thenReturn(3);
-        when(resultSet.getInt("position")).thenReturn(2).thenReturn(5).thenReturn(6);
-        when(resultSet.getString("name")).thenReturn("Vasya").thenReturn("Masha").thenReturn("Vova");
-        when(resultSet.getString("email")).thenReturn("vasya@mail.ru").thenReturn("masha@mail.ru")
-                .thenReturn("vova@mail.ru");
-        when(resultSet.getString("phone")).thenReturn("22222").thenReturn("123456").thenReturn("55555");
-        when(resultSet.getInt("petId")).thenReturn(1).thenReturn(2).thenReturn(0);
-        when(resultSet.getString("petType")).thenReturn("dog").thenReturn("cat").thenReturn(null);
-        when(resultSet.getString("petName")).thenReturn("Bobik").thenReturn("Murka").thenReturn(null);
-        when(resultSet.getInt("petAge")).thenReturn(10).thenReturn(6).thenReturn(0);
-        when(resultSet.getString("petSex")).thenReturn("m").thenReturn("f").thenReturn(null);
-
-        final Statement statement = mock(Statement.class);
-        when(statement.executeQuery(JdbcClinicService.LOAD_SQL)).thenReturn(resultSet);
-
-        when(connection.createStatement()).thenReturn(statement);
+        this.loadClinicResultSet = mock(ResultSet.class);
+        when(this.loadClinicResultSet.next()).thenReturn(true).thenReturn(true).thenReturn(true)
+                .thenReturn(false);
+        when(this.loadClinicResultSet.getInt("id")).thenReturn(1).thenReturn(2)
+                .thenReturn(3);
+        when(this.loadClinicResultSet.getInt("position")).thenReturn(2).thenReturn(5)
+                .thenReturn(6);
+        when(this.loadClinicResultSet.getString("name")).thenReturn("Vasya").thenReturn("Masha")
+                .thenReturn("Vova");
+        when(this.loadClinicResultSet.getString("email")).thenReturn("vasya@mail.ru")
+                .thenReturn("masha@mail.ru").thenReturn("vova@mail.ru");
+        when(this.loadClinicResultSet.getString("phone")).thenReturn("22222").thenReturn("123456")
+                .thenReturn("55555");
+        when(this.loadClinicResultSet.getInt("petId")).thenReturn(1).thenReturn(2)
+                .thenReturn(0);
+        when(this.loadClinicResultSet.getString("petType")).thenReturn("dog").thenReturn("cat")
+                .thenReturn(null);
+        when(this.loadClinicResultSet.getString("petName")).thenReturn("Bobik").thenReturn("Murka")
+                .thenReturn(null);
+        when(this.loadClinicResultSet.getInt("petAge")).thenReturn(10).thenReturn(6).thenReturn(0);
+        when(this.loadClinicResultSet.getString("petSex")).thenReturn("m").thenReturn("f")
+                .thenReturn(null);
     }
 
     /**
@@ -257,5 +333,51 @@ public class JdbcConnectionMocker extends Mockito {
         this.deleteClientStatement = mock(PreparedStatement.class);
         when(connection.prepareStatement(JdbcClinicService.DELETE_CLIENT_SQL))
                 .thenReturn(this.deleteClientStatement);
+    }
+
+    /**
+     * Mocking load drugs query.
+     *
+     * @param connection mocked connection.
+     * @throws SQLException shouldn't be thrown.
+     */
+    private void mockLoadDrugsQuery(final Connection connection) throws SQLException {
+        this.loadDrugsResultSet = mock(ResultSet.class);
+        when(this.loadDrugsResultSet.next()).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(true)
+                .thenReturn(false);
+        when(this.loadDrugsResultSet.getInt("id")).thenReturn(1).thenReturn(2)
+                .thenReturn(3).thenReturn(4);
+        when(this.loadDrugsResultSet.getString("name")).thenReturn("aspirin").thenReturn("aspirin")
+                .thenReturn("glucose").thenReturn("aspirin");
+    }
+
+    /**
+     * Mocking add drug query.
+     *
+     * @param connection mocked connection.
+     * @throws SQLException shouldn't be thrown.
+     */
+    private void mockAddDrugQuery(final Connection connection) throws SQLException {
+        this.addDrugStatement = mock(PreparedStatement.class);
+        when(connection.prepareStatement(JdbcDrugService.ADD_SQL, Statement.RETURN_GENERATED_KEYS))
+                .thenReturn(this.addDrugStatement);
+
+        this.generatedKeyForAddDrugResultSet = mock(ResultSet.class);
+        when(this.generatedKeyForAddDrugResultSet.next()).thenReturn(true).thenReturn(false);
+        when(this.generatedKeyForAddDrugResultSet.getInt(1)).thenReturn(6);
+
+        when(this.addDrugStatement.getGeneratedKeys()).thenReturn(this.generatedKeyForAddDrugResultSet);
+    }
+
+    /**
+     * Mocking delete drug query.
+     *
+     * @param connection mocked connection.
+     * @throws SQLException shouldn't be thrown.
+     */
+    private void mockDeleteDrugQuery(final Connection connection) throws SQLException {
+        this.deleteDrugStatement = mock(PreparedStatement.class);
+        when(connection.prepareStatement(JdbcDrugService.DELETE_SQL))
+                .thenReturn(this.deleteDrugStatement);
     }
 }

@@ -101,24 +101,16 @@ public class JdbcClinicService extends ClinicService {
                     final int petAge = rs.getInt("petAge");
                     final String petSex = rs.getString("petSex");
 
-                    final Pet pet = petType != null ? this.getPetFactory().create(petType, petName) : Pet.NONE;
-                    if (pet != Pet.NONE) {
-                        pet.setId(petId);
-                        pet.setAge(petAge);
-                        pet.setSex(petSex.toLowerCase().equals("m") ? Sex.M : Sex.F);
-                    }
-                    final Client client = new Client(name, pet, position);
+                    final Client client = super.addClient(position, name, email, phone);
                     client.setId(id);
-                    client.setEmail(email);
-                    client.setPhone(phone);
-
-                    this.getClinic().addClient(position, client);
-                    if (pet != Pet.NONE) {
-                        this.getClinic().getPetList().add(pet);
+                    if (petType != null) {
+                        final Pet pet = super.setClientPet(client, petType, petName, petAge,
+                                petSex.toLowerCase().equals("m") ? Sex.M : Sex.F);
+                        pet.setId(petId);
                     }
-                }
+                 }
             }
-        } catch(SQLException | NameException e) {
+        } catch(SQLException | ServiceException | NameException e) {
             throw new IllegalStateException("Can't load data from database", e);
         }
     }

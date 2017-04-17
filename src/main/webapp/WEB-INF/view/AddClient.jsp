@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <c:set var="title" value="Add client" scope="page"/>
+<c:set var="current" value="main" scope="page"/>
 <%@include file="Header.jsp" %>
 
 <c:url value='/client/add' var="action">

@@ -11,6 +11,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
@@ -30,6 +31,7 @@ public class SetClientPetTest extends Mockito {
         final HttpServletRequest request = mock(HttpServletRequest.class);
         final HttpServletResponse response = mock(HttpServletResponse.class);
         final ClinicService clinicService = mock(ClinicService.class);
+        final HttpSession session = mock(HttpSession.class);
 
         when(request.getParameter("name")).thenReturn("Vasya");
         when(request.getParameter("petType")).thenReturn("cat");
@@ -37,9 +39,11 @@ public class SetClientPetTest extends Mockito {
         when(request.getParameter("petAge")).thenReturn("5");
         when(request.getParameter("petSex")).thenReturn("f");
         when(request.getContextPath()).thenReturn("/context");
+        when(request.getSession()).thenReturn(session);
 
         new SetClientPet(clinicService).doPost(request, response);
 
+        verify(session, atLeastOnce()).setAttribute(eq("message"), anyString());
         verify(clinicService, times(1)).setClientPet("Vasya", "cat",
                 "Murka", 5, Sex.F);
         verify(response, atLeastOnce()).sendRedirect("/context/");
@@ -55,13 +59,15 @@ public class SetClientPetTest extends Mockito {
         final HttpServletResponse response = mock(HttpServletResponse.class);
         final RequestDispatcher dispatcher = mock(RequestDispatcher.class);
         final ClinicService clinicService = mock(ClinicService.class);
+        final HttpSession session = mock(HttpSession.class);
 
         when(request.getContextPath()).thenReturn("/context");
         when(request.getRequestDispatcher("/WEB-INF/view/SetClientPet.jsp")).thenReturn(dispatcher);
+        when(request.getSession()).thenReturn(session);
 
         new SetClientPet(clinicService).doPost(request, response);
 
-        verify(request, atLeastOnce()).setAttribute(eq("error"), anyString());
+        verify(session, atLeastOnce()).setAttribute(eq("error"), anyString());
         verify(dispatcher, atLeastOnce()).forward(request, response);
     }
 
@@ -75,6 +81,7 @@ public class SetClientPetTest extends Mockito {
         final HttpServletResponse response = mock(HttpServletResponse.class);
         final RequestDispatcher dispatcher = mock(RequestDispatcher.class);
         final ClinicService clinicService = mock(ClinicService.class);
+        final HttpSession session = mock(HttpSession.class);
 
         when(request.getParameter("name")).thenReturn("Vasya");
         when(request.getParameter("petType")).thenReturn("cat");
@@ -82,12 +89,13 @@ public class SetClientPetTest extends Mockito {
         when(request.getParameter("petAge")).thenReturn("5");
         when(request.getParameter("petSex")).thenReturn("f");
         when(request.getRequestDispatcher("/WEB-INF/view/SetClientPet.jsp")).thenReturn(dispatcher);
+        when(request.getSession()).thenReturn(session);
         doThrow(new ServiceException("Test error")).when(clinicService).setClientPet("Vasya",
                 "cat", "Murka", 5, Sex.F);
 
         new SetClientPet(clinicService).doPost(request, response);
 
-        verify(request, atLeastOnce()).setAttribute("error", "Test error.");
+        verify(session, atLeastOnce()).setAttribute("error", "Test error.");
         verify(dispatcher, atLeastOnce()).forward(request, response);
     }
 }

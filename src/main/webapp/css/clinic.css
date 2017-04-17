@@ -14,10 +14,41 @@ body {
 }
 
 h2 {
-    text-align: center;
-    padding: 2px 0;
+    position: relative;
     background-color: burlywood;
     font-size: 22px;
+    text-align: center;
+    padding: 2px 0;
+}
+
+nav {
+    position: absolute;
+    right: 0;
+    display: inline-block;
+    font-size: 0;
+    margin: 5px 5px 0 0;
+}
+
+nav a {
+    display: inline-block;
+    text-decoration: none;
+    font-weight: normal;
+    color: brown;
+    font-size: 12px;
+    margin: 0;
+    outline: 0;
+}
+
+nav a.current {
+    font-weight: bold;
+    color: darkred;
+}
+
+nav a:not(:last-child):after {
+    content: '|';
+    margin: 0 5px;
+    font-weight: normal;
+    color: brown;
 }
 
 p {
@@ -29,7 +60,11 @@ p {
     color: red;
 }
 
-form.filter {
+.message {
+    color: green;
+}
+
+form.above-list {
     text-align: center;
     background-color: bisque;
     padding: 5px 0;
@@ -37,36 +72,36 @@ form.filter {
     width: 500px;
 }
 
-form.filter input.text {
+form.above-list input.text {
     background-color: white;
 }
 
-form.filter input.button {
+form.above-list input.button {
     width: 70px;
     height: 25px;
 }
 
-table.client-list {
+table.list {
     border: 1px solid black;
     border-collapse: collapse;
     margin: 5px auto;
     width: 500px;
 }
 
-table.client-list tr:nth-child(2n) {
+table.list tr:nth-child(2n) {
     background-color: blanchedalmond;
 }
 
-table.client-list tr:nth-child(2n+1) {
+table.list tr:nth-child(2n+1) {
     background-color: antiquewhite;
 }
 
-table.client-list th {
+table.list th {
     background-color: cadetblue;
 }
 
-table.client-list td,
-table.client-list th {
+table.list td,
+table.list th {
     border: 1px solid black;
     padding: 5px;
     text-align: center;
@@ -75,6 +110,10 @@ table.client-list th {
 table.client-list td:nth-child(4) {
     text-align: left;
     min-width: 280px;
+}
+
+table.pet-list {
+    width: 150px;
 }
 
 form.form {

@@ -3,23 +3,21 @@ package ru.lightstar.clinic.servlet;
 import org.junit.Test;
 import org.mockito.Mockito;
 import ru.lightstar.clinic.ClinicService;
-import ru.lightstar.clinic.exception.NameException;
-import ru.lightstar.clinic.exception.ServiceException;
+import ru.lightstar.clinic.DrugService;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * <code>ClinicServlet</code> class tests.
+ * <code>DrugServlet</code> class tests.
  *
  * @author LightStar
  * @since 0.0.1
  */
-public class ClinicServletTest extends Mockito {
+public class DrugServletTest extends Mockito {
 
     /**
      * Test initializing servlet.
@@ -27,16 +25,20 @@ public class ClinicServletTest extends Mockito {
     @Test
     public void whenDoPostThenResult() throws ServletException {
         final ClinicService clinicService = mock(ClinicService.class);
+        final DrugService drugService = mock(DrugService.class);
         final ServletContext context = mock(ServletContext.class);
 
         when(context.getAttribute("clinicService")).thenReturn(clinicService);
+        when(context.getAttribute("drugService")).thenReturn(drugService);
 
-        final ClinicServlet clinicServlet = spy(new ClinicServlet(){});
-        doReturn(context).when(clinicServlet).getServletContext();
+        final DrugServlet drugServlet = spy(new DrugServlet(){});
+        doReturn(context).when(drugServlet).getServletContext();
 
-        clinicServlet.init();
+        drugServlet.init();
 
         verify(context, atLeastOnce()).getAttribute("clinicService");
-        assertThat(clinicServlet.clinicService, is(clinicService));
+        verify(context, atLeastOnce()).getAttribute("drugService");
+        assertThat(drugServlet.clinicService, is(clinicService));
+        assertThat(drugServlet.drugService, is(drugService));
     }
 }

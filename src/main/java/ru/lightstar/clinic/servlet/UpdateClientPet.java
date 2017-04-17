@@ -76,12 +76,8 @@ public class UpdateClientPet extends ClinicServlet {
             errorString = e.getMessage();
         }
 
-        if (errorString.isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/");
-        } else {
-            request.setAttribute("error", String.format("%s.", errorString));
-            this.doGet(request, response);
-        }
+        this.finishUpdateForm(request, response, "Pet added", errorString, "/");
+
     }
 
     /**

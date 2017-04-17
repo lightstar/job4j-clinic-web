@@ -19,6 +19,9 @@ function validateForm(form) {
             } else if (element.attr("name") === "petName") {
                 invalidField(errorElement, element, "Pet name is empty.");
                 isValid = false;
+            } else if (element.attr("name") === "clientName") {
+                invalidField(errorElement, element, "Client name is empty.");
+                isValid = false;
             } else if (element.attr("name") === "petAge" || element.attr("name") === "newAge") {
                 invalidField(errorElement, element, "Pet age is empty.");
                 isValid = false;

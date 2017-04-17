@@ -1,5 +1,3 @@
-<%--@elvariable id="error" type="String"--%>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,8 +11,22 @@
 <body>
 <div class="content">
 
-<h2>${pageScope.title}</h2>
+<h2>
+    ${pageScope.title}
 
-<c:if test="${error != null}">
-    <p class="error"><c:out value="${error}"/></p>
+    <nav>
+        <a href="<c:url value='/'/>"<c:if test="${pageScope.current == 'main'}"> class="current"</c:if>>Main</a>
+        <a href="<c:url value='/client/pet'/>"<c:if test="${pageScope.current == 'pet'}"> class="current"</c:if>>Pets</a>
+        <a href="<c:url value='/drug'/>"<c:if test="${pageScope.current == 'drug'}"> class="current"</c:if>>Drugs</a>
+    </nav>
+</h2>
+
+<c:if test="${sessionScope.error != null}">
+    <p class="error"><c:out value="${sessionScope.error}"/></p>
+    <c:remove var="error" scope="session" />
+</c:if>
+
+<c:if test="${sessionScope.message != null}">
+    <p class="message"><c:out value="${sessionScope.message}"/></p>
+    <c:remove var="message" scope="session" />
 </c:if>

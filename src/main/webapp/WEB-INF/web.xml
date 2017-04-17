@@ -102,6 +102,48 @@
         <url-pattern>/client/delete</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>ShowPets</servlet-name>
+        <servlet-class>ru.lightstar.clinic.servlet.ShowPets</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ShowPets</servlet-name>
+        <url-pattern>/client/pet</url-pattern>
+    </servlet-mapping>
+
+    <!-- drug servlets -->
+
+    <servlet>
+        <servlet-name>ShowDrugs</servlet-name>
+        <servlet-class>ru.lightstar.clinic.servlet.ShowDrugs</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ShowDrugs</servlet-name>
+        <url-pattern>/drug</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AddDrug</servlet-name>
+        <servlet-class>ru.lightstar.clinic.servlet.AddDrug</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>GiveDrug</servlet-name>
+        <url-pattern>/drug/give</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>GiveDrug</servlet-name>
+        <servlet-class>ru.lightstar.clinic.servlet.GiveDrug</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>AddDrug</servlet-name>
+        <url-pattern>/drug/add</url-pattern>
+    </servlet-mapping>
+
     <!-- filters -->
 
     <filter>

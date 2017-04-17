@@ -1,6 +1,7 @@
 package ru.lightstar.clinic;
 
 import ru.lightstar.clinic.jdbc.JdbcClinicService;
+import ru.lightstar.clinic.jdbc.JdbcDrugService;
 import ru.lightstar.clinic.jdbc.JdbcSettings;
 
 import javax.servlet.ServletContext;
@@ -40,6 +41,10 @@ public class ClinicContextListener implements ServletContextListener {
             final JdbcClinicService clinicService = new JdbcClinicService(servletContext);
             clinicService.loadClinic();
             servletContext.setAttribute("clinicService", clinicService);
+
+            final JdbcDrugService drugService = new JdbcDrugService(clinicService.getClinic(), servletContext);
+            drugService.loadDrugs();
+            servletContext.setAttribute("drugService", drugService);
         } catch (SQLException | ReflectiveOperationException e) {
             throw new IllegalStateException(e);
         }

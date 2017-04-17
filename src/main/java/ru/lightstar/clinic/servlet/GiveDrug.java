@@ -1,9 +1,10 @@
 package ru.lightstar.clinic.servlet;
 
 import ru.lightstar.clinic.ClinicService;
-import ru.lightstar.clinic.exception.NameException;
+import ru.lightstar.clinic.DrugService;
+import ru.lightstar.clinic.drug.Drug;
 import ru.lightstar.clinic.exception.ServiceException;
-import ru.lightstar.clinic.pet.Sex;
+import ru.lightstar.clinic.pet.Pet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -11,25 +12,25 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Servlet used to set client's pet.
+ * Servlet used to give drug to some pet.
  *
  * @author LightStar
  * @since 0.0.1
  */
-public class SetClientPet extends ClinicServlet {
+public class GiveDrug extends DrugServlet {
 
     /**
      * {@inheritDoc}
      */
-    public SetClientPet() {
+    public GiveDrug() {
         super();
     }
 
     /**
      * {@inheritDoc}
      */
-    SetClientPet(final ClinicService clinicService) {
-        super(clinicService);
+    GiveDrug(final ClinicService clinicService, final DrugService drugService) {
+        super(clinicService, drugService);
     }
 
     /**
@@ -38,7 +39,7 @@ public class SetClientPet extends ClinicServlet {
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/view/SetClientPet.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/view/GiveDrug.jsp").forward(request, response);
     }
 
     /**
@@ -48,18 +49,19 @@ public class SetClientPet extends ClinicServlet {
     protected void doPost(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
         String errorString = "";
+        String messageString = "";
         try {
             this.checkParameters(request);
-            this.clinicService.setClientPet(request.getParameter("name"), request.getParameter("petType"),
-                    request.getParameter("petName"), Integer.valueOf(request.getParameter("petAge")),
-                    request.getParameter("petSex").toLowerCase().equals("m") ? Sex.M : Sex.F);
-        } catch (NullPointerException | NumberFormatException e) {
+            final Pet pet = this.clinicService.getClientPet(request.getParameter("clientName"));
+            final Drug drug = this.drugService.takeDrug(request.getParameter("name"));
+            messageString = String.format("Gave %s to %s", drug, pet);
+        } catch (NullPointerException e) {
             errorString = "Invalid request parameters";
-        } catch (NameException | ServiceException e) {
+        } catch (ServiceException e) {
             errorString = e.getMessage();
         }
 
-        this.finishUpdateForm(request, response, "Pet was set", errorString, "/");
+        this.finishUpdateForm(request, response, messageString, errorString, "/drug");
     }
 
     /**
@@ -68,9 +70,7 @@ public class SetClientPet extends ClinicServlet {
      * @param request user's request.
      */
     private void checkParameters(final HttpServletRequest request) {
-        if (request.getParameter("name") == null || request.getParameter("petType") == null ||
-                request.getParameter("petName") == null || request.getParameter("petAge") == null ||
-                request.getParameter("petSex") == null) {
+        if (request.getParameter("name") == null || request.getParameter("clientName") == null) {
             throw new NullPointerException();
         }
     }
