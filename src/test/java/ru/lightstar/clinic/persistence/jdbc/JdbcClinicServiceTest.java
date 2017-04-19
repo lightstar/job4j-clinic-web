@@ -62,7 +62,7 @@ public class JdbcClinicServiceTest extends Mockito {
         assertThat(vasya.getName(), is("Vasya"));
         assertThat(vasya.getEmail(), is("vasya@mail.ru"));
         assertThat(vasya.getPhone(), is("22222"));
-        assertThat(vasya.getPosition(), is(1));
+        assertThat(vasya.getPosition(), is(2));
 
         assertThat(vasya.getPet().getId(), is(1));
         assertThat(vasya.getPet().getType(), is("dog"));
@@ -74,7 +74,7 @@ public class JdbcClinicServiceTest extends Mockito {
         assertThat(masha.getName(), is("Masha"));
         assertThat(masha.getEmail(), is("masha@mail.ru"));
         assertThat(masha.getPhone(), is("123456"));
-        assertThat(masha.getPosition(), is(4));
+        assertThat(masha.getPosition(), is(5));
 
         assertThat(masha.getPet().getId(), is(2));
         assertThat(masha.getPet().getType(), is("cat"));
@@ -86,7 +86,7 @@ public class JdbcClinicServiceTest extends Mockito {
         assertThat(vova.getName(), is("Vova"));
         assertThat(vova.getEmail(), is("vova@mail.ru"));
         assertThat(vova.getPhone(), is("55555"));
-        assertThat(vova.getPosition(), is(5));
+        assertThat(vova.getPosition(), is(6));
 
         assertThat(vova.getPet(), is(Pet.NONE));
     }
@@ -99,7 +99,7 @@ public class JdbcClinicServiceTest extends Mockito {
         this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123");
 
         verify(this.jdbcMocker.getAddClientStatement(), times(1))
-                .setInt(1, 8);
+                .setInt(1, 7);
         verify(this.jdbcMocker.getAddClientStatement(), times(1))
                 .setString(2, "Petya");
         verify(this.jdbcMocker.getAddClientStatement(), times(1))
