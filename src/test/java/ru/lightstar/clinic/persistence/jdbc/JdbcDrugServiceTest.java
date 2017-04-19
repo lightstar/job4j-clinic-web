@@ -1,4 +1,4 @@
-package ru.lightstar.clinic.jdbc;
+package ru.lightstar.clinic.persistence.jdbc;
 
 import org.junit.Test;
 import org.mockito.Mockito;

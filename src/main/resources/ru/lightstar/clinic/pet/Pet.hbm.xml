@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="ru.lightstar.clinic.pet.Pet" table="pet">
+        <id name="id" type="int" column="id">
+            <generator class="identity"/>
+        </id>
+
+        <discriminator column="type" type="string"/>
+
+        <property name="name" column="name" type="string"/>
+        <property name="age" column="age" type="int"/>
+        <property name="sex" column="sex" type="ru.lightstar.clinic.pet.SexType"/>
+
+        <many-to-one name="client" class="ru.lightstar.clinic.Client" column="client_id" unique="true" />
+
+        <subclass name="ru.lightstar.clinic.pet.Cat" discriminator-value="cat"/>
+        <subclass name="ru.lightstar.clinic.pet.Dog" discriminator-value="dog"/>
+        <subclass name="ru.lightstar.clinic.pet.Fish" discriminator-value="fish"/>
+        <subclass name="ru.lightstar.clinic.pet.Bird" discriminator-value="bird"/>
+        <subclass name="ru.lightstar.clinic.pet.CatDog" discriminator-value="cat-dog"/>
+    </class>
+</hibernate-mapping>

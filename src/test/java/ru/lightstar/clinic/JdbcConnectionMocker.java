@@ -1,8 +1,8 @@
 package ru.lightstar.clinic;
 
 import org.mockito.Mockito;
-import ru.lightstar.clinic.jdbc.JdbcClinicService;
-import ru.lightstar.clinic.jdbc.JdbcDrugService;
+import ru.lightstar.clinic.persistence.jdbc.JdbcClinicService;
+import ru.lightstar.clinic.persistence.jdbc.JdbcDrugService;
 
 import java.sql.*;
 

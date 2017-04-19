@@ -8,6 +8,11 @@
         This is web version of pet's clinic.
     </description>
 
+    <context-param>
+        <param-name>useHibernate</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
     <!-- serving static content with default container servlet -->
 
     <servlet-mapping>

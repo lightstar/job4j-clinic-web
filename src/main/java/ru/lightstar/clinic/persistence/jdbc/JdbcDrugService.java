@@ -1,20 +1,20 @@
-package ru.lightstar.clinic.jdbc;
+package ru.lightstar.clinic.persistence.jdbc;
 
 import ru.lightstar.clinic.Clinic;
-import ru.lightstar.clinic.DrugService;
 import ru.lightstar.clinic.drug.Drug;
 import ru.lightstar.clinic.exception.ServiceException;
+import ru.lightstar.clinic.persistence.PersistentDrugService;
 
 import javax.servlet.ServletContext;
 import java.sql.*;
 
 /**
- * Database-aware <code>DrugService</code> implementation.
+ * Database-aware <code>DrugService</code> implementation which uses JDBC.
  *
  * @author LightStar
  * @since 0.0.1
  */
-public class JdbcDrugService extends DrugService {
+public class JdbcDrugService extends PersistentDrugService {
 
     /**
      * SQL used to load all drug data from database.
@@ -48,8 +48,9 @@ public class JdbcDrugService extends DrugService {
     }
 
     /**
-     * Load all drug data from database to inner clinic object.
+     * {@inheritDoc}
      */
+    @Override
     public synchronized void loadDrugs() {
         try (final Statement statement = this.connection.createStatement()) {
             try (final ResultSet rs = statement.executeQuery(LOAD_SQL)) {

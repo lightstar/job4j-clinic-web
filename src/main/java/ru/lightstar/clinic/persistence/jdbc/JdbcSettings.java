@@ -1,4 +1,4 @@
-package ru.lightstar.clinic.jdbc;
+package ru.lightstar.clinic.persistence.jdbc;
 
 import java.io.IOException;
 import java.io.InputStream;

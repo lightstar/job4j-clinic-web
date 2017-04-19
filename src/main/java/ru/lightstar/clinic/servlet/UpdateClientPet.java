@@ -76,7 +76,7 @@ public class UpdateClientPet extends ClinicServlet {
             errorString = e.getMessage();
         }
 
-        this.finishUpdateForm(request, response, "Pet added", errorString, "/");
+        this.finishUpdateForm(request, response, "Pet updated", errorString, "/");
 
     }
 
