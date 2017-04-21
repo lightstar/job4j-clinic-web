@@ -86,6 +86,11 @@ function deleteClient(name) {
     submitForm({ name: name }, "client/delete?name=" + name);
 }
 
+function deleteRole(name) {
+    if (!confirm("Really delete this role?")) return;
+    submitForm({ name: name }, "role/delete?name=" + name);
+}
+
 function submitForm(params, action, method) {
     var form = document.createElement('form');
 

@@ -1,7 +1,9 @@
-package ru.lightstar.clinic.servlet;
+package ru.lightstar.clinic.servlet.drug;
 
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.DrugService;
+import ru.lightstar.clinic.persistence.RoleService;
+import ru.lightstar.clinic.servlet.ClinicServlet;
 
 import javax.servlet.ServletException;
 
@@ -32,8 +34,9 @@ public abstract class DrugServlet extends ClinicServlet {
      * @param clinicService pre-defined clinic service.
      * @param drugService pre-defined drug service.
      */
-    DrugServlet(final ClinicService clinicService, final DrugService drugService) {
-        super(clinicService);
+    DrugServlet(final ClinicService clinicService, final RoleService roleService,
+                final DrugService drugService) {
+        super(clinicService, roleService);
         this.drugService = drugService;
     }
 

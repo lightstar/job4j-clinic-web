@@ -5,6 +5,7 @@ import org.mockito.Mockito;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.exception.NameException;
 import ru.lightstar.clinic.exception.ServiceException;
+import ru.lightstar.clinic.persistence.RoleService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -29,13 +30,14 @@ public class DeleteClientPetTest extends Mockito {
         final HttpServletRequest request = mock(HttpServletRequest.class);
         final HttpServletResponse response = mock(HttpServletResponse.class);
         final ClinicService clinicService = mock(ClinicService.class);
+        final RoleService roleService = mock(RoleService.class);
         final HttpSession session = mock(HttpSession.class);
 
         when(request.getParameter("name")).thenReturn("Vasya");
         when(request.getContextPath()).thenReturn("/context");
         when(request.getSession()).thenReturn(session);
 
-        new DeleteClientPet(clinicService).doPost(request, response);
+        new DeleteClientPet(clinicService, roleService).doPost(request, response);
 
         verify(session, atLeastOnce()).setAttribute(eq("message"), anyString());
         verify(clinicService, times(1)).deleteClientPet("Vasya");
@@ -51,12 +53,13 @@ public class DeleteClientPetTest extends Mockito {
         final HttpServletRequest request = mock(HttpServletRequest.class);
         final HttpServletResponse response = mock(HttpServletResponse.class);
         final ClinicService clinicService = mock(ClinicService.class);
+        final RoleService roleService = mock(RoleService.class);
         final HttpSession session = mock(HttpSession.class);
 
         when(request.getContextPath()).thenReturn("/context");
         when(request.getSession()).thenReturn(session);
 
-        new DeleteClientPet(clinicService).doPost(request, response);
+        new DeleteClientPet(clinicService, roleService).doPost(request, response);
 
         verify(session, atLeastOnce()).setAttribute(eq("error"), anyString());
         verify(response, atLeastOnce()).sendRedirect("/context/");
@@ -71,6 +74,7 @@ public class DeleteClientPetTest extends Mockito {
         final HttpServletRequest request = mock(HttpServletRequest.class);
         final HttpServletResponse response = mock(HttpServletResponse.class);
         final ClinicService clinicService = mock(ClinicService.class);
+        final RoleService roleService = mock(RoleService.class);
         final HttpSession session = mock(HttpSession.class);
 
         when(request.getParameter("name")).thenReturn("Vasya");
@@ -78,7 +82,7 @@ public class DeleteClientPetTest extends Mockito {
         when(request.getSession()).thenReturn(session);
         doThrow(new ServiceException("Test error")).when(clinicService).deleteClientPet("Vasya");
 
-        new DeleteClientPet(clinicService).doPost(request, response);
+        new DeleteClientPet(clinicService, roleService).doPost(request, response);
 
         verify(session, atLeastOnce()).setAttribute("error", "Test error.");
         verify(response, atLeastOnce()).sendRedirect("/context/");

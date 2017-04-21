@@ -18,6 +18,7 @@
         <a href="<c:url value='/'/>"<c:if test="${pageScope.current == 'main'}"> class="current"</c:if>>Main</a>
         <a href="<c:url value='/client/pet'/>"<c:if test="${pageScope.current == 'pet'}"> class="current"</c:if>>Pets</a>
         <a href="<c:url value='/drug'/>"<c:if test="${pageScope.current == 'drug'}"> class="current"</c:if>>Drugs</a>
+        <a href="<c:url value='/role'/>"<c:if test="${pageScope.current == 'role'}"> class="current"</c:if>>Roles</a>
     </nav>
 </h2>
 

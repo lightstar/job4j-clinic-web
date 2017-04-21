@@ -10,24 +10,24 @@
 </c:url>
 <form action="${action}" method="post" class="form" onsubmit="return validateForm(this);">
     <div>
-        <label class="element">Name:</label>
+        <label class="element">Client:</label>
         <p class="element"><c:out value="${param.name}"/></p>
     </div>
 
     <div>
-        <label for="newName" class="element">Pet's new name:</label>
+        <label for="newName" class="element">Pet's name:</label>
         <input type="text" class="element text" id="newName" name="newName"
                value="<c:out value='${requestScope.newName}'/>">
     </div>
 
     <div>
-        <label for="newAge" class="element">Pet's new age:</label>
+        <label for="newAge" class="element">Pet's age:</label>
         <input type="text" class="element text" id="newAge" name="newAge"
                value="<c:out value='${requestScope.newAge}'/>">
     </div>
 
     <div>
-        <label class="element">Pet's new sex:</label>
+        <label class="element">Pet's sex:</label>
         <span class="element" id="newSex">
             <label for="newSexM">Male</label>
             <input type="radio" class="radio" id="newSexM" name="newSex" value="m"

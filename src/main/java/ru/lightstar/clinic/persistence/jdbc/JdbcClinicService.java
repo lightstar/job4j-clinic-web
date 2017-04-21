@@ -1,6 +1,7 @@
 package ru.lightstar.clinic.persistence.jdbc;
 
 import ru.lightstar.clinic.model.Client;
+import ru.lightstar.clinic.model.Role;
 import ru.lightstar.clinic.persistence.PersistentClinicService;
 import ru.lightstar.clinic.exception.NameException;
 import ru.lightstar.clinic.exception.ServiceException;
@@ -23,15 +24,18 @@ public class JdbcClinicService extends PersistentClinicService {
      */
     public static final String LOAD_SQL =
             "SELECT client.id, client.position, client.name, client.email, client.phone, " +
+                    "role.id AS roleId, role.name AS roleName, " +
                     "pet.id AS petId, pet.type AS petType, pet.name AS petName, pet.age AS petAge," +
                     "pet.sex AS petSex " +
-                    "FROM client LEFT JOIN pet ON client.id = pet.client_id";
+                    "FROM client " +
+                    "INNER JOIN role ON client.role_id = role.id " +
+                    "LEFT JOIN pet ON client.id = pet.client_id";
 
     /**
      * SQL used to add new client to database.
      */
-    public static final String ADD_CLIENT_SQL = "INSERT INTO client (`position`, `name`,`email`,`phone`) " +
-            "VALUES (?,?,?,?)";
+    public static final String ADD_CLIENT_SQL = "INSERT INTO client (`position`, `name`,`email`,`phone`,`role_id`) " +
+            "VALUES (?,?,?,?,?)";
 
     /**
      * SQL used to set client's pet in database.
@@ -42,7 +46,7 @@ public class JdbcClinicService extends PersistentClinicService {
     /**
      * SQL used to update client in database.
      */
-    public static final String UPDATE_CLIENT_SQL = "UPDATE client SET name = ?, email = ?, phone = ? " +
+    public static final String UPDATE_CLIENT_SQL = "UPDATE client SET name = ?, email = ?, phone = ?, role_id = ? " +
             "WHERE name = ?";
 
     /**
@@ -93,8 +97,12 @@ public class JdbcClinicService extends PersistentClinicService {
                     final String petName = rs.getString("petName");
                     final int petAge = rs.getInt("petAge");
                     final String petSex = rs.getString("petSex");
+                    final int roleId = rs.getInt("roleId");
+                    final String roleName = rs.getString("roleName");
 
-                    final Client client = super.addClient(position, name, email, phone);
+                    final Role role = new Role(roleName);
+                    role.setId(roleId);
+                    final Client client = super.addClient(position, name, email, phone, role);
                     client.setId(id);
                     if (petType != null) {
                         final Pet pet = super.setClientPet(client, petType, petName, petAge,
@@ -112,9 +120,10 @@ public class JdbcClinicService extends PersistentClinicService {
      * {@inheritDoc}
      */
     @Override
-    public synchronized Client addClient(final int position, final String name, final String email, final String phone)
+    public synchronized Client addClient(final int position, final String name, final String email,
+                                         final String phone, final Role role)
             throws ServiceException, NameException {
-        final Client client = super.addClient(position, name, email, phone);
+        final Client client = super.addClient(position, name, email, phone, role);
 
         try (final PreparedStatement statement = this.connection.prepareStatement(ADD_CLIENT_SQL,
                 Statement.RETURN_GENERATED_KEYS)) {
@@ -122,6 +131,7 @@ public class JdbcClinicService extends PersistentClinicService {
             statement.setString(2, client.getName());
             statement.setString(3, client.getEmail());
             statement.setString(4, client.getPhone());
+            statement.setInt(5, client.getRole().getId());
             statement.executeUpdate();
 
             try (final ResultSet generatedKeys = statement.getGeneratedKeys()) {
@@ -175,21 +185,24 @@ public class JdbcClinicService extends PersistentClinicService {
      */
     @Override
     public synchronized void updateClient(final String name, final String newName,
-                                          final String newEmail, final String newPhone)
+                                          final String newEmail, final String newPhone,
+                                          final Role newRole)
             throws ServiceException, NameException {
         final Client client = this.findClientByName(name);
         final String oldEmail = client.getEmail();
         final String oldPhone = client.getPhone();
-        super.updateClient(client, newName, newEmail, newPhone);
+        final Role oldRole = client.getRole();
+        super.updateClient(client, newName, newEmail, newPhone, newRole);
 
         try (final PreparedStatement statement = this.connection.prepareStatement(UPDATE_CLIENT_SQL)) {
             statement.setString(1, newName);
             statement.setString(2, newEmail);
             statement.setString(3, newPhone);
-            statement.setString(4, name);
+            statement.setInt(4, newRole.getId());
+            statement.setString(5, name);
             statement.executeUpdate();
         } catch (SQLException e) {
-            this.undoUpdateClient(client, name, oldEmail, oldPhone);
+            this.undoUpdateClient(client, name, oldEmail, oldPhone, oldRole);
             throw new ServiceException(String.format("Can't update client's name in database: %s", e.getMessage()));
         }
     }

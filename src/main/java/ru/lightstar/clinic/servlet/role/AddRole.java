@@ -1,8 +1,9 @@
-package ru.lightstar.clinic.servlet;
+package ru.lightstar.clinic.servlet.role;
 
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.persistence.RoleService;
+import ru.lightstar.clinic.servlet.ClinicServlet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -10,24 +11,24 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Servlet used to delete client.
+ * Servlet used to add new role.
  *
  * @author LightStar
  * @since 0.0.1
  */
-public class DeleteClient extends ClinicServlet {
+public class AddRole extends ClinicServlet {
 
     /**
      * {@inheritDoc}
      */
-    public DeleteClient() {
+    public AddRole() {
         super();
     }
 
     /**
      * {@inheritDoc}
      */
-    DeleteClient(final ClinicService clinicService, final RoleService roleService) {
+    AddRole(final ClinicService clinicService, final RoleService roleService) {
         super(clinicService, roleService);
     }
 
@@ -40,14 +41,14 @@ public class DeleteClient extends ClinicServlet {
         String errorString = "";
         try {
             this.checkParameters(request);
-            this.clinicService.deleteClient(request.getParameter("name"));
+            this.roleService.addRole(request.getParameter("name"));
         } catch (NullPointerException e) {
             errorString = "Invalid request parameters";
         } catch (ServiceException e) {
             errorString = e.getMessage();
         }
 
-        this.finishUpdate(request, response, "Client deleted", errorString, "/");
+        this.finishUpdate(request, response, "Role added", errorString, "/role");
     }
 
     /**

@@ -1,9 +1,10 @@
-package ru.lightstar.clinic.servlet;
+package ru.lightstar.clinic.servlet.drug;
 
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.DrugService;
 import ru.lightstar.clinic.drug.Drug;
 import ru.lightstar.clinic.exception.ServiceException;
+import ru.lightstar.clinic.persistence.RoleService;
 import ru.lightstar.clinic.pet.Pet;
 
 import javax.servlet.ServletException;
@@ -29,8 +30,9 @@ public class GiveDrug extends DrugServlet {
     /**
      * {@inheritDoc}
      */
-    GiveDrug(final ClinicService clinicService, final DrugService drugService) {
-        super(clinicService, drugService);
+    GiveDrug(final ClinicService clinicService, final RoleService roleService,
+             final DrugService drugService) {
+        super(clinicService, roleService, drugService);
     }
 
     /**

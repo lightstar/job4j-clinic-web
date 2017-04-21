@@ -1,8 +1,9 @@
-package ru.lightstar.clinic.servlet;
+package ru.lightstar.clinic.servlet.role;
 
 import ru.lightstar.clinic.ClinicService;
-import ru.lightstar.clinic.DrugService;
 import ru.lightstar.clinic.exception.ServiceException;
+import ru.lightstar.clinic.persistence.RoleService;
+import ru.lightstar.clinic.servlet.ClinicServlet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -10,25 +11,25 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Servlet used to add new drug.
+ * Servlet used to delete role.
  *
  * @author LightStar
  * @since 0.0.1
  */
-public class AddDrug extends DrugServlet {
+public class DeleteRole extends ClinicServlet {
 
     /**
      * {@inheritDoc}
      */
-    public AddDrug() {
+    public DeleteRole() {
         super();
     }
 
     /**
      * {@inheritDoc}
      */
-    AddDrug(final ClinicService clinicService, final DrugService drugService) {
-        super(clinicService, drugService);
+    DeleteRole(final ClinicService clinicService, final RoleService roleService) {
+        super(clinicService, roleService);
     }
 
     /**
@@ -40,14 +41,12 @@ public class AddDrug extends DrugServlet {
         String errorString = "";
         try {
             this.checkParameters(request);
-            this.drugService.addDrug(request.getParameter("name"));
-        } catch (NullPointerException e) {
-            errorString = "Invalid request parameters";
+            this.roleService.deleteRole(request.getParameter("name"));
         } catch (ServiceException e) {
             errorString = e.getMessage();
         }
 
-        this.finishUpdate(request, response, "Drug added", errorString, "/drug");
+        this.finishUpdate(request, response, "Role deleted", errorString, "/role");
     }
 
     /**

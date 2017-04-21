@@ -1,10 +1,11 @@
-package ru.lightstar.clinic.servlet;
+package ru.lightstar.clinic.servlet.drug;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.DrugService;
 import ru.lightstar.clinic.exception.ServiceException;
+import ru.lightstar.clinic.persistence.RoleService;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -30,6 +31,7 @@ public class GiveDrugTest extends Mockito {
         final HttpServletRequest request = mock(HttpServletRequest.class);
         final HttpServletResponse response = mock(HttpServletResponse.class);
         final ClinicService clinicService = mock(ClinicService.class);
+        final RoleService roleService = mock(RoleService.class);
         final DrugService drugService = mock(DrugService.class);
         final HttpSession session = mock(HttpSession.class);
 
@@ -38,7 +40,7 @@ public class GiveDrugTest extends Mockito {
         when(request.getContextPath()).thenReturn("/context");
         when(request.getSession()).thenReturn(session);
 
-        new GiveDrug(clinicService, drugService).doPost(request, response);
+        new GiveDrug(clinicService, roleService, drugService).doPost(request, response);
 
         verify(session, atLeastOnce()).setAttribute(eq("message"), anyString());
         verify(clinicService, times(1)).getClientPet("Vasya");
@@ -56,13 +58,14 @@ public class GiveDrugTest extends Mockito {
         final HttpServletResponse response = mock(HttpServletResponse.class);
         final RequestDispatcher dispatcher = mock(RequestDispatcher.class);
         final ClinicService clinicService = mock(ClinicService.class);
+        final RoleService roleService = mock(RoleService.class);
         final DrugService drugService = mock(DrugService.class);
         final HttpSession session = mock(HttpSession.class);
 
         when(request.getRequestDispatcher("/WEB-INF/view/GiveDrug.jsp")).thenReturn(dispatcher);
         when(request.getSession()).thenReturn(session);
 
-        new GiveDrug(clinicService, drugService).doPost(request, response);
+        new GiveDrug(clinicService, roleService, drugService).doPost(request, response);
 
         verify(session, atLeastOnce()).setAttribute(eq("error"), anyString());
         verify(dispatcher, atLeastOnce()).forward(request, response);
@@ -78,6 +81,7 @@ public class GiveDrugTest extends Mockito {
         final HttpServletResponse response = mock(HttpServletResponse.class);
         final RequestDispatcher dispatcher = mock(RequestDispatcher.class);
         final ClinicService clinicService = mock(ClinicService.class);
+        final RoleService roleService = mock(RoleService.class);
         final DrugService drugService = mock(DrugService.class);
         final HttpSession session = mock(HttpSession.class);
 
@@ -87,7 +91,7 @@ public class GiveDrugTest extends Mockito {
         when(request.getSession()).thenReturn(session);
         when(drugService.takeDrug("aspirin")).thenThrow(new ServiceException("Test error"));
 
-        new GiveDrug(clinicService, drugService).doPost(request, response);
+        new GiveDrug(clinicService, roleService, drugService).doPost(request, response);
 
         verify(session, atLeastOnce()).setAttribute("error", "Test error.");
         verify(dispatcher, atLeastOnce()).forward(request, response);
@@ -103,6 +107,7 @@ public class GiveDrugTest extends Mockito {
         final HttpServletResponse response = mock(HttpServletResponse.class);
         final RequestDispatcher dispatcher = mock(RequestDispatcher.class);
         final ClinicService clinicService = mock(ClinicService.class);
+        final RoleService roleService = mock(RoleService.class);
         final DrugService drugService = mock(DrugService.class);
         final HttpSession session = mock(HttpSession.class);
 
@@ -112,7 +117,7 @@ public class GiveDrugTest extends Mockito {
         when(request.getSession()).thenReturn(session);
         when(clinicService.getClientPet("Vasya")).thenThrow(new ServiceException("Test error"));
 
-        new GiveDrug(clinicService, drugService).doPost(request, response);
+        new GiveDrug(clinicService, roleService, drugService).doPost(request, response);
 
         verify(drugService, never()).takeDrug(anyString());
         verify(session, atLeastOnce()).setAttribute("error", "Test error.");

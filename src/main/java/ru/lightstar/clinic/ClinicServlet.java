@@ -5,6 +5,7 @@ import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.io.DummyOutput;
 import ru.lightstar.clinic.io.IteratorInput;
 import ru.lightstar.clinic.model.Client;
+import ru.lightstar.clinic.model.Role;
 import ru.lightstar.clinic.pet.Sex;
 
 import javax.servlet.ServletException;
@@ -109,7 +110,7 @@ public class ClinicServlet extends HttpServlet {
         try {
             this.clinicService.addClient(Integer.valueOf(request.getParameter("position")) - 1,
                     request.getParameter("name"), request.getParameter("email"),
-                    request.getParameter("phone"));
+                    request.getParameter("phone"), new Role());
             request.setAttribute("message", "Client added");
         } catch (NullPointerException e) {
             request.setAttribute("error", "Wrong parameters");
@@ -180,7 +181,7 @@ public class ClinicServlet extends HttpServlet {
     private void updateClient(final HttpServletRequest request) {
         try {
             this.clinicService.updateClient(request.getParameter("name"), request.getParameter("newName"),
-                    request.getParameter("newEmail"), request.getParameter("newPhone"));
+                    request.getParameter("newEmail"), request.getParameter("newPhone"), new Role());
             request.setAttribute("message", "Client updated");
         } catch (NullPointerException e) {
             request.setAttribute("error", "Wrong parameters");

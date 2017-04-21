@@ -1,3 +1,5 @@
+<%--@elvariable id="roles" type="java.util.List<ru.lightstar.clinic.model.Role>"--%>
+
 <%@ page language="java" pageEncoding="utf-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
@@ -5,6 +7,13 @@
 <c:set var="current" value="main" scope="page"/>
 <%@include file="Header.jsp" %>
 
+<c:if test="${roles.size() == 0}">
+    <p>
+        Add some roles before adding clients.
+    </p>
+</c:if>
+
+<c:if test="${roles.size() > 0}">
 <c:url value='/client/add' var="action">
     <c:param name="pos" value="${param.pos}"/>
 </c:url>
@@ -17,6 +26,18 @@
     <div>
         <label for="name" class="element">Name:</label>
         <input type="text" class="element text" id="name" name="name" value="<c:out value='${param.name}'/>">
+    </div>
+
+    <div>
+        <label for="role" class="element">Role:</label>
+        <select class="element" id="role" name="role">
+            <c:forEach items="${roles}" var="role">
+                <option value="<c:out value='${role.name}'/>"
+                    ${param.role == role.name ? ' selected="selected"' : ''}>
+                    <c:out value="${role.name}"/>
+                </option>
+            </c:forEach>
+        </select>
     </div>
 
     <div>
@@ -36,5 +57,6 @@
 
     <input type="hidden" name="pos" value="<c:out value='${param.pos}'/>">
 </form>
+</c:if>
 
 <%@include file="Footer.jsp" %>

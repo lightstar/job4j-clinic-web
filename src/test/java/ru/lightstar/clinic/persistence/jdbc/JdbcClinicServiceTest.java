@@ -138,7 +138,9 @@ public class JdbcClinicServiceTest extends PersistentClinicServiceTest {
         verify(this.jdbcMocker.getUpdateClientStatement(), times(1))
                 .setString(3, "456456");
         verify(this.jdbcMocker.getUpdateClientStatement(), times(1))
-                .setString(4, "Petya");
+                .setInt(4, 1);
+        verify(this.jdbcMocker.getUpdateClientStatement(), times(1))
+                .setString(5, "Petya");
         verify(this.jdbcMocker.getUpdateClientStatement(), times(1))
                 .executeUpdate();
     }

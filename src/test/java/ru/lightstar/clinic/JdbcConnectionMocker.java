@@ -240,6 +240,10 @@ public class JdbcConnectionMocker extends Mockito {
                 .thenReturn("masha@mail.ru").thenReturn("vova@mail.ru");
         when(this.loadClinicResultSet.getString("phone")).thenReturn("22222").thenReturn("123456")
                 .thenReturn("55555");
+        when(this.loadClinicResultSet.getInt("roleId")).thenReturn(2).thenReturn(2)
+                .thenReturn(1);
+        when(this.loadClinicResultSet.getString("roleName")).thenReturn("client").thenReturn("client")
+                .thenReturn("admin");
         when(this.loadClinicResultSet.getInt("petId")).thenReturn(1).thenReturn(2)
                 .thenReturn(0);
         when(this.loadClinicResultSet.getString("petType")).thenReturn("dog").thenReturn("cat")

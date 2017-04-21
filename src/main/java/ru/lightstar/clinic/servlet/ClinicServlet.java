@@ -1,6 +1,7 @@
 package ru.lightstar.clinic.servlet;
 
 import ru.lightstar.clinic.ClinicService;
+import ru.lightstar.clinic.persistence.RoleService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -23,6 +24,12 @@ public abstract class ClinicServlet extends HttpServlet {
     protected ClinicService clinicService = null;
 
     /**
+     * Global role service used by all servlets. Usually it is set in {@link #init} method but in tests it is
+     * provided in constructor.
+     */
+    protected RoleService roleService = null;
+
+    /**
      * Constructs <code>ClinicServlet</code> object.
      */
     public ClinicServlet() {
@@ -33,10 +40,12 @@ public abstract class ClinicServlet extends HttpServlet {
      * Constructs <code>ClinicServlet</code> object using pre-defined clinic service (used in tests).
      *
      * @param clinicService pre-defined clinic service.
+     * @param roleService pre-defined role service.
      */
-    ClinicServlet(final ClinicService clinicService) {
+    protected ClinicServlet(final ClinicService clinicService, final RoleService roleService) {
         super();
         this.clinicService = clinicService;
+        this.roleService = roleService;
     }
 
     /**
@@ -46,6 +55,7 @@ public abstract class ClinicServlet extends HttpServlet {
     public void init() throws ServletException {
         super.init();
         this.clinicService = (ClinicService) this.getServletContext().getAttribute("clinicService");
+        this.roleService = (RoleService) this.getServletContext().getAttribute("roleService");
     }
 
     /**

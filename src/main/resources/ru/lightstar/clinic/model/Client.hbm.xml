@@ -18,11 +18,11 @@
         <property name="email" column="email" type="string"/>
         <property name="phone" column="phone" type="string"/>
 
-        <one-to-one name="pet" class="ru.lightstar.clinic.pet.Pet" property-ref="client"/>
+        <one-to-one name="pet" class="ru.lightstar.clinic.pet.Pet" property-ref="client" lazy="false" fetch="join"/>
 
-        <many-to-one name="role" column="role_id" class="ru.lightstar.clinic.model.Role" cascade="save-update"/>
+        <many-to-one name="role" column="role_id" class="ru.lightstar.clinic.model.Role" lazy="false" fetch="join"/>
 
-        <set name="messages" table="message" lazy="false" fetch="join" inverse="true" cascade="all">
+        <set name="messages" table="message" lazy="true" inverse="true">
             <key column="client_id" not-null="true"/>
             <one-to-many class="ru.lightstar.clinic.model.Message"/>
         </set>

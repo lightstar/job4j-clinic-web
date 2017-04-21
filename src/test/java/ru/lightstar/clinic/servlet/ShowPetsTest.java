@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.io.DummyOutput;
+import ru.lightstar.clinic.persistence.RoleService;
 import ru.lightstar.clinic.pet.Cat;
 import ru.lightstar.clinic.pet.Pet;
 
@@ -30,12 +31,13 @@ public class ShowPetsTest extends Mockito {
         final HttpServletResponse response = mock(HttpServletResponse.class);
         final RequestDispatcher dispatcher = mock(RequestDispatcher.class);
         final ClinicService clinicService = mock(ClinicService.class);
+        final RoleService roleService = mock(RoleService.class);
         final Pet[] pets = new Pet[]{new Cat("Murka", new DummyOutput())};
 
         when(request.getRequestDispatcher("/WEB-INF/view/ShowPets.jsp")).thenReturn(dispatcher);
         when(clinicService.getAllPets()).thenReturn(pets);
 
-        new ShowPets(clinicService).doGet(request, response);
+        new ShowPets(clinicService, roleService).doGet(request, response);
 
         verify(clinicService, atLeastOnce()).getAllPets();
         verify(request, atLeastOnce()).setAttribute("pets", pets);

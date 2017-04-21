@@ -6,6 +6,7 @@ import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.io.DummyOutput;
+import ru.lightstar.clinic.persistence.RoleService;
 import ru.lightstar.clinic.pet.Cat;
 import ru.lightstar.clinic.pet.Pet;
 
@@ -33,13 +34,14 @@ public class ShowClientsTest extends Mockito {
         final HttpServletResponse response = mock(HttpServletResponse.class);
         final RequestDispatcher dispatcher = mock(RequestDispatcher.class);
         final ClinicService clinicService = mock(ClinicService.class);
+        final RoleService roleService = mock(RoleService.class);
         final Client[] clients = new Client[]{new Client("Vasya", Pet.NONE, 1)};
 
         when(request.getParameterMap()).thenReturn(Collections.emptyMap());
         when(request.getRequestDispatcher("/WEB-INF/view/ShowClients.jsp")).thenReturn(dispatcher);
         when(clinicService.getAllClients()).thenReturn(clients);
 
-        new ShowClients(clinicService).doGet(request, response);
+        new ShowClients(clinicService, roleService).doGet(request, response);
 
         verify(clinicService, atLeastOnce()).getAllClients();
         verify(request, atLeastOnce()).setAttribute("clients", clients);
@@ -55,6 +57,7 @@ public class ShowClientsTest extends Mockito {
         final HttpServletResponse response = mock(HttpServletResponse.class);
         final RequestDispatcher dispatcher = mock(RequestDispatcher.class);
         final ClinicService clinicService = mock(ClinicService.class);
+        final RoleService roleService = mock(RoleService.class);
         final Client client = new Client("Vasya", Pet.NONE, 1);
 
         when(request.getParameter("filterType")).thenReturn("client");
@@ -62,7 +65,7 @@ public class ShowClientsTest extends Mockito {
         when(request.getRequestDispatcher("/WEB-INF/view/ShowClients.jsp")).thenReturn(dispatcher);
         when(clinicService.findClientByName("Vasya")).thenReturn(client);
 
-        new ShowClients(clinicService).doGet(request, response);
+        new ShowClients(clinicService, roleService).doGet(request, response);
 
         verify(clinicService, atLeastOnce()).findClientByName("Vasya");
         verify(request, atLeastOnce()).setAttribute("clients", new Client[]{client});
@@ -79,13 +82,14 @@ public class ShowClientsTest extends Mockito {
         final HttpServletResponse response = mock(HttpServletResponse.class);
         final RequestDispatcher dispatcher = mock(RequestDispatcher.class);
         final ClinicService clinicService = mock(ClinicService.class);
+        final RoleService roleService = mock(RoleService.class);
 
         when(request.getParameter("filterType")).thenReturn("client");
         when(request.getParameter("filterName")).thenReturn("Vasya");
         when(request.getRequestDispatcher("/WEB-INF/view/ShowClients.jsp")).thenReturn(dispatcher);
         when(clinicService.findClientByName("Vasya")).thenThrow(new ServiceException("Client not found"));
 
-        new ShowClients(clinicService).doGet(request, response);
+        new ShowClients(clinicService, roleService).doGet(request, response);
 
         verify(clinicService, atLeastOnce()).findClientByName("Vasya");
         verify(request, atLeastOnce()).setAttribute("clients", new Client[]{});
@@ -101,6 +105,7 @@ public class ShowClientsTest extends Mockito {
         final HttpServletResponse response = mock(HttpServletResponse.class);
         final RequestDispatcher dispatcher = mock(RequestDispatcher.class);
         final ClinicService clinicService = mock(ClinicService.class);
+        final RoleService roleService = mock(RoleService.class);
         final Pet pet = new Cat("Murka", new DummyOutput());
         final Client client = new Client("Vasya", pet, 1);
         final Client[] clients = new Client[]{client};
@@ -110,7 +115,7 @@ public class ShowClientsTest extends Mockito {
         when(request.getRequestDispatcher("/WEB-INF/view/ShowClients.jsp")).thenReturn(dispatcher);
         when(clinicService.findClientsByPetName("Murka")).thenReturn(clients);
 
-        new ShowClients(clinicService).doGet(request, response);
+        new ShowClients(clinicService, roleService).doGet(request, response);
 
         verify(clinicService, atLeastOnce()).findClientsByPetName("Murka");
         verify(request, atLeastOnce()).setAttribute("clients", clients);

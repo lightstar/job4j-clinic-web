@@ -3,6 +3,7 @@ package ru.lightstar.clinic.servlet;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.exception.NameException;
 import ru.lightstar.clinic.exception.ServiceException;
+import ru.lightstar.clinic.persistence.RoleService;
 import ru.lightstar.clinic.pet.Sex;
 
 import javax.servlet.ServletException;
@@ -28,8 +29,8 @@ public class SetClientPet extends ClinicServlet {
     /**
      * {@inheritDoc}
      */
-    SetClientPet(final ClinicService clinicService) {
-        super(clinicService);
+    SetClientPet(final ClinicService clinicService, final RoleService roleService) {
+        super(clinicService, roleService);
     }
 
     /**

@@ -7,6 +7,7 @@ import ru.lightstar.clinic.exception.NameException;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.io.DummyOutput;
 import ru.lightstar.clinic.io.IteratorInput;
+import ru.lightstar.clinic.model.Role;
 import ru.lightstar.clinic.pet.Pet;
 import ru.lightstar.clinic.pet.Sex;
 
@@ -71,9 +72,9 @@ public abstract class PersistentClinicService extends ClinicService {
      * @throws NameException shouldn't be thrown.
      */
     protected void undoUpdateClient(final Client client, final String oldName, final String oldEmail,
-                                    final String oldPhone)
+                                    final String oldPhone, final Role oldRole)
             throws ServiceException, NameException {
-        super.updateClient(client, oldName, oldEmail, oldPhone);
+        super.updateClient(client, oldName, oldEmail, oldPhone, oldRole);
     }
 
     /**

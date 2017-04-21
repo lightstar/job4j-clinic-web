@@ -4,6 +4,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import ru.lightstar.clinic.model.Client;
+import ru.lightstar.clinic.model.Role;
 import ru.lightstar.clinic.persistence.PersistentClinicService;
 import ru.lightstar.clinic.exception.NameException;
 import ru.lightstar.clinic.exception.ServiceException;
@@ -65,9 +66,10 @@ public class HibernateClinicService extends PersistentClinicService {
      * {@inheritDoc}
      */
     @Override
-    public synchronized Client addClient(final int position, final String name, final String email, final String phone)
+    public synchronized Client addClient(final int position, final String name, final String email,
+                                         final String phone, final Role role)
             throws ServiceException, NameException {
-        final Client client = super.addClient(position, name, email, phone);
+        final Client client = super.addClient(position, name, email, phone, role);
 
         try (final Session session = this.sessionFactory.openSession()) {
             final Transaction transaction = session.beginTransaction();
@@ -113,12 +115,14 @@ public class HibernateClinicService extends PersistentClinicService {
      */
     @Override
     public synchronized void updateClient(final String name, final String newName,
-                                          final String newEmail, final String newPhone)
+                                          final String newEmail, final String newPhone,
+                                          final Role newRole)
             throws ServiceException, NameException {
         final Client client = this.findClientByName(name);
         final String oldEmail = client.getEmail();
         final String oldPhone = client.getPhone();
-        super.updateClient(client, newName, newEmail, newPhone);
+        final Role oldRole = client.getRole();
+        super.updateClient(client, newName, newEmail, newPhone, newRole);
 
         try (final Session session = this.sessionFactory.openSession()) {
             final Transaction transaction = session.beginTransaction();
@@ -126,7 +130,7 @@ public class HibernateClinicService extends PersistentClinicService {
                 session.update(client);
                 transaction.commit();
             } catch (PersistenceException e) {
-                this.undoUpdateClient(client, name, oldEmail, oldPhone);
+                this.undoUpdateClient(client, name, oldEmail, oldPhone, oldRole);
                 throw new ServiceException(String.format("Can't update client's name in database: %s", e.getMessage()));
             }
         }

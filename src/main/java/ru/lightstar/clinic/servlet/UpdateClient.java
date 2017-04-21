@@ -1,9 +1,11 @@
 package ru.lightstar.clinic.servlet;
 
-import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.exception.NameException;
 import ru.lightstar.clinic.exception.ServiceException;
+import ru.lightstar.clinic.model.Client;
+import ru.lightstar.clinic.model.Role;
+import ru.lightstar.clinic.persistence.RoleService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -28,8 +30,8 @@ public class UpdateClient extends ClinicServlet {
     /**
      * {@inheritDoc}
      */
-    UpdateClient(final ClinicService clinicService) {
-        super(clinicService);
+    UpdateClient(final ClinicService clinicService, final RoleService roleService) {
+        super(clinicService, roleService);
     }
 
     /**
@@ -53,6 +55,9 @@ public class UpdateClient extends ClinicServlet {
         this.setAttributeFromParameter(request, "newName", client.getName());
         this.setAttributeFromParameter(request, "newEmail", client.getEmail());
         this.setAttributeFromParameter(request, "newPhone", client.getPhone());
+        this.setAttributeFromParameter(request, "newRole", client.getRole().getName());
+
+        request.setAttribute("roles", this.roleService.getAllRoles());
         request.getRequestDispatcher("/WEB-INF/view/UpdateClient.jsp").forward(request, response);
     }
 
@@ -65,8 +70,10 @@ public class UpdateClient extends ClinicServlet {
         String errorString = "";
         try {
             this.checkParameters(request);
+            final Role newRole = this.roleService.getRoleByName(request.getParameter("newRole"));
             this.clinicService.updateClient(request.getParameter("name"), request.getParameter("newName"),
-                    request.getParameter("newEmail"), request.getParameter("newPhone"));
+                   request.getParameter("newEmail"), request.getParameter("newPhone"),
+                   newRole);
         } catch (NullPointerException e) {
             errorString = "Invalid request parameters";
         } catch (NameException | ServiceException e) {
@@ -83,7 +90,8 @@ public class UpdateClient extends ClinicServlet {
      */
     private void checkParameters(final HttpServletRequest request) {
         if (request.getParameter("name") == null || request.getParameter("newName") == null ||
-                request.getParameter("newEmail") == null || request.getParameter("newPhone") == null) {
+                request.getParameter("newEmail") == null || request.getParameter("newPhone") == null ||
+                request.getParameter("newRole") == null) {
             throw new NullPointerException();
         }
     }

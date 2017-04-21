@@ -6,6 +6,8 @@ import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.exception.NameException;
 import ru.lightstar.clinic.exception.ServiceException;
+import ru.lightstar.clinic.model.Role;
+import ru.lightstar.clinic.persistence.RoleService;
 import ru.lightstar.clinic.pet.Pet;
 
 import javax.servlet.RequestDispatcher;
@@ -32,20 +34,25 @@ public class UpdateClientTest extends Mockito {
         final HttpServletRequest request = mock(HttpServletRequest.class);
         final HttpServletResponse response = mock(HttpServletResponse.class);
         final ClinicService clinicService = mock(ClinicService.class);
+        final RoleService roleService = mock(RoleService.class);
         final HttpSession session = mock(HttpSession.class);
+        final Role role = new Role("admin");
+        role.setId(1);
 
         when(request.getParameter("name")).thenReturn("Vasya");
         when(request.getParameter("newName")).thenReturn("Vova");
         when(request.getParameter("newEmail")).thenReturn("vova@mail.ru");
         when(request.getParameter("newPhone")).thenReturn("22222");
+        when(request.getParameter("newRole")).thenReturn("client");
+        when(roleService.getRoleByName("client")).thenReturn(role);
         when(request.getContextPath()).thenReturn("/context");
         when(request.getSession()).thenReturn(session);
 
-        new UpdateClient(clinicService).doPost(request, response);
+        new UpdateClient(clinicService, roleService).doPost(request, response);
 
         verify(session, atLeastOnce()).setAttribute(eq("message"), anyString());
         verify(clinicService, times(1)).updateClient("Vasya", "Vova",
-                "vova@mail.ru", "22222");
+                "vova@mail.ru", "22222", role);
         verify(response, atLeastOnce()).sendRedirect("/context/");
     }
 
@@ -59,6 +66,7 @@ public class UpdateClientTest extends Mockito {
         final HttpServletResponse response = mock(HttpServletResponse.class);
         final RequestDispatcher dispatcher = mock(RequestDispatcher.class);
         final ClinicService clinicService = mock(ClinicService.class);
+        final RoleService roleService = mock(RoleService.class);
         final HttpSession session = mock(HttpSession.class);
 
         when(request.getParameter("name")).thenReturn("Vasya");
@@ -67,7 +75,7 @@ public class UpdateClientTest extends Mockito {
         when(clinicService.findClientByName("Vasya")).thenReturn(new Client("Vasya", Pet.NONE, 0));
         when(request.getSession()).thenReturn(session);
 
-        new UpdateClient(clinicService).doPost(request, response);
+        new UpdateClient(clinicService, roleService).doPost(request, response);
 
         verify(session, atLeastOnce()).setAttribute(eq("error"), anyString());
         verify(dispatcher, atLeastOnce()).forward(request, response);
@@ -83,19 +91,24 @@ public class UpdateClientTest extends Mockito {
         final HttpServletResponse response = mock(HttpServletResponse.class);
         final RequestDispatcher dispatcher = mock(RequestDispatcher.class);
         final ClinicService clinicService = mock(ClinicService.class);
+        final RoleService roleService = mock(RoleService.class);
         final HttpSession session = mock(HttpSession.class);
+        final Role role = new Role("admin");
+        role.setId(1);
 
         when(request.getParameter("name")).thenReturn("Vasya");
         when(request.getParameter("newName")).thenReturn("Vova");
         when(request.getParameter("newEmail")).thenReturn("vova@mail.ru");
         when(request.getParameter("newPhone")).thenReturn("22222");
+        when(request.getParameter("newRole")).thenReturn("client");
         when(request.getRequestDispatcher("/WEB-INF/view/UpdateClient.jsp")).thenReturn(dispatcher);
         doThrow(new ServiceException("Test error")).when(clinicService).updateClient("Vasya", "Vova",
-                "vova@mail.ru", "22222");
+                "vova@mail.ru", "22222", role);
+        when(roleService.getRoleByName("client")).thenReturn(role);
         when(clinicService.findClientByName("Vasya")).thenReturn(new Client("Vasya", Pet.NONE, 0));
         when(request.getSession()).thenReturn(session);
 
-        new UpdateClient(clinicService).doPost(request, response);
+        new UpdateClient(clinicService, roleService).doPost(request, response);
 
         verify(session, atLeastOnce()).setAttribute("error", "Test error.");
         verify(dispatcher, atLeastOnce()).forward(request, response);

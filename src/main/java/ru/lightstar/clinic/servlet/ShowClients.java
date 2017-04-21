@@ -1,8 +1,9 @@
 package ru.lightstar.clinic.servlet;
 
-import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.exception.ServiceException;
+import ru.lightstar.clinic.model.Client;
+import ru.lightstar.clinic.persistence.RoleService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -27,8 +28,8 @@ public class ShowClients extends ClinicServlet {
     /**
      * {@inheritDoc}
      */
-    ShowClients(final ClinicService clinicService) {
-        super(clinicService);
+    ShowClients(final ClinicService clinicService, final RoleService roleService) {
+        super(clinicService, roleService);
     }
 
     /**

@@ -8,6 +8,7 @@
         This is web version of pet's clinic.
     </description>
 
+    <!-- If you use 'false' here, then half of functionality will not work! -->
     <context-param>
         <param-name>useHibernate</param-name>
         <param-value>true</param-value>
@@ -121,7 +122,7 @@
 
     <servlet>
         <servlet-name>ShowDrugs</servlet-name>
-        <servlet-class>ru.lightstar.clinic.servlet.ShowDrugs</servlet-class>
+        <servlet-class>ru.lightstar.clinic.servlet.drug.ShowDrugs</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -131,7 +132,7 @@
 
     <servlet>
         <servlet-name>AddDrug</servlet-name>
-        <servlet-class>ru.lightstar.clinic.servlet.AddDrug</servlet-class>
+        <servlet-class>ru.lightstar.clinic.servlet.drug.AddDrug</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -141,12 +142,44 @@
 
     <servlet>
         <servlet-name>GiveDrug</servlet-name>
-        <servlet-class>ru.lightstar.clinic.servlet.GiveDrug</servlet-class>
+        <servlet-class>ru.lightstar.clinic.servlet.drug.GiveDrug</servlet-class>
     </servlet>
 
     <servlet-mapping>
         <servlet-name>AddDrug</servlet-name>
         <url-pattern>/drug/add</url-pattern>
+    </servlet-mapping>
+
+    <!-- role servlets -->
+
+    <servlet>
+        <servlet-name>ShowRoles</servlet-name>
+        <servlet-class>ru.lightstar.clinic.servlet.role.ShowRoles</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ShowRoles</servlet-name>
+        <url-pattern>/role</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AddRole</servlet-name>
+        <servlet-class>ru.lightstar.clinic.servlet.role.AddRole</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>AddRole</servlet-name>
+        <url-pattern>/role/add</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DeleteRole</servlet-name>
+        <servlet-class>ru.lightstar.clinic.servlet.role.DeleteRole</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>DeleteRole</servlet-name>
+        <url-pattern>/role/delete</url-pattern>
     </servlet-mapping>
 
     <!-- filters -->

@@ -2,6 +2,7 @@ package ru.lightstar.clinic.servlet;
 
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.exception.ServiceException;
+import ru.lightstar.clinic.persistence.RoleService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -26,8 +27,8 @@ public class DeleteClientPet extends ClinicServlet {
     /**
      * {@inheritDoc}
      */
-    DeleteClientPet(final ClinicService clinicService) {
-        super(clinicService);
+    DeleteClientPet(final ClinicService clinicService, final RoleService roleService) {
+        super(clinicService, roleService);
     }
 
     /**

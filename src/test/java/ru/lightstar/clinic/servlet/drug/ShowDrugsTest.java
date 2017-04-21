@@ -1,4 +1,4 @@
-package ru.lightstar.clinic.servlet;
+package ru.lightstar.clinic.servlet.drug;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -6,6 +6,7 @@ import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.DrugService;
 import ru.lightstar.clinic.drug.Aspirin;
 import ru.lightstar.clinic.drug.Drug;
+import ru.lightstar.clinic.persistence.RoleService;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -32,13 +33,14 @@ public class ShowDrugsTest extends Mockito {
         final HttpServletResponse response = mock(HttpServletResponse.class);
         final RequestDispatcher dispatcher = mock(RequestDispatcher.class);
         final ClinicService clinicService = mock(ClinicService.class);
+        final RoleService roleService = mock(RoleService.class);
         final DrugService drugService = mock(DrugService.class);
         final Map<Drug,Integer> drugs = Collections.singletonMap(new Aspirin(), 1);
 
         when(request.getRequestDispatcher("/WEB-INF/view/ShowDrugs.jsp")).thenReturn(dispatcher);
         when(drugService.getAllDrugs()).thenReturn(drugs);
 
-        new ShowDrugs(clinicService, drugService).doGet(request, response);
+        new ShowDrugs(clinicService, roleService, drugService).doGet(request, response);
 
         verify(drugService, atLeastOnce()).getAllDrugs();
         verify(request, atLeastOnce()).setAttribute("drugs", drugs);

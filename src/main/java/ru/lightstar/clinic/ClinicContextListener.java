@@ -4,9 +4,9 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import ru.lightstar.clinic.persistence.hibernate.HibernateClinicService;
 import ru.lightstar.clinic.persistence.hibernate.HibernateDrugService;
-import ru.lightstar.clinic.persistence.jdbc.JdbcClinicService;
-import ru.lightstar.clinic.persistence.jdbc.JdbcDrugService;
-import ru.lightstar.clinic.persistence.jdbc.JdbcSettings;
+import ru.lightstar.clinic.persistence.hibernate.HibernateMessageService;
+import ru.lightstar.clinic.persistence.hibernate.HibernateRoleService;
+import ru.lightstar.clinic.persistence.jdbc.*;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -72,6 +72,9 @@ public class ClinicContextListener implements ServletContextListener {
                 servletContext);
         drugService.loadDrugs();
         servletContext.setAttribute("drugService", drugService);
+
+        servletContext.setAttribute("roleService", new HibernateRoleService(servletContext));
+        servletContext.setAttribute("messageService", new HibernateMessageService(servletContext));
     }
 
     /**
@@ -93,6 +96,9 @@ public class ClinicContextListener implements ServletContextListener {
             final JdbcDrugService drugService = new JdbcDrugService(clinicService.getClinic(), servletContext);
             drugService.loadDrugs();
             servletContext.setAttribute("drugService", drugService);
+
+            servletContext.setAttribute("roleService", new JdbcRoleService(servletContext));
+            servletContext.setAttribute("messageService", new JdbcMessageService(servletContext));
         } catch (SQLException | ReflectiveOperationException e) {
             throw new IllegalStateException(e);
         }
