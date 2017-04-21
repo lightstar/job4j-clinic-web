@@ -13,9 +13,11 @@ CREATE TABLE `client` (
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL DEFAULT '',
   `phone` varchar(255) NOT NULL DEFAULT '',
+  `role_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `position` (`position`),
-  UNIQUE KEY `name` (`name`)
+  UNIQUE KEY `name` (`name`),
+  CONSTRAINT `client_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`)
 );
 
 CREATE TABLE `pet` (
@@ -35,4 +37,18 @@ CREATE TABLE `drug` (
   `name` varchar(255) NOT NULL,
   `danger` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `role` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  PRIMARY KEY(`id`)
+);
+
+CREATE TABLE `message` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `text` longtext NOT NULL,
+  `client_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY(`id`),
+  CONSTRAINT `message_ibfk_1` FOREIGN KEY (`client_id`) REFERENCES `client` (`id`)
 );

@@ -2,7 +2,7 @@ package ru.lightstar.clinic.persistence.hibernate;
 
 import org.hibernate.SessionFactory;
 import org.junit.Test;
-import ru.lightstar.clinic.Client;
+import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.SessionFactoryMocker;
 import ru.lightstar.clinic.exception.NameException;
 import ru.lightstar.clinic.exception.ServiceException;

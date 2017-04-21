@@ -4,20 +4,17 @@
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-    <class name="ru.lightstar.clinic.drug.Drug" table="drug">
+    <class name="ru.lightstar.clinic.model.Message" table="message">
         <meta attribute="class-description">
-            Clinic's drug.
+            Client's message.
         </meta>
 
         <id name="id" type="int" column="id">
             <generator class="identity"/>
         </id>
 
-        <discriminator column="name" type="string"/>
+        <many-to-one name="client" column="client_id" class="ru.lightstar.clinic.model.Client"/>
 
-        <property name="dangerLevel" column="danger" type="int"/>
-
-        <subclass name="ru.lightstar.clinic.drug.Aspirin" discriminator-value="aspirin"/>
-        <subclass name="ru.lightstar.clinic.drug.Glucose" discriminator-value="glucose"/>
+        <property name="text" column="text" type="string"/>
     </class>
 </hibernate-mapping>

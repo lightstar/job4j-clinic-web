@@ -1,6 +1,6 @@
 package ru.lightstar.clinic.servlet;
 
-import ru.lightstar.clinic.Client;
+import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.exception.ServiceException;
 

@@ -5,6 +5,10 @@
 
 <hibernate-mapping>
     <class name="ru.lightstar.clinic.pet.Pet" table="pet">
+        <meta attribute="class-description">
+            Client's pet.
+        </meta>
+
         <id name="id" type="int" column="id">
             <generator class="identity"/>
         </id>
@@ -15,7 +19,7 @@
         <property name="age" column="age" type="int"/>
         <property name="sex" column="sex" type="ru.lightstar.clinic.pet.SexType"/>
 
-        <many-to-one name="client" class="ru.lightstar.clinic.Client" column="client_id" unique="true" />
+        <many-to-one name="client" column="client_id" class="ru.lightstar.clinic.model.Client" unique="true"/>
 
         <subclass name="ru.lightstar.clinic.pet.Cat" discriminator-value="cat"/>
         <subclass name="ru.lightstar.clinic.pet.Dog" discriminator-value="dog"/>

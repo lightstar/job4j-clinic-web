@@ -9,6 +9,7 @@ import ru.lightstar.clinic.drug.Aspirin;
 import ru.lightstar.clinic.drug.Drug;
 import ru.lightstar.clinic.drug.Glucose;
 import ru.lightstar.clinic.io.DummyOutput;
+import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.pet.Cat;
 import ru.lightstar.clinic.pet.Dog;
 import ru.lightstar.clinic.pet.Pet;
