@@ -38,7 +38,7 @@ public class ShowRoles extends ClinicServlet {
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
 
-        request.setAttribute("roles", this.roleService.getAllRoles());
+        this.setRolesAttribute(request);
         request.getRequestDispatcher("/WEB-INF/view/ShowRoles.jsp").forward(request, response);
     }
 }

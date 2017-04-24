@@ -1,4 +1,4 @@
-<%--@elvariable id="roleService" type="ru.lightstar.clinic.persistence.RoleService"--%>
+<%--@elvariable id="roles" type="java.util.List<ru.lightstar.clinic.model.Role>"--%>
 
 <%@ page language="java" pageEncoding="utf-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -7,6 +7,7 @@
 <c:set var="current" value="main" scope="page"/>
 <%@include file="Header.jsp" %>
 
+<c:if test="${roles.size() > 0}">
 <c:url value='/client/update' var="action">
     <c:param name="name" value="${param.name}"/>
 </c:url>
@@ -20,7 +21,7 @@
     <div>
         <label for="newRole" class="element">Role:</label>
         <select class="element" id="newRole" name="newRole">
-            <c:forEach items="${roleService.allRoles}" var="role">
+            <c:forEach items="${roles}" var="role">
                 <option value="<c:out value='${role.name}'/>"
                     ${requestScope.newRole == role.name ? ' selected="selected"' : ''}>
                     <c:out value="${role.name}"/>
@@ -48,5 +49,6 @@
 
     <input type="hidden" name="name" value="<c:out value='${param.name}'/>">
 </form>
+</c:if>
 
 <%@include file="Footer.jsp" %>

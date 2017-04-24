@@ -8,7 +8,6 @@
         This is web version of pet's clinic.
     </description>
 
-    <!-- If you use 'false' here, then half of functionality will not work! -->
     <context-param>
         <param-name>useHibernate</param-name>
         <param-value>true</param-value>

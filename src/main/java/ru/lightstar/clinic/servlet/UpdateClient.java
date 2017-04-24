@@ -52,12 +52,12 @@ public class UpdateClient extends ClinicServlet {
             return;
         }
 
+        this.setRolesAttribute(request);
         this.setAttributeFromParameter(request, "newName", client.getName());
         this.setAttributeFromParameter(request, "newEmail", client.getEmail());
         this.setAttributeFromParameter(request, "newPhone", client.getPhone());
         this.setAttributeFromParameter(request, "newRole", client.getRole().getName());
 
-        request.setAttribute("roles", this.roleService.getAllRoles());
         request.getRequestDispatcher("/WEB-INF/view/UpdateClient.jsp").forward(request, response);
     }
 

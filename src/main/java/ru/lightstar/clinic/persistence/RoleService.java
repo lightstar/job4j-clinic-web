@@ -17,14 +17,16 @@ public interface RoleService {
      * Get all roles from database.
      *
      * @return list of all roles.
+     * @throws ServiceException thrown if can't get data.
      */
-    List<Role> getAllRoles();
+    List<Role> getAllRoles() throws ServiceException;
 
     /**
      * Get role by given name or null if it doesn't exists.
      *
      * @param name role's name.
      * @return role or null if it doesn't exists.
+     * @throws ServiceException thrown if can't get role.
      */
     Role getRoleByName(final String name) throws ServiceException;
 
@@ -32,6 +34,7 @@ public interface RoleService {
      * Add new role.
      *
      * @param name role's name.
+     * @throws ServiceException thrown if can't add role.
      */
     void addRole(final String name) throws ServiceException;
 
@@ -39,6 +42,7 @@ public interface RoleService {
      * Delete role.
      *
      * @param name role's name.
+     * @throws ServiceException thrown if can't delete role.
      */
     void deleteRole(final String name) throws ServiceException;
 }

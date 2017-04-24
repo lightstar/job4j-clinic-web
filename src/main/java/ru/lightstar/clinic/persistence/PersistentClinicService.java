@@ -68,6 +68,7 @@ public abstract class PersistentClinicService extends ClinicService {
      * @param oldName previous client's name.
      * @param oldEmail previous client's email.
      * @param oldPhone previous client's phone.
+     * @param oldRole previous client's role.
      * @throws ServiceException shouldn't be thrown.
      * @throws NameException shouldn't be thrown.
      */

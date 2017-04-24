@@ -3,7 +3,6 @@
 
 <%@ page language="java" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <c:set var="title" value="Drugs" scope="page"/>
 <c:set var="current" value="drug" scope="page"/>
@@ -23,13 +22,13 @@
     <input type="submit" class="button" value="Add">
 </form>
 
-<c:if test="${fn:length(drugs) == 0}">
+<c:if test="${drugs.size() == 0}">
     <p>
         No drugs found.
     </p>
 </c:if>
 
-<c:if test="${fn:length(drugs) > 0}">
+<c:if test="${drugs.size() > 0}">
     <table class="list drug-list">
         <tr>
             <th>Drug</th>

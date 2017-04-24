@@ -14,7 +14,7 @@ public abstract class JdbcService {
     /**
      * Jdbc connection used by this service.
      */
-    private final Connection connection;
+    protected final Connection connection;
 
     /**
      * Constructs <code>JdbcClinicService</code> object.

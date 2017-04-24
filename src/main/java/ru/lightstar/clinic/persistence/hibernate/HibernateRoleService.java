@@ -5,8 +5,8 @@ import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.model.Role;
 import ru.lightstar.clinic.persistence.RoleService;
 
+import javax.persistence.PersistenceException;
 import javax.servlet.ServletContext;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -31,13 +31,11 @@ public class HibernateRoleService extends HibernateService implements RoleServic
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<Role> getAllRoles() {
-        if (this.sessionFactory == null) {
-            return Collections.emptyList();
-        }
-
+    public List<Role> getAllRoles() throws ServiceException {
         try (final Session session = this.sessionFactory.openSession()) {
             return session.createQuery("from Role").list();
+        } catch (PersistenceException e) {
+            throw new ServiceException(String.format("Can't get data from database: %s", e.getMessage()));
         }
     }
 
@@ -46,10 +44,6 @@ public class HibernateRoleService extends HibernateService implements RoleServic
      */
     @Override
     public Role getRoleByName(final String name) throws ServiceException {
-        if (this.sessionFactory == null) {
-            throw new ServiceException("Role doesn't exists");
-        }
-
         try (final Session session = this.sessionFactory.openSession()) {
             final Role role = (Role) session.createQuery("from Role where name = :name")
                     .setParameter("name", name)
@@ -58,6 +52,8 @@ public class HibernateRoleService extends HibernateService implements RoleServic
                 throw new ServiceException("Role doesn't exists");
             }
             return role;
+        } catch(PersistenceException e) {
+            throw new ServiceException(String.format("Can't get data from database: %s", e.getMessage()));
         }
     }
 
@@ -66,10 +62,6 @@ public class HibernateRoleService extends HibernateService implements RoleServic
      */
     @Override
     public void addRole(final String name) throws ServiceException {
-        if (this.sessionFactory == null) {
-            return;
-        }
-
         if (name.isEmpty()) {
             throw new ServiceException("Name is empty");
         }
@@ -89,6 +81,8 @@ public class HibernateRoleService extends HibernateService implements RoleServic
             session.beginTransaction();
             session.save(new Role(name));
             session.getTransaction().commit();
+        } catch (PersistenceException e) {
+            throw new ServiceException(String.format("Can't insert role into database: %s", e.getMessage()));
         }
     }
 
@@ -97,10 +91,6 @@ public class HibernateRoleService extends HibernateService implements RoleServic
      */
     @Override
     public void deleteRole(final String name) throws ServiceException {
-        if (this.sessionFactory == null) {
-            return;
-        }
-
         if (this.isRoleBusy(name)) {
             throw new ServiceException("Some client has this role");
         }
@@ -111,6 +101,8 @@ public class HibernateRoleService extends HibernateService implements RoleServic
                     .setParameter("name", name)
                     .executeUpdate();
             session.getTransaction().commit();
+        } catch (PersistenceException e) {
+            throw new ServiceException(String.format("Can't delete role from database: %s", e.getMessage()));
         }
     }
 
@@ -119,15 +111,14 @@ public class HibernateRoleService extends HibernateService implements RoleServic
      *
      * @param name role's name.
      * @return <code>true</code> if some client has given role and <code>false</code> otherwise.
+     * @throws ServiceException thrown if can't get data from database.
      */
-    private boolean isRoleBusy(final String name) {
-        if (this.sessionFactory == null) {
-            return false;
-        }
-
+    private boolean isRoleBusy(final String name) throws ServiceException {
         try (final Session session = this.sessionFactory.openSession()) {
             return session.createQuery("from Client where role.name = :name")
                     .setParameter("name", name).setMaxResults(1).uniqueResult() != null;
+        } catch (PersistenceException e) {
+            throw new ServiceException(String.format("Can't get data from database: %s", e.getMessage()));
         }
     }
 }

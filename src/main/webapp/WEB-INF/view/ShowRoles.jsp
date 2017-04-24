@@ -2,7 +2,6 @@
 
 <%@ page language="java" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <c:set var="title" value="Roles" scope="page"/>
 <c:set var="current" value="role" scope="page"/>
@@ -14,13 +13,13 @@
     <input type="submit" class="button" value="Add">
 </form>
 
-<c:if test="${fn:length(roles) == 0}">
+<c:if test="${roles.size() == 0}">
     <p>
         No roles found.
     </p>
 </c:if>
 
-<c:if test="${fn:length(roles) > 0}">
+<c:if test="${roles.size() > 0}">
     <table class="list role-list">
         <tr>
             <th>Role</th>

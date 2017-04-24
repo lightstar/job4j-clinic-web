@@ -1,6 +1,7 @@
 package ru.lightstar.clinic.servlet;
 
 import ru.lightstar.clinic.ClinicService;
+import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.persistence.RoleService;
 
 import javax.servlet.ServletException;
@@ -119,5 +120,18 @@ public abstract class ClinicServlet extends HttpServlet {
         }
 
         response.sendRedirect(request.getContextPath() + redirectUrl);
+    }
+
+    /**
+     * Set request's <code>roles</code> attribute or current session's error attribute if roles can't be loaded.
+     *
+     * @param request user's request.
+     */
+    protected void setRolesAttribute(final HttpServletRequest request) {
+        try {
+            request.setAttribute("roles", this.roleService.getAllRoles());
+        } catch (ServiceException e) {
+            request.getSession().setAttribute("error", String.format("%s.", e.getMessage()));
+        }
     }
 }
