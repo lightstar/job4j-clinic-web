@@ -29,9 +29,10 @@ public abstract class DrugServlet extends ClinicServlet {
     }
 
     /**
-     * Constructs <code>DrugServlet</code> object using pre-defined clinic and drug services (used in tests).
+     * Constructs <code>DrugServlet</code> object using pre-defined clinic, role and drug services (used in tests).
      *
      * @param clinicService pre-defined clinic service.
+     * @param roleService pre-defined role service.
      * @param drugService pre-defined drug service.
      */
     DrugServlet(final ClinicService clinicService, final RoleService roleService,

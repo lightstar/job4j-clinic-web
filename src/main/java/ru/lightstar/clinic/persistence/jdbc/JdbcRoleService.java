@@ -66,7 +66,7 @@ public class JdbcRoleService extends JdbcService implements RoleService {
      */
     @Override
     public synchronized List<Role> getAllRoles() throws ServiceException {
-        List<Role> roles = new ArrayList<>();
+        final List<Role> roles = new ArrayList<>();
 
         try (final Statement statement = this.connection.createStatement()) {
             try (final ResultSet rs = statement.executeQuery(ALL_ROLES_SQL)) {

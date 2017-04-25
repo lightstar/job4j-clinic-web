@@ -85,6 +85,11 @@
                         </c:if>
 
                         <a href="#" onclick="deleteClient('<c:out value="${client.name}"/>');">Delete</a>
+
+                        <c:url value='/client/message' var="messagesUrl">
+                            <c:param name="name" value="${client.name}"/>
+                        </c:url>
+                        <a href="${messagesUrl}">Messages</a>
                     </c:if>
                 </td>
             </tr>

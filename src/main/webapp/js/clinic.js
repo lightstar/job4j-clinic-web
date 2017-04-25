@@ -1,7 +1,7 @@
 function validateForm(form) {
     var isValid = true;
     form = $(form);
-    var errorElement = initErrorElement(form);
+    var errorElement = initErrorElement();
 
     form.find(":input").each(function(index, element) {
         element = $(element);
@@ -24,6 +24,9 @@ function validateForm(form) {
                 isValid = false;
             } else if (element.attr("name") === "petAge" || element.attr("name") === "newAge") {
                 invalidField(errorElement, element, "Pet age is empty.");
+                isValid = false;
+            } else if (element.attr("name") === "text") {
+                invalidField(errorElement, element, "Text is empty.");
                 isValid = false;
             }
         }
@@ -57,11 +60,11 @@ function validatePetSex(form, errorElement, name) {
     return isValid;
 }
 
-function initErrorElement(form) {
+function initErrorElement() {
     var errorElement = $(".error");
     if (errorElement.length === 0) {
         errorElement = $("<p class='error'></p>");
-        errorElement.insertBefore(form);
+        errorElement.insertAfter($('h2'));
     }
     errorElement.empty();
     return errorElement;
@@ -89,6 +92,11 @@ function deleteClient(name) {
 function deleteRole(name) {
     if (!confirm("Really delete this role?")) return;
     submitForm({ name: name }, "role/delete?name=" + name);
+}
+
+function deleteMessage(name, id) {
+    if (!confirm("Really delete this message?")) return;
+    submitForm({ name: name, id: id }, "message/delete?name=" + name);
 }
 
 function submitForm(params, action, method) {

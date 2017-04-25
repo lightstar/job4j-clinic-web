@@ -40,15 +40,9 @@ public class UpdateClient extends ClinicServlet {
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
-        final Client client;
-        try {
-            final String name= request.getParameter("name");
-            if (name == null) {
-                throw new NullPointerException();
-            }
-            client = this.clinicService.findClientByName(name);
-        } catch (ServiceException | NullPointerException e) {
-            response.sendRedirect(request.getContextPath() + "/");
+
+        final Client client = this.getClientByNameParameterOrGoHome(request, response);
+        if (client == Client.NONE) {
             return;
         }
 

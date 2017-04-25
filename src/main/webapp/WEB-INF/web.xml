@@ -10,7 +10,7 @@
 
     <context-param>
         <param-name>useHibernate</param-name>
-        <param-value>true</param-value>
+        <param-value>false</param-value>
     </context-param>
 
     <!-- serving static content with default container servlet -->
@@ -179,6 +179,38 @@
     <servlet-mapping>
         <servlet-name>DeleteRole</servlet-name>
         <url-pattern>/role/delete</url-pattern>
+    </servlet-mapping>
+
+    <!-- message servlets -->
+
+    <servlet>
+        <servlet-name>ShowMessages</servlet-name>
+        <servlet-class>ru.lightstar.clinic.servlet.message.ShowMessages</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ShowMessages</servlet-name>
+        <url-pattern>/client/message</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AddMessage</servlet-name>
+        <servlet-class>ru.lightstar.clinic.servlet.message.AddMessage</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>AddMessage</servlet-name>
+        <url-pattern>/client/message/add</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DeleteMessage</servlet-name>
+        <servlet-class>ru.lightstar.clinic.servlet.message.DeleteMessage</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>DeleteMessage</servlet-name>
+        <url-pattern>/client/message/delete</url-pattern>
     </servlet-mapping>
 
     <!-- filters -->

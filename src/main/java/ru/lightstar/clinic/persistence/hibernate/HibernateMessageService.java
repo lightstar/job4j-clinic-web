@@ -1,8 +1,14 @@
 package ru.lightstar.clinic.persistence.hibernate;
 
+import org.hibernate.Session;
+import ru.lightstar.clinic.exception.ServiceException;
+import ru.lightstar.clinic.model.Client;
+import ru.lightstar.clinic.model.Message;
 import ru.lightstar.clinic.persistence.MessageService;
 
+import javax.persistence.PersistenceException;
 import javax.servlet.ServletContext;
+import java.util.List;
 
 /**
  * Service operating on messages which uses hibernate.
@@ -19,5 +25,56 @@ public class HibernateMessageService extends HibernateService implements Message
      */
     public HibernateMessageService(final ServletContext context) {
         super(context);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Message> getClientMessages(final Client client) throws ServiceException {
+        try (final Session session = this.sessionFactory.openSession()) {
+            return session.createQuery("from Message where client = :client")
+                    .setParameter("client", client)
+                    .list();
+        } catch (PersistenceException e) {
+            throw new ServiceException(String.format("Can't get data from database: %s", e.getMessage()));
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addMessage(final Client client, final String text) throws ServiceException {
+        if (text.isEmpty()) {
+            throw new ServiceException("Text is empty");
+        }
+
+        try (final Session session = this.sessionFactory.openSession()) {
+            session.beginTransaction();
+            final Message message = new Message(client, text);
+            session.save(message);
+            session.getTransaction().commit();
+        } catch (PersistenceException e) {
+            throw new ServiceException(String.format("Can't insert message into database: %s", e.getMessage()));
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteMessage(final Client client, final int id) throws ServiceException {
+        try (final Session session = this.sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.createQuery("delete from Message where client = :client and id = :id")
+                    .setParameter("client", client)
+                    .setParameter("id", id)
+                    .executeUpdate();
+            session.getTransaction().commit();
+        } catch (PersistenceException e) {
+            throw new ServiceException(String.format("Can't delete message from database: %s", e.getMessage()));
+        }
     }
 }

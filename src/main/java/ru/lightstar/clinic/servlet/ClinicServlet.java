@@ -2,6 +2,7 @@ package ru.lightstar.clinic.servlet;
 
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.exception.ServiceException;
+import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.persistence.RoleService;
 
 import javax.servlet.ServletException;
@@ -132,6 +133,29 @@ public abstract class ClinicServlet extends HttpServlet {
             request.setAttribute("roles", this.roleService.getAllRoles());
         } catch (ServiceException e) {
             request.getSession().setAttribute("error", String.format("%s.", e.getMessage()));
+        }
+    }
+
+    /**
+     * Get client by request's <code>name</code> parameter.
+     * If client can't be found then redirect to home page is performed.
+     *
+     * @param request user's request.
+     * @param response response for user
+     * @return found client.
+     */
+    protected Client getClientByNameParameterOrGoHome(final HttpServletRequest request,
+                                                      final HttpServletResponse response)
+            throws IOException {
+        try {
+            final String name = request.getParameter("name");
+            if (name == null) {
+                throw new NullPointerException();
+            }
+            return this.clinicService.findClientByName(name);
+        } catch (ServiceException | NullPointerException e) {
+            response.sendRedirect(request.getContextPath() + "/");
+            return Client.NONE;
         }
     }
 }
