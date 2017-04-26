@@ -24,7 +24,7 @@ import static org.junit.Assert.assertThat;
 public abstract class PersistentClinicServiceTest extends Mockito {
 
     /**
-     * <code>PersistentClinicService</code> object used in all tests.
+     * <code>PersistentClinicService</code> object used in all tests. Must be set in subclasses.
      */
     protected PersistentClinicService clinicService;
 

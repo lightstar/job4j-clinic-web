@@ -10,6 +10,7 @@ import ru.lightstar.clinic.drug.Drug;
 import ru.lightstar.clinic.drug.Glucose;
 import ru.lightstar.clinic.io.DummyOutput;
 import ru.lightstar.clinic.model.Client;
+import ru.lightstar.clinic.model.Role;
 import ru.lightstar.clinic.pet.Cat;
 import ru.lightstar.clinic.pet.Dog;
 import ru.lightstar.clinic.pet.Pet;
@@ -36,6 +37,31 @@ public class SessionFactoryMocker extends Mockito {
     private Transaction transaction;
 
     /**
+     * Mocked <code>Query</code> object for get all roles query.
+     */
+    private Query allRolesQuery;
+
+    /**
+     * Mocked <code>Query</code> object for get role by name query when name equals to 'client'.
+     */
+    private Query roleByNameClientQuery;
+
+    /**
+     * Mocked <code>Query</code> object for get role by name query when name equals to 'manager'.
+     */
+    private Query roleByNameManagerQuery;
+
+    /**
+     * Mocked <code>Query</code> object for delete role query.
+     */
+    private Query deleteRoleQuery;
+
+    /**
+     * Mocked <code>Query</code> object for checking if role is busy query.
+     */
+    private Query isRoleBusyQuery;
+
+    /**
      * Get mocked hibernate session factory with test data.
      *
      * @return mocked hibernate session factory.
@@ -47,11 +73,18 @@ public class SessionFactoryMocker extends Mockito {
 
         when(sessionFactory.openSession()).thenReturn(this.session);
         when(this.session.beginTransaction()).thenReturn(this.transaction);
+        when(this.session.getTransaction()).thenReturn(this.transaction);
 
         this.mockLoadClinicQuery(this.session);
         this.mockAddClientQuery(this.session);
         this.mockSetClientPetQuery(this.session);
+
         this.mockLoadDrugsQuery(this.session);
+
+        this.mockAllRolesQuery(this.session);
+        this.mockRoleByNameQuery(this.session);
+        this.mockDeleteRoleQuery(this.session);
+        this.mockIsRoleBusyQuery(this.session);
 
         return sessionFactory;
     }
@@ -72,6 +105,51 @@ public class SessionFactoryMocker extends Mockito {
      */
     public Transaction getTransaction() {
         return this.transaction;
+    }
+
+    /**
+     * Get mocked <code>Query</code> object for get all roles query.
+     *
+     * @return mocked query object.
+     */
+    public Query getAllRolesQuery() {
+        return this.allRolesQuery;
+    }
+
+    /**
+     * Get mocked <code>Query</code> object for get role by name query when name equals to 'client'.
+     *
+     * @return mocked query object.
+     */
+    public Query getRoleByNameClientQuery() {
+        return this.roleByNameClientQuery;
+    }
+
+    /**
+     * Get mocked <code>Query</code> object for get role by name query when name equals to 'manager'.
+     *
+     * @return mocked query object.
+     */
+    public Query getRoleByNameManagerQuery() {
+        return this.roleByNameManagerQuery;
+    }
+
+    /**
+     * Get mocked <code>Query</code> object for delete role query.
+     *
+     * @return mocked query object.
+     */
+    public Query getDeleteRoleQuery() {
+        return this.deleteRoleQuery;
+    }
+
+    /**
+     * Get mocked <code>Query</code> object for checking if role is busy query.
+     *
+     * @return mocked query object.
+     */
+    public Query getIsRoleBusyQuery() {
+        return this.isRoleBusyQuery;
     }
 
     /**
@@ -151,5 +229,83 @@ public class SessionFactoryMocker extends Mockito {
         when(session.createQuery("from Drug")).thenReturn(loadDrugsQuery);
         when(loadDrugsQuery.list()).thenReturn(Arrays.asList(new Aspirin(), new Aspirin(),
                 new Glucose(), new Aspirin()));
+    }
+
+    /**
+     * Mocking get all roles query
+     *
+     * @param session mocked session.
+     */
+    private void mockAllRolesQuery(final Session session) {
+        this.allRolesQuery = mock(Query.class);
+        when(session.createQuery("from Role")).thenReturn(this.allRolesQuery);
+
+        final Role adminRole = new Role("admin");
+        adminRole.setId(1);
+        final Role clientRole = new Role("client");
+        clientRole.setId(2);
+
+        when(this.allRolesQuery.list()).thenReturn(Arrays.asList(adminRole, clientRole));
+    }
+
+    /**
+     * Mocking get role by name query.
+     *
+     * @param session mocked session.
+     */
+    private void mockRoleByNameQuery(final Session session) {
+        final Query roleByNameQuery = mock(Query.class);
+        when(session.createQuery("from Role where name = :name"))
+                .thenReturn(roleByNameQuery);
+
+        this.roleByNameClientQuery = mock(Query.class);
+        when(roleByNameQuery.setParameter("name", "client"))
+                .thenReturn(this.roleByNameClientQuery);
+
+        final Role clientRole = new Role("client");
+        clientRole.setId(2);
+        when(this.roleByNameClientQuery.uniqueResult()).thenReturn(clientRole);
+
+        this.roleByNameManagerQuery = mock(Query.class);
+        when(roleByNameQuery.setParameter("name", "manager"))
+                .thenReturn(this.roleByNameManagerQuery);
+
+        final Role managerRole = new Role("manager");
+        managerRole.setId(3);
+
+        when(this.roleByNameManagerQuery.uniqueResult()).thenReturn(managerRole);
+    }
+
+    /**
+     * Mocking delete role query.
+     *
+     * @param session mocked session.
+     */
+    private void mockDeleteRoleQuery(final Session session) {
+        this.deleteRoleQuery = mock(Query.class);
+        when(session.createQuery("delete from Role where name = :name"))
+                .thenReturn(this.deleteRoleQuery);
+        when(this.deleteRoleQuery.setParameter("name", "client"))
+                .thenReturn(this.deleteRoleQuery);
+    }
+
+    /**
+     * Mocking checking if role is busy query.
+     *
+     * @param session mocked session.
+     */
+    private void mockIsRoleBusyQuery(final Session session) {
+        this.isRoleBusyQuery = mock(Query.class);
+        when(session.createQuery("from Client where role.name = :name"))
+                .thenReturn(this.isRoleBusyQuery);
+        when(this.isRoleBusyQuery.setParameter("name", "client"))
+                .thenReturn(this.isRoleBusyQuery);
+        when(this.isRoleBusyQuery.setMaxResults(1))
+                .thenReturn(this.isRoleBusyQuery);
+
+        final Client client = new Client("Vasya", Pet.NONE, 0);
+        client.setId(1);
+
+        when(this.isRoleBusyQuery.uniqueResult()).thenReturn(client);
     }
 }

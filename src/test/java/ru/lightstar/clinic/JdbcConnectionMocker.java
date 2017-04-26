@@ -3,6 +3,7 @@ package ru.lightstar.clinic;
 import org.mockito.Mockito;
 import ru.lightstar.clinic.persistence.jdbc.JdbcClinicService;
 import ru.lightstar.clinic.persistence.jdbc.JdbcDrugService;
+import ru.lightstar.clinic.persistence.jdbc.JdbcRoleService;
 
 import java.sql.*;
 
@@ -15,14 +16,19 @@ import java.sql.*;
 public class JdbcConnectionMocker extends Mockito {
 
     /**
-     * Mocked result set for load clinic operation.
+     * Mocked result set for load clinic query.
      */
     private ResultSet loadClinicResultSet;
 
     /**
-     * Mocked result set for load drugs operation.
+     * Mocked result set for load drugs query.
      */
     private ResultSet loadDrugsResultSet;
+
+    /**
+     * Mocked result set for get all roles query.
+     */
+    private ResultSet allRolesResultSet;
 
     /**
      * Mocked prepared statement for add client query.
@@ -80,6 +86,31 @@ public class JdbcConnectionMocker extends Mockito {
     private PreparedStatement deleteDrugStatement;
 
     /**
+     * Mocked prepared statement for get role by name query.
+     */
+    private PreparedStatement roleByNameStatement;
+
+    /**
+     * Mocked result set for get role by name query.
+     */
+    private ResultSet roleByNameResultSet;
+
+    /**
+     * Mocked result set for checking if role is busy query.
+     */
+    private ResultSet roleBusyResultSet;
+
+    /**
+     * Mocked prepared statement for add role query.
+     */
+    private PreparedStatement addRoleStatement;
+
+    /**
+     * Mocked prepared statement for delete role query.
+     */
+    private PreparedStatement deleteRoleStatement;
+
+    /**
      * Get mocked jdbc connection with test data.
      *
      * @return mocked jdbc connection.
@@ -99,6 +130,12 @@ public class JdbcConnectionMocker extends Mockito {
             this.mockLoadDrugsQuery(connection);
             this.mockAddDrugQuery(connection);
             this.mockDeleteDrugQuery(connection);
+
+            this.mockAllRolesQuery(connection);
+            this.mockRoleByNameQuery(connection);
+            this.mockRoleBusyQuery(connection);
+            this.mockAddRoleQuery(connection);
+            this.mockDeleteRoleQuery(connection);
 
             this.mockCreateStatement(connection);
         } catch (SQLException e) {
@@ -208,6 +245,60 @@ public class JdbcConnectionMocker extends Mockito {
     }
 
     /**
+     * Get mocked result set for get all roles query.
+     *
+     * @return mocked result set.
+     */
+    public ResultSet getAllRolesResultSet() {
+        return this.allRolesResultSet;
+    }
+
+    /**
+     * Get mocked prepared statement for get role by name query.
+     *
+     * @return mocked prepared statement.
+     */
+    public PreparedStatement getRoleByNameStatement() {
+        return this.roleByNameStatement;
+    }
+
+    /**
+     * Get mocked result set for get role by name query.
+     *
+     * @return mocked result set.
+     */
+    public ResultSet getRoleByNameResultSet() {
+        return this.roleByNameResultSet;
+    }
+
+    /**
+     * Get mocked prepared statement for add role query.
+     *
+     * @return mocked prepared statement.
+     */
+    public PreparedStatement getAddRoleStatement() {
+        return this.addRoleStatement;
+    }
+
+    /**
+     * Get mocked prepared statement for delete role query.
+     *
+     * @return mocked prepared statement.
+     */
+    public PreparedStatement getDeleteRoleStatement() {
+        return this.deleteRoleStatement;
+    }
+
+    /**
+     * Get mocked result set for checking if role is busy query.
+     *
+     * @return mocked result set.
+     */
+    public ResultSet getRoleBusyResultSet() {
+        return this.roleBusyResultSet;
+    }
+
+    /**
      * Mocking <code>createStatement</code> method.
      * @param connection mocked connection.
      * @throws SQLException shouldn't be thrown.
@@ -216,6 +307,7 @@ public class JdbcConnectionMocker extends Mockito {
         final Statement statement = mock(Statement.class);
         when(statement.executeQuery(JdbcClinicService.LOAD_SQL)).thenReturn(this.loadClinicResultSet);
         when(statement.executeQuery(JdbcDrugService.LOAD_SQL)).thenReturn(this.loadDrugsResultSet);
+        when(statement.executeQuery(JdbcRoleService.ALL_ROLES_SQL)).thenReturn(this.allRolesResultSet);
 
         when(connection.createStatement()).thenReturn(statement);
     }
@@ -383,5 +475,74 @@ public class JdbcConnectionMocker extends Mockito {
         this.deleteDrugStatement = mock(PreparedStatement.class);
         when(connection.prepareStatement(JdbcDrugService.DELETE_SQL))
                 .thenReturn(this.deleteDrugStatement);
+    }
+
+    /**
+     * Mocking get all roles query.
+     *
+     * @param connection mocked connection.
+     * @throws SQLException shouldn't be thrown.
+     */
+    private void mockAllRolesQuery(final Connection connection) throws SQLException {
+        this.allRolesResultSet = mock(ResultSet.class);
+        when(this.allRolesResultSet.next()).thenReturn(true).thenReturn(true).thenReturn(false);
+        when(this.allRolesResultSet.getInt("id")).thenReturn(1).thenReturn(2);
+        when(this.allRolesResultSet.getString("name")).thenReturn("admin").thenReturn("client");
+    }
+
+    /**
+     * Mocking get role by name query.
+     *
+     * @param connection mocked connection.
+     * @throws SQLException shouldn't be thrown.
+     */
+    private void mockRoleByNameQuery(final Connection connection) throws SQLException {
+        this.roleByNameStatement = mock(PreparedStatement.class);
+        when(connection.prepareStatement(JdbcRoleService.ROLE_BY_NAME_SQL)).thenReturn(this.roleByNameStatement);
+
+        this.roleByNameResultSet = mock(ResultSet.class);
+        when(this.roleByNameStatement.executeQuery()).thenReturn(this.roleByNameResultSet);
+
+        when(this.roleByNameResultSet.next()).thenReturn(true).thenReturn(false);
+        when(this.roleByNameResultSet.getInt("id")).thenReturn(2);
+        when(this.roleByNameResultSet.getString("name")).thenReturn("client");
+    }
+
+    /**
+     * Mocking check if role is busy query.
+     *
+     * @param connection mocked connection.
+     * @throws SQLException shouldn't be thrown.
+     */
+    private void mockRoleBusyQuery(final Connection connection) throws SQLException {
+        final PreparedStatement roleBusyStatement = mock(PreparedStatement.class);
+        when(connection.prepareStatement(JdbcRoleService.CLIENT_BY_ROLE_SQL)).thenReturn(roleBusyStatement);
+
+        this.roleBusyResultSet = mock(ResultSet.class);
+        when(roleBusyStatement.executeQuery()).thenReturn(this.roleBusyResultSet);
+    }
+
+    /**
+     * Mocking add role query.
+     *
+     * @param connection mocked connection.
+     * @throws SQLException shouldn't be thrown.
+     */
+    private void mockAddRoleQuery(final Connection connection) throws SQLException {
+        this.addRoleStatement = mock(PreparedStatement.class);
+        when(connection.prepareStatement(JdbcRoleService.ADD_ROLE_SQL))
+                .thenReturn(this.addRoleStatement);
+    }
+
+    /**
+     * Mocking delete role query.
+     *
+     * @param connection mocked connection.
+     * @throws SQLException shouldn't be thrown.
+     */
+    private void mockDeleteRoleQuery(final Connection connection) throws SQLException {
+        this.deleteRoleStatement = mock(PreparedStatement.class);
+        when(connection.prepareStatement(JdbcRoleService.DELETE_ROLE_SQL))
+                .thenReturn(this.deleteRoleStatement);
     }
 }

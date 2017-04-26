@@ -27,7 +27,7 @@ public class PersistentDrugServiceTest extends Mockito {
     protected static final int CLINIC_SIZE = 10;
 
     /**
-     * <code>PersistentDrugService</code> object used in all tests.
+     * <code>PersistentDrugService</code> object used in all tests. Must be set in subclasses.
      */
     protected PersistentDrugService drugService;
 

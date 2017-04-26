@@ -26,7 +26,7 @@ public class HibernateDrugServiceTest extends PersistentDrugServiceTest {
     private final SessionFactoryMocker hibernateMocker;
 
     /**
-     * Constructs <code>HibernateClinicServiceTest</code> object.
+     * Constructs <code>HibernateDrugServiceTest</code> object.
      */
     public HibernateDrugServiceTest() {
         super();
