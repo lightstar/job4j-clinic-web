@@ -3,6 +3,7 @@ package ru.lightstar.clinic;
 import org.mockito.Mockito;
 import ru.lightstar.clinic.persistence.jdbc.JdbcClinicService;
 import ru.lightstar.clinic.persistence.jdbc.JdbcDrugService;
+import ru.lightstar.clinic.persistence.jdbc.JdbcMessageService;
 import ru.lightstar.clinic.persistence.jdbc.JdbcRoleService;
 
 import java.sql.*;
@@ -111,6 +112,26 @@ public class JdbcConnectionMocker extends Mockito {
     private PreparedStatement deleteRoleStatement;
 
     /**
+     * Mocked prepared statement for get client messages query.
+     */
+    private PreparedStatement clientMessagesStatement;
+
+    /**
+     * Mocked result set for get client messages query.
+     */
+    private ResultSet clientMessagesResultSet;
+
+    /**
+     * Mocked prepared statement for add client message query.
+     */
+    private PreparedStatement addMessageStatement;
+
+    /**
+     * Mocked prepared statement for delete client message query.
+     */
+    private PreparedStatement deleteMessageStatement;
+
+    /**
      * Get mocked jdbc connection with test data.
      *
      * @return mocked jdbc connection.
@@ -136,6 +157,10 @@ public class JdbcConnectionMocker extends Mockito {
             this.mockRoleBusyQuery(connection);
             this.mockAddRoleQuery(connection);
             this.mockDeleteRoleQuery(connection);
+
+            this.mockGetClientMessagesQuery(connection);
+            this.mockAddMessageQuery(connection);
+            this.mockDeleteMessageQuery(connection);
 
             this.mockCreateStatement(connection);
         } catch (SQLException e) {
@@ -296,6 +321,42 @@ public class JdbcConnectionMocker extends Mockito {
      */
     public ResultSet getRoleBusyResultSet() {
         return this.roleBusyResultSet;
+    }
+
+    /**
+     * Get mocked prepared statement for get client messages query.
+     *
+     * @return mocked prepared statement.
+     */
+    public PreparedStatement getClientMessagesStatement() {
+        return this.clientMessagesStatement;
+    }
+
+    /**
+     * Get mocked result set for get client messages query.
+     *
+     * @return mocked result set.
+     */
+    public ResultSet getClientMessagesResultSet() {
+        return this.clientMessagesResultSet;
+    }
+
+    /**
+     * Get mocked prepared statement for add client message query.
+     *
+     * @return mocked prepared statement.
+     */
+    public PreparedStatement getAddMessageStatement() {
+        return this.addMessageStatement;
+    }
+
+    /**
+     * Get mocked prepared statement for delete client message query.
+     *
+     * @return mocked prepared statement.
+     */
+    public PreparedStatement getDeleteMessageStatement() {
+        return this.deleteMessageStatement;
     }
 
     /**
@@ -544,5 +605,48 @@ public class JdbcConnectionMocker extends Mockito {
         this.deleteRoleStatement = mock(PreparedStatement.class);
         when(connection.prepareStatement(JdbcRoleService.DELETE_ROLE_SQL))
                 .thenReturn(this.deleteRoleStatement);
+    }
+
+    /**
+     * Mocking get client messages query.
+     *
+     * @param connection mocked connection.
+     * @throws SQLException shouldn't be thrown.
+     */
+    private void mockGetClientMessagesQuery(final Connection connection) throws SQLException {
+        this.clientMessagesStatement = mock(PreparedStatement.class);
+        when(connection.prepareStatement(JdbcMessageService.CLIENT_MESSAGES_SQL)).thenReturn(this.clientMessagesStatement);
+
+        this.clientMessagesResultSet = mock(ResultSet.class);
+        when(this.clientMessagesStatement.executeQuery()).thenReturn(this.clientMessagesResultSet);
+
+        when(this.clientMessagesResultSet.next()).thenReturn(true).thenReturn(true).thenReturn(false);
+        when(this.clientMessagesResultSet.getInt("id")).thenReturn(1).thenReturn(2);
+        when(this.clientMessagesResultSet.getString("text")).thenReturn("Test message")
+                .thenReturn("Another test message");
+    }
+
+    /**
+     * Mocking add message query.
+     *
+     * @param connection mocked connection.
+     * @throws SQLException shouldn't be thrown.
+     */
+    private void mockAddMessageQuery(final Connection connection) throws SQLException {
+        this.addMessageStatement = mock(PreparedStatement.class);
+        when(connection.prepareStatement(JdbcMessageService.ADD_MESSAGE_SQL))
+                .thenReturn(this.addMessageStatement);
+    }
+
+    /**
+     * Mocking delete message query.
+     *
+     * @param connection mocked connection.
+     * @throws SQLException shouldn't be thrown.
+     */
+    private void mockDeleteMessageQuery(final Connection connection) throws SQLException {
+        this.deleteMessageStatement = mock(PreparedStatement.class);
+        when(connection.prepareStatement(JdbcMessageService.DELETE_MESSAGE_SQL))
+                .thenReturn(this.deleteMessageStatement);
     }
 }

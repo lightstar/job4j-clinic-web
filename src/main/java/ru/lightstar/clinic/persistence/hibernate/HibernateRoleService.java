@@ -18,6 +18,26 @@ import java.util.List;
 public class HibernateRoleService extends HibernateService implements RoleService {
 
     /**
+     * HQL used to get all roles from database.
+     */
+    public static final String ALL_ROLES_HQL = "from Role";
+
+    /**
+     * HQL used to get role by name from database.
+     */
+    public static final String ROLE_BY_NAME_HQL = "from Role where name = :name";
+
+    /**
+     * HQL used to delete role from database.
+     */
+    public static final String DELETE_ROLE_HQL = "delete from Role where name = :name";
+
+    /**
+     * HQL used to get client by role's name from database.
+     */
+    public static final String CLIENT_BY_ROLE_HQL = "from Client where role.name = :name";
+
+    /**
      * Constructs <code>HibernateRoleService</code> object.
      *
      * @param context servlet context.
@@ -33,7 +53,7 @@ public class HibernateRoleService extends HibernateService implements RoleServic
     @Override
     public List<Role> getAllRoles() throws ServiceException {
         try (final Session session = this.sessionFactory.openSession()) {
-            return session.createQuery("from Role").list();
+            return session.createQuery(ALL_ROLES_HQL).list();
         } catch (PersistenceException e) {
             throw new ServiceException(String.format("Can't get data from database: %s", e.getMessage()));
         }
@@ -45,7 +65,7 @@ public class HibernateRoleService extends HibernateService implements RoleServic
     @Override
     public Role getRoleByName(final String name) throws ServiceException {
         try (final Session session = this.sessionFactory.openSession()) {
-            final Role role = (Role) session.createQuery("from Role where name = :name")
+            final Role role = (Role) session.createQuery(ROLE_BY_NAME_HQL)
                     .setParameter("name", name)
                     .uniqueResult();
             if (role == null) {
@@ -97,7 +117,7 @@ public class HibernateRoleService extends HibernateService implements RoleServic
 
         try (final Session session = this.sessionFactory.openSession()) {
             session.beginTransaction();
-            session.createQuery("delete from Role where name = :name")
+            session.createQuery(DELETE_ROLE_HQL)
                     .setParameter("name", name)
                     .executeUpdate();
             session.getTransaction().commit();
@@ -115,7 +135,7 @@ public class HibernateRoleService extends HibernateService implements RoleServic
      */
     private boolean isRoleBusy(final String name) throws ServiceException {
         try (final Session session = this.sessionFactory.openSession()) {
-            return session.createQuery("from Client where role.name = :name")
+            return session.createQuery(CLIENT_BY_ROLE_HQL)
                     .setParameter("name", name).setMaxResults(1).uniqueResult() != null;
         } catch (PersistenceException e) {
             throw new ServiceException(String.format("Can't get data from database: %s", e.getMessage()));

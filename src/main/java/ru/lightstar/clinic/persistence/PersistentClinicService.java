@@ -40,9 +40,8 @@ public abstract class PersistentClinicService extends ClinicService {
      * Undo <code>AddClient</code> operation.
      *
      * @param client added client.
-     * @throws ServiceException shouldn't be thrown.
      */
-    protected void undoAddClient(final Client client) throws ServiceException {
+    protected void undoAddClient(final Client client) {
         super.deleteClient(client);
     }
 
@@ -99,9 +98,8 @@ public abstract class PersistentClinicService extends ClinicService {
      *
      * @param client affected client.
      * @param oldPet previous client's pet.
-     * @throws ServiceException shouldn't be thrown.
      */
-    protected void undoDeleteClientPet(final Client client, final Pet oldPet) throws ServiceException {
+    protected void undoDeleteClientPet(final Client client, final Pet oldPet) {
         super.setClientPet(client, oldPet);
     }
 

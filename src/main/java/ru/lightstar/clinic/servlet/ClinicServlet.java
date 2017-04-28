@@ -108,12 +108,11 @@ public abstract class ClinicServlet extends HttpServlet {
      * @param messageString message string on success.
      * @param errorString message string on error.
      * @param redirectUrl redirect url on success.
-     * @throws ServletException servlet processing exception.
      * @throws IOException i/o exception.
      */
     protected void finishUpdate(final HttpServletRequest request, final HttpServletResponse response,
                                 final String messageString, final String errorString, final String redirectUrl)
-            throws ServletException, IOException {
+            throws IOException {
         if (!errorString.isEmpty()) {
             request.getSession().setAttribute("error", String.format("%s.", errorString));
         } else {

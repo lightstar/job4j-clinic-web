@@ -45,18 +45,4 @@ public abstract class RoleServiceTest extends Mockito {
         assertThat(role.getId(), is(2));
         assertThat(role.getName(), is("client"));
     }
-
-    /**
-     * Test correctness of <code>addRole</code> method.
-     */
-    public void whenAddRoleThenItAdds() throws ServiceException, SQLException {
-        this.roleService.addRole("manager");
-    }
-
-    /**
-     * Test correctness of <code>deleteRole</code> method.
-     */
-    public void whenDeleteRoleThenItDeletes() throws ServiceException, SQLException {
-        this.roleService.deleteRole("client");
-    }
 }

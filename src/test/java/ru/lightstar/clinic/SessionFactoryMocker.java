@@ -10,7 +10,10 @@ import ru.lightstar.clinic.drug.Drug;
 import ru.lightstar.clinic.drug.Glucose;
 import ru.lightstar.clinic.io.DummyOutput;
 import ru.lightstar.clinic.model.Client;
+import ru.lightstar.clinic.model.Message;
 import ru.lightstar.clinic.model.Role;
+import ru.lightstar.clinic.persistence.hibernate.HibernateMessageService;
+import ru.lightstar.clinic.persistence.hibernate.HibernateRoleService;
 import ru.lightstar.clinic.pet.Cat;
 import ru.lightstar.clinic.pet.Dog;
 import ru.lightstar.clinic.pet.Pet;
@@ -62,6 +65,16 @@ public class SessionFactoryMocker extends Mockito {
     private Query isRoleBusyQuery;
 
     /**
+     * Mocked <code>Query</code> object for get client messages query.
+     */
+    private Query clientMessagesQuery;
+
+    /**
+     * Mocked <code>Query</code> object for delete client message query.
+     */
+    private Query deleteMessageQuery;
+
+    /**
      * Get mocked hibernate session factory with test data.
      *
      * @return mocked hibernate session factory.
@@ -85,6 +98,9 @@ public class SessionFactoryMocker extends Mockito {
         this.mockRoleByNameQuery(this.session);
         this.mockDeleteRoleQuery(this.session);
         this.mockIsRoleBusyQuery(this.session);
+
+        this.mockClientMessagesQuery(this.session);
+        this.mockDeleteMessageQuery(this.session);
 
         return sessionFactory;
     }
@@ -150,6 +166,24 @@ public class SessionFactoryMocker extends Mockito {
      */
     public Query getIsRoleBusyQuery() {
         return this.isRoleBusyQuery;
+    }
+
+    /**
+     * Get mocked <code>Query</code> object for get client messages query.
+     *
+     * @return mocked query object.
+     */
+    public Query getClientMessagesQuery() {
+        return this.clientMessagesQuery;
+    }
+
+    /**
+     * Get mocked <code>Query</code> object for delete client message query.
+     *
+     * @return mocked query object.
+     */
+    public Query getDeleteMessageQuery() {
+        return this.deleteMessageQuery;
     }
 
     /**
@@ -238,7 +272,7 @@ public class SessionFactoryMocker extends Mockito {
      */
     private void mockAllRolesQuery(final Session session) {
         this.allRolesQuery = mock(Query.class);
-        when(session.createQuery("from Role")).thenReturn(this.allRolesQuery);
+        when(session.createQuery(HibernateRoleService.ALL_ROLES_HQL)).thenReturn(this.allRolesQuery);
 
         final Role adminRole = new Role("admin");
         adminRole.setId(1);
@@ -255,7 +289,7 @@ public class SessionFactoryMocker extends Mockito {
      */
     private void mockRoleByNameQuery(final Session session) {
         final Query roleByNameQuery = mock(Query.class);
-        when(session.createQuery("from Role where name = :name"))
+        when(session.createQuery(HibernateRoleService.ROLE_BY_NAME_HQL))
                 .thenReturn(roleByNameQuery);
 
         this.roleByNameClientQuery = mock(Query.class);
@@ -283,7 +317,7 @@ public class SessionFactoryMocker extends Mockito {
      */
     private void mockDeleteRoleQuery(final Session session) {
         this.deleteRoleQuery = mock(Query.class);
-        when(session.createQuery("delete from Role where name = :name"))
+        when(session.createQuery(HibernateRoleService.DELETE_ROLE_HQL))
                 .thenReturn(this.deleteRoleQuery);
         when(this.deleteRoleQuery.setParameter("name", "client"))
                 .thenReturn(this.deleteRoleQuery);
@@ -296,7 +330,7 @@ public class SessionFactoryMocker extends Mockito {
      */
     private void mockIsRoleBusyQuery(final Session session) {
         this.isRoleBusyQuery = mock(Query.class);
-        when(session.createQuery("from Client where role.name = :name"))
+        when(session.createQuery(HibernateRoleService.CLIENT_BY_ROLE_HQL))
                 .thenReturn(this.isRoleBusyQuery);
         when(this.isRoleBusyQuery.setParameter("name", "client"))
                 .thenReturn(this.isRoleBusyQuery);
@@ -307,5 +341,45 @@ public class SessionFactoryMocker extends Mockito {
         client.setId(1);
 
         when(this.isRoleBusyQuery.uniqueResult()).thenReturn(client);
+    }
+
+    /**
+     * Mocking get client messages query
+     *
+     * @param session mocked session.
+     */
+    private void mockClientMessagesQuery(final Session session) {
+        this.clientMessagesQuery = mock(Query.class);
+        when(session.createQuery(HibernateMessageService.CLIENT_MESSAGES_HQL))
+                .thenReturn(this.clientMessagesQuery);
+
+        final Message message1 = new Message(Client.NONE, "Test message");
+        message1.setId(1);
+        final Message message2 = new Message(Client.NONE, "Another test message");
+        message2.setId(2);
+
+        doAnswer(invocation -> {
+            final Client client = (Client) (invocation.getArguments())[1];
+            message1.setClient(client);
+            message2.setClient(client);
+            return SessionFactoryMocker.this.clientMessagesQuery;
+        }).when(this.clientMessagesQuery).setParameter(eq("client"), any(Client.class));
+
+        when(this.clientMessagesQuery.list()).thenReturn(Arrays.asList(message1, message2));
+    }
+
+    /**
+     * Mocking delete client message query.
+     *
+     * @param session mocked session.
+     */
+    private void mockDeleteMessageQuery(final Session session) {
+        this.deleteMessageQuery = mock(Query.class);
+        when(session.createQuery(HibernateMessageService.DELETE_MESSAGE_HQL))
+                .thenReturn(this.deleteMessageQuery);
+        when(this.deleteMessageQuery.setParameter(eq("client"), any(Client.class)))
+                .thenReturn(this.deleteMessageQuery);
+        when(this.deleteMessageQuery.setParameter(eq("id"), anyInt()))
+                .thenReturn(this.deleteMessageQuery);
     }
 }

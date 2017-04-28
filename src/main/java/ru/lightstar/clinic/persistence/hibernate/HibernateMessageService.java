@@ -19,6 +19,16 @@ import java.util.List;
 public class HibernateMessageService extends HibernateService implements MessageService {
 
     /**
+     * HQL used to get client messages from database.
+     */
+    public static final String CLIENT_MESSAGES_HQL = "from Message where client = :client";
+
+    /**
+     * HQL used to delete client message from database.
+     */
+    public static final String DELETE_MESSAGE_HQL = "delete from Message where client = :client and id = :id";
+
+    /**
      * Constructs <code>HibernateMessageService</code> object.
      *
      * @param context servlet context.
@@ -34,7 +44,7 @@ public class HibernateMessageService extends HibernateService implements Message
     @Override
     public List<Message> getClientMessages(final Client client) throws ServiceException {
         try (final Session session = this.sessionFactory.openSession()) {
-            return session.createQuery("from Message where client = :client")
+            return session.createQuery(CLIENT_MESSAGES_HQL)
                     .setParameter("client", client)
                     .list();
         } catch (PersistenceException e) {
@@ -68,7 +78,7 @@ public class HibernateMessageService extends HibernateService implements Message
     public void deleteMessage(final Client client, final int id) throws ServiceException {
         try (final Session session = this.sessionFactory.openSession()) {
             session.beginTransaction();
-            session.createQuery("delete from Message where client = :client and id = :id")
+            session.createQuery(DELETE_MESSAGE_HQL)
                     .setParameter("client", client)
                     .setParameter("id", id)
                     .executeUpdate();

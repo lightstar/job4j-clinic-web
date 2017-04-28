@@ -84,13 +84,12 @@ public class HibernateRoleServiceTest extends RoleServiceTest {
     }
 
     /**
-     * {@inheritDoc}
+     * Test correctness of <code>addRole</code> method.
      */
     @Test
-    @Override
     public void whenAddRoleThenItAdds() throws ServiceException, SQLException {
         when(this.hibernateMocker.getRoleByNameManagerQuery().uniqueResult()).thenReturn(null);
-        super.whenAddRoleThenItAdds();
+        this.roleService.addRole("manager");
 
         verify(this.hibernateMocker.getSession(), atLeastOnce())
                 .beginTransaction();
@@ -105,7 +104,16 @@ public class HibernateRoleServiceTest extends RoleServiceTest {
      */
     @Test(expected = ServiceException.class)
     public void whenAddExistingRoleThenException() throws ServiceException, SQLException {
-        super.whenAddRoleThenItAdds();
+        this.roleService.addRole("manager");
+    }
+
+    /**
+     * Test correctness of <code>addRole</code> method when name is empty.
+     */
+    @Test(expected = ServiceException.class)
+    public void whenAddRoleWithEmptyNameThenException() throws ServiceException, SQLException {
+        when(this.hibernateMocker.getRoleByNameManagerQuery().uniqueResult()).thenReturn(null);
+        this.roleService.addRole("");
     }
 
     /**
@@ -115,17 +123,25 @@ public class HibernateRoleServiceTest extends RoleServiceTest {
     public void whenAddRoleWithExceptionThenException() throws ServiceException, SQLException {
         when(this.hibernateMocker.getRoleByNameManagerQuery().uniqueResult()).thenReturn(null);
         doThrow(PersistenceException.class).when(this.hibernateMocker.getSession()).save(any(Role.class));
-        super.whenAddRoleThenItAdds();
+        this.roleService.addRole("manager");
     }
 
     /**
-     * {@inheritDoc}
+     * Test correctness of <code>deleteRole</code> method.
      */
     @Test
-    @Override
     public void whenDeleteRoleThenItDeletes() throws ServiceException, SQLException {
         when(this.hibernateMocker.getIsRoleBusyQuery().uniqueResult()).thenReturn(null);
-        super.whenDeleteRoleThenItDeletes();
+        this.roleService.deleteRole("client");
+
+        verify(this.hibernateMocker.getSession(), atLeastOnce())
+                .beginTransaction();
+        verify(this.hibernateMocker.getDeleteRoleQuery(), times(1))
+                .setParameter("name", "client");
+        verify(this.hibernateMocker.getDeleteRoleQuery(), times(1))
+                .executeUpdate();
+        verify(this.hibernateMocker.getTransaction(), atLeastOnce())
+                .commit();
     }
 
     /**
@@ -133,7 +149,7 @@ public class HibernateRoleServiceTest extends RoleServiceTest {
      */
     @Test(expected = ServiceException.class)
     public void whenDeleteBusyRoleThenException() throws ServiceException, SQLException {
-        super.whenDeleteRoleThenItDeletes();
+        this.roleService.deleteRole("client");
     }
 
     /**
@@ -143,6 +159,15 @@ public class HibernateRoleServiceTest extends RoleServiceTest {
     public void whenDeleteRoleWithExceptionThenException() throws ServiceException, SQLException {
         when(this.hibernateMocker.getIsRoleBusyQuery().uniqueResult()).thenReturn(null);
         doThrow(PersistenceException.class).when(this.hibernateMocker.getDeleteRoleQuery()).executeUpdate();
-        super.whenDeleteRoleThenItDeletes();
+        this.roleService.deleteRole("client");
+    }
+
+    /**
+     * Test correctness of <code>deleteRole</code> method when exception in method <code>IsRoleBusy</code> is thrown.
+     */
+    @Test(expected = ServiceException.class)
+    public void whenDeleteRoleWithExceptionInIsRoleBusyThenException() throws ServiceException, SQLException {
+        doThrow(PersistenceException.class).when(this.hibernateMocker.getIsRoleBusyQuery()).uniqueResult();
+        this.roleService.deleteRole("client");
     }
 }
