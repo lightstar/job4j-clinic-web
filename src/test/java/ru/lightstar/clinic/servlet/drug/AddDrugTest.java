@@ -1,16 +1,10 @@
 package ru.lightstar.clinic.servlet.drug;
 
 import org.junit.Test;
-import org.mockito.Mockito;
-import ru.lightstar.clinic.ClinicService;
-import ru.lightstar.clinic.DrugService;
 import ru.lightstar.clinic.exception.ServiceException;
-import ru.lightstar.clinic.persistence.RoleService;
+import ru.lightstar.clinic.servlet.ServletTest;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
@@ -19,7 +13,7 @@ import java.io.IOException;
  * @author LightStar
  * @since 0.0.1
  */
-public class AddDrugTest extends Mockito {
+public class AddDrugTest extends ServletTest {
 
     /**
      * Test adding drug with correct parameters in servlet.
@@ -27,22 +21,13 @@ public class AddDrugTest extends Mockito {
     @Test
     public void whenDoPostThenResult()
             throws ServletException, IOException, ServiceException {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        final ClinicService clinicService = mock(ClinicService.class);
-        final RoleService roleService = mock(RoleService.class);
-        final DrugService drugService = mock(DrugService.class);
-        final HttpSession session = mock(HttpSession.class);
+        when(this.request.getParameter("name")).thenReturn("aspirin");
 
-        when(request.getParameter("name")).thenReturn("aspirin");
-        when(request.getContextPath()).thenReturn("/context");
-        when(request.getSession()).thenReturn(session);
+        new AddDrug(this.clinicService, this.roleService, this.drugService).doPost(this.request, this.response);
 
-        new AddDrug(clinicService, roleService, drugService).doPost(request, response);
-
-        verify(session, atLeastOnce()).setAttribute(eq("message"), anyString());
-        verify(drugService, times(1)).addDrug("aspirin");
-        verify(response, atLeastOnce()).sendRedirect("/context/drug");
+        verify(this.session, atLeastOnce()).setAttribute(eq("message"), anyString());
+        verify(this.drugService, times(1)).addDrug("aspirin");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/drug");
     }
 
     /**
@@ -51,20 +36,10 @@ public class AddDrugTest extends Mockito {
     @Test
     public void whenDoPostWithNullParametersThenError()
             throws ServletException, IOException, ServiceException {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        final ClinicService clinicService = mock(ClinicService.class);
-        final RoleService roleService = mock(RoleService.class);
-        final DrugService drugService = mock(DrugService.class);
-        final HttpSession session = mock(HttpSession.class);
+        new AddDrug(this.clinicService, this.roleService, this.drugService).doPost(this.request, this.response);
 
-        when(request.getContextPath()).thenReturn("/context");
-        when(request.getSession()).thenReturn(session);
-
-        new AddDrug(clinicService, roleService, drugService).doPost(request, response);
-
-        verify(session, atLeastOnce()).setAttribute(eq("error"), anyString());
-        verify(response, atLeastOnce()).sendRedirect("/context/drug");
+        verify(this.session, atLeastOnce()).setAttribute(eq("error"), anyString());
+        verify(this.response, atLeastOnce()).sendRedirect("/context/drug");
     }
 
     /**
@@ -73,22 +48,13 @@ public class AddDrugTest extends Mockito {
     @Test
     public void whenDoPostWithServiceExceptionThenError()
             throws ServletException, IOException, ServiceException {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        final ClinicService clinicService = mock(ClinicService.class);
-        final RoleService roleService = mock(RoleService.class);
-        final DrugService drugService = mock(DrugService.class);
-        final HttpSession session = mock(HttpSession.class);
-
-        when(request.getParameter("name")).thenReturn("aspirin");
-        when(request.getContextPath()).thenReturn("/context");
-        when(request.getSession()).thenReturn(session);
-        when(drugService.addDrug("aspirin"))
+        when(this.request.getParameter("name")).thenReturn("aspirin");
+        when(this.drugService.addDrug("aspirin"))
                 .thenThrow(new ServiceException("Test error"));
 
-        new AddDrug(clinicService, roleService, drugService).doPost(request, response);
+        new AddDrug(this.clinicService, this.roleService, this.drugService).doPost(this.request, this.response);
 
-        verify(session, atLeastOnce()).setAttribute("error", "Test error.");
-        verify(response, atLeastOnce()).sendRedirect("/context/drug");
+        verify(this.session, atLeastOnce()).setAttribute("error", "Test error.");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/drug");
     }
 }

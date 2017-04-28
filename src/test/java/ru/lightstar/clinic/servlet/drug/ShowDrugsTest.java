@@ -1,17 +1,11 @@
 package ru.lightstar.clinic.servlet.drug;
 
 import org.junit.Test;
-import org.mockito.Mockito;
-import ru.lightstar.clinic.ClinicService;
-import ru.lightstar.clinic.DrugService;
 import ru.lightstar.clinic.drug.Aspirin;
 import ru.lightstar.clinic.drug.Drug;
-import ru.lightstar.clinic.persistence.RoleService;
+import ru.lightstar.clinic.servlet.ServletTest;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
@@ -22,28 +16,22 @@ import java.util.Map;
  * @author LightStar
  * @since 0.0.1
  */
-public class ShowDrugsTest extends Mockito {
+public class ShowDrugsTest extends ServletTest {
 
     /**
      * Test correctness of <code>doGet</code> method.
      */
     @Test
-    public void whenDoGetWithoutFiltersThenResult() throws ServletException, IOException {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        final RequestDispatcher dispatcher = mock(RequestDispatcher.class);
-        final ClinicService clinicService = mock(ClinicService.class);
-        final RoleService roleService = mock(RoleService.class);
-        final DrugService drugService = mock(DrugService.class);
+    public void whenDoGetThenResult() throws ServletException, IOException {
         final Map<Drug,Integer> drugs = Collections.singletonMap(new Aspirin(), 1);
 
-        when(request.getRequestDispatcher("/WEB-INF/view/ShowDrugs.jsp")).thenReturn(dispatcher);
-        when(drugService.getAllDrugs()).thenReturn(drugs);
+        when(this.request.getRequestDispatcher("/WEB-INF/view/ShowDrugs.jsp")).thenReturn(this.dispatcher);
+        when(this.drugService.getAllDrugs()).thenReturn(drugs);
 
-        new ShowDrugs(clinicService, roleService, drugService).doGet(request, response);
+        new ShowDrugs(this.clinicService, this.roleService, this.drugService).doGet(this.request, this.response);
 
-        verify(drugService, atLeastOnce()).getAllDrugs();
-        verify(request, atLeastOnce()).setAttribute("drugs", drugs);
-        verify(dispatcher, atLeastOnce()).forward(request, response);
+        verify(this.drugService, atLeastOnce()).getAllDrugs();
+        verify(this.request, atLeastOnce()).setAttribute("drugs", drugs);
+        verify(this.dispatcher, atLeastOnce()).forward(this.request, this.response);
     }
 }

@@ -1,4 +1,4 @@
-package ru.lightstar.clinic.servlet.drug;
+package ru.lightstar.clinic.servlet.message;
 
 import org.junit.Test;
 import ru.lightstar.clinic.servlet.ServletTest;
@@ -9,26 +9,26 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * <code>DrugServlet</code> class tests.
+ * <code>MessageServlet</code> class tests.
  *
  * @author LightStar
  * @since 0.0.1
  */
-public class DrugServletTest extends ServletTest {
+public class MessageServletTest extends ServletTest {
 
     /**
      * Test initializing servlet.
      */
     @Test
     public void whenDoPostThenResult() throws ServletException {
-        final DrugServlet drugServlet = spy(new DrugServlet(){});
-        doReturn(this.context).when(drugServlet).getServletContext();
+        final MessageServlet messageServlet = spy(new MessageServlet(){});
+        doReturn(this.context).when(messageServlet).getServletContext();
 
-        drugServlet.init();
+        messageServlet.init();
 
         verify(this.context, atLeastOnce()).getAttribute("clinicService");
         verify(this.context, atLeastOnce()).getAttribute("roleService");
-        verify(this.context, atLeastOnce()).getAttribute("drugService");
-        assertThat(drugServlet.drugService, is(this.drugService));
+        verify(this.context, atLeastOnce()).getAttribute("messageService");
+        assertThat(messageServlet.messageService, is(this.messageService));
     }
 }

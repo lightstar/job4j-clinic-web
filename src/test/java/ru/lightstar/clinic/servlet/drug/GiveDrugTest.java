@@ -1,17 +1,10 @@
 package ru.lightstar.clinic.servlet.drug;
 
 import org.junit.Test;
-import org.mockito.Mockito;
-import ru.lightstar.clinic.ClinicService;
-import ru.lightstar.clinic.DrugService;
 import ru.lightstar.clinic.exception.ServiceException;
-import ru.lightstar.clinic.persistence.RoleService;
+import ru.lightstar.clinic.servlet.ServletTest;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
@@ -20,7 +13,19 @@ import java.io.IOException;
  * @author LightStar
  * @since 0.0.1
  */
-public class GiveDrugTest extends Mockito {
+public class GiveDrugTest extends ServletTest {
+
+    /**
+     * Test correctness of <code>doGet</code> method.
+     */
+    @Test
+    public void whenDoGetThenResult() throws ServletException, IOException, ServiceException {
+        when(this.request.getRequestDispatcher("/WEB-INF/view/GiveDrug.jsp")).thenReturn(this.dispatcher);
+
+        new GiveDrug(this.clinicService, this.roleService, this.drugService).doGet(this.request, this.response);
+
+        verify(this.dispatcher, atLeastOnce()).forward(this.request, this.response);
+    }
 
     /**
      * Test giving drug with correct parameters in servlet.
@@ -28,24 +33,15 @@ public class GiveDrugTest extends Mockito {
     @Test
     public void whenDoPostThenResult()
             throws ServletException, IOException, ServiceException {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        final ClinicService clinicService = mock(ClinicService.class);
-        final RoleService roleService = mock(RoleService.class);
-        final DrugService drugService = mock(DrugService.class);
-        final HttpSession session = mock(HttpSession.class);
+        when(this.request.getParameter("name")).thenReturn("aspirin");
+        when(this.request.getParameter("clientName")).thenReturn("Vasya");
 
-        when(request.getParameter("name")).thenReturn("aspirin");
-        when(request.getParameter("clientName")).thenReturn("Vasya");
-        when(request.getContextPath()).thenReturn("/context");
-        when(request.getSession()).thenReturn(session);
+        new GiveDrug(this.clinicService, this.roleService, this.drugService).doPost(this.request, this.response);
 
-        new GiveDrug(clinicService, roleService, drugService).doPost(request, response);
-
-        verify(session, atLeastOnce()).setAttribute(eq("message"), anyString());
-        verify(clinicService, times(1)).getClientPet("Vasya");
-        verify(drugService, times(1)).takeDrug("aspirin");
-        verify(response, atLeastOnce()).sendRedirect("/context/drug");
+        verify(this.session, atLeastOnce()).setAttribute(eq("message"), anyString());
+        verify(this.clinicService, times(1)).getClientPet("Vasya");
+        verify(this.drugService, times(1)).takeDrug("aspirin");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/drug");
     }
 
     /**
@@ -54,21 +50,12 @@ public class GiveDrugTest extends Mockito {
     @Test
     public void whenDoPostWithNullParametersThenError()
             throws ServletException, IOException, ServiceException {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        final RequestDispatcher dispatcher = mock(RequestDispatcher.class);
-        final ClinicService clinicService = mock(ClinicService.class);
-        final RoleService roleService = mock(RoleService.class);
-        final DrugService drugService = mock(DrugService.class);
-        final HttpSession session = mock(HttpSession.class);
+        when(this.request.getRequestDispatcher("/WEB-INF/view/GiveDrug.jsp")).thenReturn(this.dispatcher);
 
-        when(request.getRequestDispatcher("/WEB-INF/view/GiveDrug.jsp")).thenReturn(dispatcher);
-        when(request.getSession()).thenReturn(session);
+        new GiveDrug(this.clinicService, this.roleService, this.drugService).doPost(this.request, this.response);
 
-        new GiveDrug(clinicService, roleService, drugService).doPost(request, response);
-
-        verify(session, atLeastOnce()).setAttribute(eq("error"), anyString());
-        verify(dispatcher, atLeastOnce()).forward(request, response);
+        verify(this.session, atLeastOnce()).setAttribute(eq("error"), anyString());
+        verify(this.dispatcher, atLeastOnce()).forward(this.request, this.response);
     }
 
     /**
@@ -77,24 +64,15 @@ public class GiveDrugTest extends Mockito {
     @Test
     public void whenDoPostWithServiceExceptionThenError()
             throws ServletException, IOException, ServiceException {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        final RequestDispatcher dispatcher = mock(RequestDispatcher.class);
-        final ClinicService clinicService = mock(ClinicService.class);
-        final RoleService roleService = mock(RoleService.class);
-        final DrugService drugService = mock(DrugService.class);
-        final HttpSession session = mock(HttpSession.class);
+        when(this.request.getParameter("name")).thenReturn("aspirin");
+        when(this.request.getParameter("clientName")).thenReturn("Vasya");
+        when(this.request.getRequestDispatcher("/WEB-INF/view/GiveDrug.jsp")).thenReturn(this.dispatcher);
+        when(this.drugService.takeDrug("aspirin")).thenThrow(new ServiceException("Test error"));
 
-        when(request.getParameter("name")).thenReturn("aspirin");
-        when(request.getParameter("clientName")).thenReturn("Vasya");
-        when(request.getRequestDispatcher("/WEB-INF/view/GiveDrug.jsp")).thenReturn(dispatcher);
-        when(request.getSession()).thenReturn(session);
-        when(drugService.takeDrug("aspirin")).thenThrow(new ServiceException("Test error"));
+        new GiveDrug(this.clinicService, this.roleService, this.drugService).doPost(this.request, this.response);
 
-        new GiveDrug(clinicService, roleService, drugService).doPost(request, response);
-
-        verify(session, atLeastOnce()).setAttribute("error", "Test error.");
-        verify(dispatcher, atLeastOnce()).forward(request, response);
+        verify(this.session, atLeastOnce()).setAttribute("error", "Test error.");
+        verify(this.dispatcher, atLeastOnce()).forward(this.request, this.response);
     }
 
     /**
@@ -103,24 +81,15 @@ public class GiveDrugTest extends Mockito {
     @Test
     public void whenDoPostWithWrongClientThenError()
             throws ServletException, IOException, ServiceException {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        final RequestDispatcher dispatcher = mock(RequestDispatcher.class);
-        final ClinicService clinicService = mock(ClinicService.class);
-        final RoleService roleService = mock(RoleService.class);
-        final DrugService drugService = mock(DrugService.class);
-        final HttpSession session = mock(HttpSession.class);
+        when(this.request.getParameter("name")).thenReturn("aspirin");
+        when(this.request.getParameter("clientName")).thenReturn("Vasya");
+        when(this.request.getRequestDispatcher("/WEB-INF/view/GiveDrug.jsp")).thenReturn(this.dispatcher);
+        when(this.clinicService.getClientPet("Vasya")).thenThrow(new ServiceException("Test error"));
 
-        when(request.getParameter("name")).thenReturn("aspirin");
-        when(request.getParameter("clientName")).thenReturn("Vasya");
-        when(request.getRequestDispatcher("/WEB-INF/view/GiveDrug.jsp")).thenReturn(dispatcher);
-        when(request.getSession()).thenReturn(session);
-        when(clinicService.getClientPet("Vasya")).thenThrow(new ServiceException("Test error"));
+        new GiveDrug(this.clinicService, this.roleService, this.drugService).doPost(this.request, this.response);
 
-        new GiveDrug(clinicService, roleService, drugService).doPost(request, response);
-
-        verify(drugService, never()).takeDrug(anyString());
-        verify(session, atLeastOnce()).setAttribute("error", "Test error.");
-        verify(dispatcher, atLeastOnce()).forward(request, response);
+        verify(this.drugService, never()).takeDrug(anyString());
+        verify(this.session, atLeastOnce()).setAttribute("error", "Test error.");
+        verify(this.dispatcher, atLeastOnce()).forward(this.request, this.response);
     }
 }

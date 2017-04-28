@@ -1,18 +1,11 @@
 package ru.lightstar.clinic.servlet;
 
 import org.junit.Test;
-import org.mockito.Mockito;
-import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.exception.NameException;
 import ru.lightstar.clinic.exception.ServiceException;
-import ru.lightstar.clinic.persistence.RoleService;
 import ru.lightstar.clinic.pet.Sex;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
@@ -21,7 +14,19 @@ import java.io.IOException;
  * @author LightStar
  * @since 0.0.1
  */
-public class SetClientPetTest extends Mockito {
+public class SetClientPetTest extends ServletTest {
+
+    /**
+     * Test correctness of <code>doGet</code> method.
+     */
+    @Test
+    public void whenDoGetThenResult() throws ServletException, IOException, ServiceException {
+        when(this.request.getRequestDispatcher("/WEB-INF/view/SetClientPet.jsp")).thenReturn(this.dispatcher);
+
+        new SetClientPet(this.clinicService, this.roleService).doGet(this.request, this.response);
+
+        verify(this.dispatcher, atLeastOnce()).forward(this.request, this.response);
+    }
 
     /**
      * Test setting client's pet with correct parameters in servlet.
@@ -29,26 +34,18 @@ public class SetClientPetTest extends Mockito {
     @Test
     public void whenDoPostThenResult()
             throws ServletException, IOException, NameException, ServiceException {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        final ClinicService clinicService = mock(ClinicService.class);
-        final RoleService roleService = mock(RoleService.class);
-        final HttpSession session = mock(HttpSession.class);
+        when(this.request.getParameter("name")).thenReturn("Vasya");
+        when(this.request.getParameter("petType")).thenReturn("cat");
+        when(this.request.getParameter("petName")).thenReturn("Murka");
+        when(this.request.getParameter("petAge")).thenReturn("5");
+        when(this.request.getParameter("petSex")).thenReturn("f");
 
-        when(request.getParameter("name")).thenReturn("Vasya");
-        when(request.getParameter("petType")).thenReturn("cat");
-        when(request.getParameter("petName")).thenReturn("Murka");
-        when(request.getParameter("petAge")).thenReturn("5");
-        when(request.getParameter("petSex")).thenReturn("f");
-        when(request.getContextPath()).thenReturn("/context");
-        when(request.getSession()).thenReturn(session);
+        new SetClientPet(this.clinicService, this.roleService).doPost(this.request, this.response);
 
-        new SetClientPet(clinicService, roleService).doPost(request, response);
-
-        verify(session, atLeastOnce()).setAttribute(eq("message"), anyString());
-        verify(clinicService, times(1)).setClientPet("Vasya", "cat",
+        verify(this.session, atLeastOnce()).setAttribute(eq("message"), anyString());
+        verify(this.clinicService, times(1)).setClientPet("Vasya", "cat",
                 "Murka", 5, Sex.F);
-        verify(response, atLeastOnce()).sendRedirect("/context/");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/");
     }
 
     /**
@@ -57,21 +54,12 @@ public class SetClientPetTest extends Mockito {
     @Test
     public void whenDoPostWithNullParametersThenError()
             throws ServletException, IOException, NameException, ServiceException {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        final RequestDispatcher dispatcher = mock(RequestDispatcher.class);
-        final ClinicService clinicService = mock(ClinicService.class);
-        final RoleService roleService = mock(RoleService.class);
-        final HttpSession session = mock(HttpSession.class);
+        when(this.request.getRequestDispatcher("/WEB-INF/view/SetClientPet.jsp")).thenReturn(this.dispatcher);
 
-        when(request.getContextPath()).thenReturn("/context");
-        when(request.getRequestDispatcher("/WEB-INF/view/SetClientPet.jsp")).thenReturn(dispatcher);
-        when(request.getSession()).thenReturn(session);
+        new SetClientPet(this.clinicService, this.roleService).doPost(this.request, this.response);
 
-        new SetClientPet(clinicService, roleService).doPost(request, response);
-
-        verify(session, atLeastOnce()).setAttribute(eq("error"), anyString());
-        verify(dispatcher, atLeastOnce()).forward(request, response);
+        verify(this.session, atLeastOnce()).setAttribute(eq("error"), anyString());
+        verify(this.dispatcher, atLeastOnce()).forward(this.request, this.response);
     }
 
     /**
@@ -80,26 +68,18 @@ public class SetClientPetTest extends Mockito {
     @Test
     public void whenDoPostWithServiceExceptionThenError()
             throws ServletException, IOException, NameException, ServiceException {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        final RequestDispatcher dispatcher = mock(RequestDispatcher.class);
-        final ClinicService clinicService = mock(ClinicService.class);
-        final RoleService roleService = mock(RoleService.class);
-        final HttpSession session = mock(HttpSession.class);
-
-        when(request.getParameter("name")).thenReturn("Vasya");
-        when(request.getParameter("petType")).thenReturn("cat");
-        when(request.getParameter("petName")).thenReturn("Murka");
-        when(request.getParameter("petAge")).thenReturn("5");
-        when(request.getParameter("petSex")).thenReturn("f");
-        when(request.getRequestDispatcher("/WEB-INF/view/SetClientPet.jsp")).thenReturn(dispatcher);
-        when(request.getSession()).thenReturn(session);
-        doThrow(new ServiceException("Test error")).when(clinicService).setClientPet("Vasya",
+        when(this.request.getParameter("name")).thenReturn("Vasya");
+        when(this.request.getParameter("petType")).thenReturn("cat");
+        when(this.request.getParameter("petName")).thenReturn("Murka");
+        when(this.request.getParameter("petAge")).thenReturn("5");
+        when(this.request.getParameter("petSex")).thenReturn("f");
+        when(this.request.getRequestDispatcher("/WEB-INF/view/SetClientPet.jsp")).thenReturn(this.dispatcher);
+        doThrow(new ServiceException("Test error")).when(this.clinicService).setClientPet("Vasya",
                 "cat", "Murka", 5, Sex.F);
 
-        new SetClientPet(clinicService, roleService).doPost(request, response);
+        new SetClientPet(this.clinicService, roleService).doPost(this.request, this.response);
 
-        verify(session, atLeastOnce()).setAttribute("error", "Test error.");
-        verify(dispatcher, atLeastOnce()).forward(request, response);
+        verify(this.session, atLeastOnce()).setAttribute("error", "Test error.");
+        verify(this.dispatcher, atLeastOnce()).forward(this.request, this.response);
     }
 }

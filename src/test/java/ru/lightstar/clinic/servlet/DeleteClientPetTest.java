@@ -1,16 +1,10 @@
 package ru.lightstar.clinic.servlet;
 
 import org.junit.Test;
-import org.mockito.Mockito;
-import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.exception.NameException;
 import ru.lightstar.clinic.exception.ServiceException;
-import ru.lightstar.clinic.persistence.RoleService;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
@@ -19,7 +13,7 @@ import java.io.IOException;
  * @author LightStar
  * @since 0.0.1
  */
-public class DeleteClientPetTest extends Mockito {
+public class DeleteClientPetTest extends ServletTest {
 
     /**
      * Test deleting client's pet with correct parameters in servlet.
@@ -27,21 +21,13 @@ public class DeleteClientPetTest extends Mockito {
     @Test
     public void whenDoPostThenResult()
             throws ServletException, IOException, NameException, ServiceException {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        final ClinicService clinicService = mock(ClinicService.class);
-        final RoleService roleService = mock(RoleService.class);
-        final HttpSession session = mock(HttpSession.class);
+        when(this.request.getParameter("name")).thenReturn("Vasya");
 
-        when(request.getParameter("name")).thenReturn("Vasya");
-        when(request.getContextPath()).thenReturn("/context");
-        when(request.getSession()).thenReturn(session);
+        new DeleteClientPet(this.clinicService, this.roleService).doPost(this.request, this.response);
 
-        new DeleteClientPet(clinicService, roleService).doPost(request, response);
-
-        verify(session, atLeastOnce()).setAttribute(eq("message"), anyString());
-        verify(clinicService, times(1)).deleteClientPet("Vasya");
-        verify(response, atLeastOnce()).sendRedirect("/context/");
+        verify(this.session, atLeastOnce()).setAttribute(eq("message"), anyString());
+        verify(this.clinicService, times(1)).deleteClientPet("Vasya");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/");
     }
 
     /**
@@ -50,19 +36,10 @@ public class DeleteClientPetTest extends Mockito {
     @Test
     public void whenDoPostWithNullParametersThenError()
             throws ServletException, IOException, NameException, ServiceException {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        final ClinicService clinicService = mock(ClinicService.class);
-        final RoleService roleService = mock(RoleService.class);
-        final HttpSession session = mock(HttpSession.class);
+        new DeleteClientPet(this.clinicService, this.roleService).doPost(this.request, this.response);
 
-        when(request.getContextPath()).thenReturn("/context");
-        when(request.getSession()).thenReturn(session);
-
-        new DeleteClientPet(clinicService, roleService).doPost(request, response);
-
-        verify(session, atLeastOnce()).setAttribute(eq("error"), anyString());
-        verify(response, atLeastOnce()).sendRedirect("/context/");
+        verify(this.session, atLeastOnce()).setAttribute(eq("error"), anyString());
+        verify(this.response, atLeastOnce()).sendRedirect("/context/");
     }
 
     /**
@@ -71,20 +48,12 @@ public class DeleteClientPetTest extends Mockito {
     @Test
     public void whenDoPostWithServiceExceptionThenError()
             throws ServletException, IOException, NameException, ServiceException {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        final ClinicService clinicService = mock(ClinicService.class);
-        final RoleService roleService = mock(RoleService.class);
-        final HttpSession session = mock(HttpSession.class);
+        when(this.request.getParameter("name")).thenReturn("Vasya");
+        doThrow(new ServiceException("Test error")).when(this.clinicService).deleteClientPet("Vasya");
 
-        when(request.getParameter("name")).thenReturn("Vasya");
-        when(request.getContextPath()).thenReturn("/context");
-        when(request.getSession()).thenReturn(session);
-        doThrow(new ServiceException("Test error")).when(clinicService).deleteClientPet("Vasya");
+        new DeleteClientPet(this.clinicService, this.roleService).doPost(this.request, this.response);
 
-        new DeleteClientPet(clinicService, roleService).doPost(request, response);
-
-        verify(session, atLeastOnce()).setAttribute("error", "Test error.");
-        verify(response, atLeastOnce()).sendRedirect("/context/");
+        verify(this.session, atLeastOnce()).setAttribute("error", "Test error.");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/");
     }
 }

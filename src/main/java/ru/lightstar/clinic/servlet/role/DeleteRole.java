@@ -42,6 +42,8 @@ public class DeleteRole extends ClinicServlet {
         try {
             this.checkParameters(request);
             this.roleService.deleteRole(request.getParameter("name"));
+        } catch (NullPointerException e) {
+            errorString = "Invalid request parameters";
         } catch (ServiceException e) {
             errorString = e.getMessage();
         }

@@ -1,20 +1,13 @@
 package ru.lightstar.clinic.servlet;
 
 import org.junit.Test;
-import org.mockito.Mockito;
-import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.exception.NameException;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.io.DummyOutput;
-import ru.lightstar.clinic.persistence.RoleService;
 import ru.lightstar.clinic.pet.Cat;
 import ru.lightstar.clinic.pet.Sex;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
@@ -23,7 +16,47 @@ import java.io.IOException;
  * @author LightStar
  * @since 0.0.1
  */
-public class UpdateClientPetTest extends Mockito {
+public class UpdateClientPetTest extends ServletTest {
+
+    /**
+     * Test correctness of <code>doGet</code> method.
+     */
+    @Test
+    public void whenDoGetThenResult() throws ServletException, IOException, ServiceException {
+        when(this.request.getRequestDispatcher("/WEB-INF/view/UpdateClientPet.jsp")).thenReturn(this.dispatcher);
+        when(this.request.getParameter("name")).thenReturn("Vasya");
+        when(this.clinicService.getClientPet("Vasya")).thenReturn(new Cat("Murka", new DummyOutput()));
+
+        new UpdateClientPet(this.clinicService, this.roleService).doGet(this.request, this.response);
+
+        verify(this.dispatcher, atLeastOnce()).forward(this.request, this.response);
+    }
+
+    /**
+     * Test correctness of <code>doGet</code> method when client name is absent.
+     */
+    @Test
+    public void whenDoGetWithAbsentClientNameThenRedirect() throws ServletException, IOException, ServiceException {
+        when(this.request.getRequestDispatcher("/WEB-INF/view/UpdateClientPet.jsp")).thenReturn(this.dispatcher);
+
+        new UpdateClientPet(this.clinicService, this.roleService).doGet(this.request, this.response);
+
+        verify(this.response, atLeastOnce()).sendRedirect("/context/");
+    }
+
+    /**
+     * Test correctness of <code>doGet</code> method when pet not found.
+     */
+    @Test
+    public void whenDoGetWithPetNotFoundThenRedirect() throws ServletException, IOException, ServiceException {
+        when(this.request.getRequestDispatcher("/WEB-INF/view/UpdateClientPet.jsp")).thenReturn(this.dispatcher);
+        when(this.request.getParameter("name")).thenReturn("Vasya");
+        when(this.clinicService.getClientPet("Vasya")).thenThrow(new ServiceException("Pet not found"));
+
+        new UpdateClientPet(this.clinicService, this.roleService).doGet(this.request, this.response);
+
+        verify(this.response, atLeastOnce()).sendRedirect("/context/");
+    }
 
     /**
      * Test updating client's pet with correct parameters in servlet.
@@ -31,25 +64,17 @@ public class UpdateClientPetTest extends Mockito {
     @Test
     public void whenDoPostThenResult()
             throws ServletException, IOException, NameException, ServiceException {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        final ClinicService clinicService = mock(ClinicService.class);
-        final RoleService roleService = mock(RoleService.class);
-        final HttpSession session = mock(HttpSession.class);
+        when(this.request.getParameter("name")).thenReturn("Vasya");
+        when(this.request.getParameter("newName")).thenReturn("Murka");
+        when(this.request.getParameter("newAge")).thenReturn("5");
+        when(this.request.getParameter("newSex")).thenReturn("f");
 
-        when(request.getParameter("name")).thenReturn("Vasya");
-        when(request.getParameter("newName")).thenReturn("Murka");
-        when(request.getParameter("newAge")).thenReturn("5");
-        when(request.getParameter("newSex")).thenReturn("f");
-        when(request.getContextPath()).thenReturn("/context");
-        when(request.getSession()).thenReturn(session);
+        new UpdateClientPet(this.clinicService, this.roleService).doPost(this.request, this.response);
 
-        new UpdateClientPet(clinicService, roleService).doPost(request, response);
-
-        verify(session, atLeastOnce()).setAttribute(eq("message"), anyString());
-        verify(clinicService, times(1)).updateClientPet("Vasya",
+        verify(this.session, atLeastOnce()).setAttribute(eq("message"), anyString());
+        verify(this.clinicService, times(1)).updateClientPet("Vasya",
                 "Murka", 5, Sex.F);
-        verify(response, atLeastOnce()).sendRedirect("/context/");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/");
     }
 
     /**
@@ -58,23 +83,14 @@ public class UpdateClientPetTest extends Mockito {
     @Test
     public void whenDoPostWithNullParametersThenError()
             throws ServletException, IOException, NameException, ServiceException {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        final RequestDispatcher dispatcher = mock(RequestDispatcher.class);
-        final ClinicService clinicService = mock(ClinicService.class);
-        final RoleService roleService = mock(RoleService.class);
-        final HttpSession session = mock(HttpSession.class);
+        when(this.request.getParameter("name")).thenReturn("Vasya");
+        when(this.request.getRequestDispatcher("/WEB-INF/view/UpdateClientPet.jsp")).thenReturn(this.dispatcher);
+        when(this.clinicService.getClientPet("Vasya")).thenReturn(new Cat("Murka", new DummyOutput()));
 
-        when(request.getParameter("name")).thenReturn("Vasya");
-        when(request.getContextPath()).thenReturn("/context");
-        when(request.getRequestDispatcher("/WEB-INF/view/UpdateClientPet.jsp")).thenReturn(dispatcher);
-        when(clinicService.getClientPet("Vasya")).thenReturn(new Cat("Murka", new DummyOutput()));
-        when(request.getSession()).thenReturn(session);
+        new UpdateClientPet(this.clinicService, this.roleService).doPost(this.request, this.response);
 
-        new UpdateClientPet(clinicService, roleService).doPost(request, response);
-
-        verify(session, atLeastOnce()).setAttribute(eq("error"), anyString());
-        verify(dispatcher, atLeastOnce()).forward(request, response);
+        verify(this.session, atLeastOnce()).setAttribute(eq("error"), anyString());
+        verify(this.dispatcher, atLeastOnce()).forward(this.request, this.response);
     }
 
     /**
@@ -83,26 +99,18 @@ public class UpdateClientPetTest extends Mockito {
     @Test
     public void whenDoPostWithServiceExceptionThenError()
             throws ServletException, IOException, NameException, ServiceException {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        final RequestDispatcher dispatcher = mock(RequestDispatcher.class);
-        final ClinicService clinicService = mock(ClinicService.class);
-        final RoleService roleService = mock(RoleService.class);
-        final HttpSession session = mock(HttpSession.class);
-
-        when(request.getParameter("name")).thenReturn("Vasya");
-        when(request.getParameter("newName")).thenReturn("Murka");
-        when(request.getParameter("newAge")).thenReturn("5");
-        when(request.getParameter("newSex")).thenReturn("f");
-        when(request.getRequestDispatcher("/WEB-INF/view/UpdateClientPet.jsp")).thenReturn(dispatcher);
-        doThrow(new ServiceException("Test error")).when(clinicService).updateClientPet("Vasya",
+        when(this.request.getParameter("name")).thenReturn("Vasya");
+        when(this.request.getParameter("newName")).thenReturn("Murka");
+        when(this.request.getParameter("newAge")).thenReturn("5");
+        when(this.request.getParameter("newSex")).thenReturn("f");
+        when(this.request.getRequestDispatcher("/WEB-INF/view/UpdateClientPet.jsp")).thenReturn(this.dispatcher);
+        doThrow(new ServiceException("Test error")).when(this.clinicService).updateClientPet("Vasya",
                 "Murka", 5, Sex.F);
-        when(clinicService.getClientPet("Vasya")).thenReturn(new Cat("Murka", new DummyOutput()));
-        when(request.getSession()).thenReturn(session);
+        when(this.clinicService.getClientPet("Vasya")).thenReturn(new Cat("Murka", new DummyOutput()));
 
-        new UpdateClientPet(clinicService, roleService).doPost(request, response);
+        new UpdateClientPet(this.clinicService, this.roleService).doPost(this.request, this.response);
 
-        verify(session, atLeastOnce()).setAttribute("error", "Test error.");
-        verify(dispatcher, atLeastOnce()).forward(request, response);
+        verify(this.session, atLeastOnce()).setAttribute("error", "Test error.");
+        verify(this.dispatcher, atLeastOnce()).forward(this.request, this.response);
     }
 }

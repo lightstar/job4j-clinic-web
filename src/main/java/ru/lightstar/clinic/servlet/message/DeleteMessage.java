@@ -1,7 +1,10 @@
 package ru.lightstar.clinic.servlet.message;
 
+import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.model.Client;
+import ru.lightstar.clinic.persistence.MessageService;
+import ru.lightstar.clinic.persistence.RoleService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +19,21 @@ import java.net.URLEncoder;
  * @since 0.0.1
  */
 public class DeleteMessage extends MessageServlet {
+
+    /**
+     * {@inheritDoc}
+     */
+    public DeleteMessage() {
+        super();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    DeleteMessage(final ClinicService clinicService, final RoleService roleService,
+                 final MessageService messageService) {
+        super(clinicService, roleService, messageService);
+    }
 
     /**
      * {@inheritDoc}
