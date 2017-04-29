@@ -5,7 +5,6 @@ import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.model.Role;
 import ru.lightstar.clinic.persistence.RoleService;
 
-import javax.persistence.PersistenceException;
 import javax.servlet.ServletContext;
 import java.util.List;
 
@@ -35,7 +34,7 @@ public class HibernateRoleService extends HibernateService implements RoleServic
     /**
      * HQL used to get client by role's name from database.
      */
-    public static final String CLIENT_BY_ROLE_HQL = "from Client where role.name = :name";
+    public static final String CLIENT_BY_ROLE_HQL = "select c from Client c inner join Role r where r.name = :name";
 
     /**
      * Constructs <code>HibernateRoleService</code> object.
@@ -52,11 +51,7 @@ public class HibernateRoleService extends HibernateService implements RoleServic
     @SuppressWarnings("unchecked")
     @Override
     public List<Role> getAllRoles() throws ServiceException {
-        try (final Session session = this.sessionFactory.openSession()) {
-            return session.createQuery(ALL_ROLES_HQL).list();
-        } catch (PersistenceException e) {
-            throw new ServiceException(String.format("Can't get data from database: %s", e.getMessage()));
-        }
+        return this.doInTransaction(session -> session.createQuery(ALL_ROLES_HQL).list());
     }
 
     /**
@@ -64,17 +59,13 @@ public class HibernateRoleService extends HibernateService implements RoleServic
      */
     @Override
     public Role getRoleByName(final String name) throws ServiceException {
-        try (final Session session = this.sessionFactory.openSession()) {
-            final Role role = (Role) session.createQuery(ROLE_BY_NAME_HQL)
-                    .setParameter("name", name)
-                    .uniqueResult();
+        return this.doInTransaction(session -> {
+            final Role role = this.getRoleByName(session, name);
             if (role == null) {
                 throw new ServiceException("Role doesn't exists");
             }
             return role;
-        } catch(PersistenceException e) {
-            throw new ServiceException(String.format("Can't get data from database: %s", e.getMessage()));
-        }
+        });
     }
 
     /**
@@ -86,24 +77,13 @@ public class HibernateRoleService extends HibernateService implements RoleServic
             throw new ServiceException("Name is empty");
         }
 
-        ServiceException expectedException = null;
-        try {
-            this.getRoleByName(name);
-        } catch (ServiceException e) {
-            expectedException = e;
-        }
-
-        if (expectedException == null) {
-            throw new ServiceException("Role already exists");
-        }
-
-        try (final Session session = this.sessionFactory.openSession()) {
-            session.beginTransaction();
+        this.doInTransaction(session -> {
+            if (this.getRoleByName(session, name) != null) {
+                throw new ServiceException("Role already exists");
+            }
             session.save(new Role(name));
-            session.getTransaction().commit();
-        } catch (PersistenceException e) {
-            throw new ServiceException(String.format("Can't insert role into database: %s", e.getMessage()));
-        }
+            return null;
+        });
     }
 
     /**
@@ -111,34 +91,39 @@ public class HibernateRoleService extends HibernateService implements RoleServic
      */
     @Override
     public void deleteRole(final String name) throws ServiceException {
-        if (this.isRoleBusy(name)) {
-            throw new ServiceException("Some client has this role");
-        }
+        this.doInTransaction(session -> {
+            if (this.isRoleBusy(session, name)) {
+                throw new ServiceException("Some client has this role");
+            }
 
-        try (final Session session = this.sessionFactory.openSession()) {
-            session.beginTransaction();
             session.createQuery(DELETE_ROLE_HQL)
                     .setParameter("name", name)
                     .executeUpdate();
-            session.getTransaction().commit();
-        } catch (PersistenceException e) {
-            throw new ServiceException(String.format("Can't delete role from database: %s", e.getMessage()));
-        }
+            return null;
+        });
     }
 
     /**
-     * Check if some client has given role.
+     * Get role by name with already opened session and in already created transaction.
      *
+     * @param session already opened session.
      * @param name role's name.
-     * @return <code>true</code> if some client has given role and <code>false</code> otherwise.
-     * @throws ServiceException thrown if can't get data from database.
+     * @return role object.
      */
-    private boolean isRoleBusy(final String name) throws ServiceException {
-        try (final Session session = this.sessionFactory.openSession()) {
-            return session.createQuery(CLIENT_BY_ROLE_HQL)
-                    .setParameter("name", name).setMaxResults(1).uniqueResult() != null;
-        } catch (PersistenceException e) {
-            throw new ServiceException(String.format("Can't get data from database: %s", e.getMessage()));
-        }
+    private Role getRoleByName(final Session session, final String name) {
+        return (Role) session.createQuery(ROLE_BY_NAME_HQL)
+                .setParameter("name", name).uniqueResult();
+    }
+
+    /**
+     * Check if role is busy with some client. Session must be already opened.
+     *
+     * @param session already opened session.
+     * @param name role's name.
+     * @return <code>true</code> if some client has this role and <code>false</code> - otherwise.
+     */
+    private boolean isRoleBusy(final Session session, final String name) {
+        return session.createQuery(CLIENT_BY_ROLE_HQL)
+                .setParameter("name", name).setMaxResults(1).uniqueResult() != null;
     }
 }

@@ -49,7 +49,6 @@ public class HibernateDrugService extends PersistentDrugService {
                 }
                 transaction.commit();
             } catch (HibernateException | ServiceException e){
-                transaction.rollback();
                 throw new IllegalStateException("Can't load data from database", e);
             }
         }

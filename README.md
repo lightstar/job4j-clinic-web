@@ -44,3 +44,9 @@
 **Выдача лекарства питомцу клиента:**
 
 ![Screenshot](img/screenshot8.png)
+
+**Роли:**
+![Screenshot](img/screenshot9.png)
+
+**Сообщения:**
+![Screenshot](img/screenshot10.png)

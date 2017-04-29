@@ -1,12 +1,10 @@
 package ru.lightstar.clinic.persistence.hibernate;
 
-import org.hibernate.Session;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.model.Message;
 import ru.lightstar.clinic.persistence.MessageService;
 
-import javax.persistence.PersistenceException;
 import javax.servlet.ServletContext;
 import java.util.List;
 
@@ -43,13 +41,10 @@ public class HibernateMessageService extends HibernateService implements Message
     @SuppressWarnings("unchecked")
     @Override
     public List<Message> getClientMessages(final Client client) throws ServiceException {
-        try (final Session session = this.sessionFactory.openSession()) {
-            return session.createQuery(CLIENT_MESSAGES_HQL)
-                    .setParameter("client", client)
-                    .list();
-        } catch (PersistenceException e) {
-            throw new ServiceException(String.format("Can't get data from database: %s", e.getMessage()));
-        }
+        return this.doInTransaction(session -> session
+                .createQuery(CLIENT_MESSAGES_HQL)
+                .setParameter("client", client)
+                .list());
     }
 
     /**
@@ -61,14 +56,10 @@ public class HibernateMessageService extends HibernateService implements Message
             throw new ServiceException("Text is empty");
         }
 
-        try (final Session session = this.sessionFactory.openSession()) {
-            session.beginTransaction();
-            final Message message = new Message(client, text);
-            session.save(message);
-            session.getTransaction().commit();
-        } catch (PersistenceException e) {
-            throw new ServiceException(String.format("Can't insert message into database: %s", e.getMessage()));
-        }
+        this.doInTransaction(session -> {
+            session.save(new Message(client, text));
+            return null;
+        });
     }
 
     /**
@@ -76,15 +67,12 @@ public class HibernateMessageService extends HibernateService implements Message
      */
     @Override
     public void deleteMessage(final Client client, final int id) throws ServiceException {
-        try (final Session session = this.sessionFactory.openSession()) {
-            session.beginTransaction();
+        this.doInTransaction(session -> {
             session.createQuery(DELETE_MESSAGE_HQL)
                     .setParameter("client", client)
                     .setParameter("id", id)
                     .executeUpdate();
-            session.getTransaction().commit();
-        } catch (PersistenceException e) {
-            throw new ServiceException(String.format("Can't delete message from database: %s", e.getMessage()));
-        }
+            return null;
+        });
     }
 }
