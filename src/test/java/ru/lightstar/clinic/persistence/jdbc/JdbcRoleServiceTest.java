@@ -5,7 +5,6 @@ import ru.lightstar.clinic.JdbcConnectionMocker;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.persistence.RoleServiceTest;
 
-import javax.servlet.ServletContext;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -27,13 +26,9 @@ public class JdbcRoleServiceTest extends RoleServiceTest {
      */
     public JdbcRoleServiceTest() {
         super();
-
-        final ServletContext context = mock(ServletContext.class);
         this.jdbcMocker = new JdbcConnectionMocker();
         final Connection connection = jdbcMocker.getConnection();
-        when(context.getAttribute("jdbcConnection")).thenReturn(connection);
-
-        this.roleService = new JdbcRoleService(context);
+        this.roleService = new JdbcRoleService(connection);
     }
 
     /**

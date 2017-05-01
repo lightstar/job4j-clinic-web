@@ -1,12 +1,12 @@
 package ru.lightstar.clinic.persistence;
 
-import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.Clinic;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.exception.NameException;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.io.DummyOutput;
 import ru.lightstar.clinic.io.IteratorInput;
+import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.model.Role;
 import ru.lightstar.clinic.pet.Pet;
 import ru.lightstar.clinic.pet.Sex;

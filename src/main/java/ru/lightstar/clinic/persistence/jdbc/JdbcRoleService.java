@@ -4,11 +4,7 @@ import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.model.Role;
 import ru.lightstar.clinic.persistence.RoleService;
 
-import javax.servlet.ServletContext;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,10 +51,10 @@ public class JdbcRoleService extends JdbcService implements RoleService {
     /**
      * Constructs <code>JdbcRoleService</code> object.
      *
-     * @param context servlet context.
+     * @param connection jdbc connection.
      */
-    public JdbcRoleService(final ServletContext context) {
-        super(context);
+    public JdbcRoleService(final Connection connection) {
+        super(connection);
     }
 
     /**

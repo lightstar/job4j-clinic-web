@@ -5,7 +5,7 @@ import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.model.Message;
 import ru.lightstar.clinic.persistence.MessageService;
 
-import javax.servlet.ServletContext;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -41,10 +41,10 @@ public class JdbcMessageService extends JdbcService implements MessageService {
     /**
      * Constructs <code>JdbcMessageService</code> object.
      *
-     * @param context servlet context.
+     * @param connection jdbc connection.
      */
-    public JdbcMessageService(final ServletContext context) {
-        super(context);
+    public JdbcMessageService(final Connection connection) {
+        super(connection);
     }
 
     /**

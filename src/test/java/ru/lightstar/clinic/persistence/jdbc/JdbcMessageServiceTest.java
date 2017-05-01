@@ -5,7 +5,6 @@ import ru.lightstar.clinic.JdbcConnectionMocker;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.persistence.MessageServiceTest;
 
-import javax.servlet.ServletContext;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -27,13 +26,9 @@ public class JdbcMessageServiceTest extends MessageServiceTest {
      */
     public JdbcMessageServiceTest() {
         super();
-
-        final ServletContext context = mock(ServletContext.class);
         this.jdbcMocker = new JdbcConnectionMocker();
         final Connection connection = jdbcMocker.getConnection();
-        when(context.getAttribute("jdbcConnection")).thenReturn(connection);
-
-        this.messageService = new JdbcMessageService(context);
+        this.messageService = new JdbcMessageService(connection);
     }
 
     /**

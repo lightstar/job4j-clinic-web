@@ -8,7 +8,6 @@ import ru.lightstar.clinic.model.Message;
 import ru.lightstar.clinic.persistence.MessageServiceTest;
 
 import javax.persistence.PersistenceException;
-import javax.servlet.ServletContext;
 import java.sql.SQLException;
 
 /**
@@ -29,13 +28,9 @@ public class HibernateMessageServiceTest extends MessageServiceTest {
      */
     public HibernateMessageServiceTest() {
         super();
-        final ServletContext context = mock(ServletContext.class);
-
         this.hibernateMocker = new SessionFactoryMocker();
         final SessionFactory sessionFactory = this.hibernateMocker.getSessionFactory();
-        when(context.getAttribute("sessionFactory")).thenReturn(sessionFactory);
-
-        this.messageService = new HibernateMessageService(context);
+        this.messageService = new HibernateMessageService(sessionFactory);
     }
 
     /**

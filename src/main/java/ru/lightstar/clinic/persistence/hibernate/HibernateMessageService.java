@@ -1,11 +1,13 @@
 package ru.lightstar.clinic.persistence.hibernate;
 
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.model.Message;
 import ru.lightstar.clinic.persistence.MessageService;
 
-import javax.servlet.ServletContext;
 import java.util.List;
 
 /**
@@ -14,6 +16,7 @@ import java.util.List;
  * @author LightStar
  * @since 0.0.1
  */
+@Service
 public class HibernateMessageService extends HibernateService implements MessageService {
 
     /**
@@ -29,10 +32,11 @@ public class HibernateMessageService extends HibernateService implements Message
     /**
      * Constructs <code>HibernateMessageService</code> object.
      *
-     * @param context servlet context.
+     * @param sessionFactory hibernate's session factory.
      */
-    public HibernateMessageService(final ServletContext context) {
-        super(context);
+    @Autowired
+    public HibernateMessageService(final SessionFactory sessionFactory) {
+        super(sessionFactory);
     }
 
     /**

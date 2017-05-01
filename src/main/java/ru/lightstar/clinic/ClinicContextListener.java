@@ -64,17 +64,17 @@ public class ClinicContextListener implements ServletContextListener {
         final SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
         servletContext.setAttribute("sessionFactory", sessionFactory);
 
-        final HibernateClinicService clinicService = new HibernateClinicService(servletContext);
+        final HibernateClinicService clinicService = new HibernateClinicService(sessionFactory);
         clinicService.loadClinic();
         servletContext.setAttribute("clinicService", clinicService);
 
         final HibernateDrugService drugService = new HibernateDrugService(clinicService.getClinic(),
-                servletContext);
+                sessionFactory);
         drugService.loadDrugs();
         servletContext.setAttribute("drugService", drugService);
 
-        servletContext.setAttribute("roleService", new HibernateRoleService(servletContext));
-        servletContext.setAttribute("messageService", new HibernateMessageService(servletContext));
+        servletContext.setAttribute("roleService", new HibernateRoleService(sessionFactory));
+        servletContext.setAttribute("messageService", new HibernateMessageService(sessionFactory));
     }
 
     /**
@@ -89,16 +89,16 @@ public class ClinicContextListener implements ServletContextListener {
                     this.settings.value("jdbc.username"), this.settings.value("jdbc.password"));
             servletContext.setAttribute("jdbcConnection", connection);
 
-            final JdbcClinicService clinicService = new JdbcClinicService(servletContext);
+            final JdbcClinicService clinicService = new JdbcClinicService(connection);
             clinicService.loadClinic();
             servletContext.setAttribute("clinicService", clinicService);
 
-            final JdbcDrugService drugService = new JdbcDrugService(clinicService.getClinic(), servletContext);
+            final JdbcDrugService drugService = new JdbcDrugService(clinicService.getClinic(), connection);
             drugService.loadDrugs();
             servletContext.setAttribute("drugService", drugService);
 
-            servletContext.setAttribute("roleService", new JdbcRoleService(servletContext));
-            servletContext.setAttribute("messageService", new JdbcMessageService(servletContext));
+            servletContext.setAttribute("roleService", new JdbcRoleService(connection));
+            servletContext.setAttribute("messageService", new JdbcMessageService(connection));
         } catch (SQLException | ReflectiveOperationException e) {
             throw new IllegalStateException(e);
         }

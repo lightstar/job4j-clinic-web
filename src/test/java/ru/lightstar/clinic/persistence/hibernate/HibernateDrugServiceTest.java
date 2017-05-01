@@ -9,7 +9,6 @@ import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.persistence.PersistentDrugServiceTest;
 
 import javax.persistence.PersistenceException;
-import javax.servlet.ServletContext;
 import java.sql.SQLException;
 
 /**
@@ -30,13 +29,9 @@ public class HibernateDrugServiceTest extends PersistentDrugServiceTest {
      */
     public HibernateDrugServiceTest() {
         super();
-        final ServletContext context = mock(ServletContext.class);
-
         this.hibernateMocker = new SessionFactoryMocker();
         final SessionFactory sessionFactory = this.hibernateMocker.getSessionFactory();
-        when(context.getAttribute("sessionFactory")).thenReturn(sessionFactory);
-
-        this.drugService = new HibernateDrugService(new Clinic(CLINIC_SIZE), context);
+        this.drugService = new HibernateDrugService(new Clinic(CLINIC_SIZE), sessionFactory);
     }
 
 

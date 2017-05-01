@@ -5,7 +5,6 @@ import ru.lightstar.clinic.drug.Drug;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.persistence.PersistentDrugService;
 
-import javax.servlet.ServletContext;
 import java.sql.*;
 
 /**
@@ -41,10 +40,13 @@ public class JdbcDrugService extends PersistentDrugService {
 
     /**
      * Constructs <code>JdbcClinicService</code> object.
+     *
+     * @param clinic clinic object.
+     * @param connection jdbc connection.
      */
-    public JdbcDrugService(final Clinic clinic, final ServletContext context) {
+    public JdbcDrugService(final Clinic clinic, final Connection connection) {
         super(clinic);
-        this.connection = (Connection) context.getAttribute("jdbcConnection");
+        this.connection = connection;
     }
 
     /**

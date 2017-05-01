@@ -3,16 +3,17 @@ package ru.lightstar.clinic.persistence.hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import ru.lightstar.clinic.exception.NameException;
+import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.model.Role;
 import ru.lightstar.clinic.persistence.PersistentClinicService;
-import ru.lightstar.clinic.exception.NameException;
-import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.pet.Pet;
 import ru.lightstar.clinic.pet.Sex;
 
 import javax.persistence.PersistenceException;
-import javax.servlet.ServletContext;
 import java.util.List;
 
 /**
@@ -21,6 +22,7 @@ import java.util.List;
  * @author LightStar
  * @since 0.0.1
  */
+@Service
 public class HibernateClinicService extends PersistentClinicService {
 
     /**
@@ -30,10 +32,13 @@ public class HibernateClinicService extends PersistentClinicService {
 
     /**
      * Constructs <code>HibernateClinicService</code> object.
+     *
+     * @param sessionFactory hibernate's session factory.
      */
-    public HibernateClinicService(final ServletContext context) {
+    @Autowired
+    public HibernateClinicService(final SessionFactory sessionFactory) {
         super();
-        this.sessionFactory = (SessionFactory) context.getAttribute("sessionFactory");
+        this.sessionFactory = sessionFactory;
     }
 
     /**

@@ -4,13 +4,14 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.lightstar.clinic.Clinic;
 import ru.lightstar.clinic.drug.Drug;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.persistence.PersistentDrugService;
 
 import javax.persistence.PersistenceException;
-import javax.servlet.ServletContext;
 import java.util.List;
 
 /**
@@ -19,6 +20,7 @@ import java.util.List;
  * @author LightStar
  * @since 0.0.1
  */
+@Service
 public class HibernateDrugService extends PersistentDrugService {
 
     /**
@@ -28,10 +30,14 @@ public class HibernateDrugService extends PersistentDrugService {
 
     /**
      * Constructs <code>HibernateDrugService</code> object.
+     *
+     * @param clinic clinic object.
+     * @param sessionFactory hibernate's session factory.
      */
-    public HibernateDrugService(final Clinic clinic, final ServletContext context) {
+    @Autowired
+    public HibernateDrugService(final Clinic clinic, final SessionFactory sessionFactory) {
         super(clinic);
-        this.sessionFactory = (SessionFactory) context.getAttribute("sessionFactory");
+        this.sessionFactory = sessionFactory;
     }
 
     /**

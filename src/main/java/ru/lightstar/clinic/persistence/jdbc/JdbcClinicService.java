@@ -1,14 +1,13 @@
 package ru.lightstar.clinic.persistence.jdbc;
 
+import ru.lightstar.clinic.exception.NameException;
+import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.model.Role;
 import ru.lightstar.clinic.persistence.PersistentClinicService;
-import ru.lightstar.clinic.exception.NameException;
-import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.pet.Pet;
 import ru.lightstar.clinic.pet.Sex;
 
-import javax.servlet.ServletContext;
 import java.sql.*;
 
 /**
@@ -73,10 +72,12 @@ public class JdbcClinicService extends PersistentClinicService {
 
     /**
      * Constructs <code>JdbcClinicService</code> object.
+     *
+     * @param connection jdbc connection.
      */
-    public JdbcClinicService(final ServletContext context) {
+    public JdbcClinicService(final Connection connection) {
         super();
-        this.connection = (Connection) context.getAttribute("jdbcConnection");
+        this.connection = connection;
     }
 
     /**

@@ -1,11 +1,13 @@
 package ru.lightstar.clinic.persistence.hibernate;
 
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.model.Role;
 import ru.lightstar.clinic.persistence.RoleService;
 
-import javax.servlet.ServletContext;
 import java.util.List;
 
 /**
@@ -14,6 +16,7 @@ import java.util.List;
  * @author LightStar
  * @since 0.0.1
  */
+@Service
 public class HibernateRoleService extends HibernateService implements RoleService {
 
     /**
@@ -39,10 +42,11 @@ public class HibernateRoleService extends HibernateService implements RoleServic
     /**
      * Constructs <code>HibernateRoleService</code> object.
      *
-     * @param context servlet context.
+     * @param sessionFactory hibernate's session factory.
      */
-    public HibernateRoleService(final ServletContext context) {
-        super(context);
+    @Autowired
+    public HibernateRoleService(final SessionFactory sessionFactory) {
+        super(sessionFactory);
     }
 
     /**

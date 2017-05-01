@@ -8,7 +8,6 @@ import ru.lightstar.clinic.model.Role;
 import ru.lightstar.clinic.persistence.RoleServiceTest;
 
 import javax.persistence.PersistenceException;
-import javax.servlet.ServletContext;
 import java.sql.SQLException;
 
 /**
@@ -29,13 +28,9 @@ public class HibernateRoleServiceTest extends RoleServiceTest {
      */
     public HibernateRoleServiceTest() {
         super();
-        final ServletContext context = mock(ServletContext.class);
-
         this.hibernateMocker = new SessionFactoryMocker();
         final SessionFactory sessionFactory = this.hibernateMocker.getSessionFactory();
-        when(context.getAttribute("sessionFactory")).thenReturn(sessionFactory);
-
-        this.roleService = new HibernateRoleService(context);
+        this.roleService = new HibernateRoleService(sessionFactory);
     }
 
     /**

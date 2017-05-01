@@ -1,6 +1,5 @@
 package ru.lightstar.clinic.persistence.jdbc;
 
-import javax.servlet.ServletContext;
 import java.sql.Connection;
 
 /**
@@ -18,9 +17,11 @@ public abstract class JdbcService {
 
     /**
      * Constructs <code>JdbcClinicService</code> object.
+     *
+     * @param connection jdbc connection.
      */
-    public JdbcService(final ServletContext context) {
+    public JdbcService(final Connection connection) {
         super();
-        this.connection = (Connection) context.getAttribute("jdbcConnection");
+        this.connection = connection;
     }
 }

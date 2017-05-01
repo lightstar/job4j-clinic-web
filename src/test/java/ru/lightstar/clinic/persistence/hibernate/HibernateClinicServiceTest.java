@@ -2,15 +2,14 @@ package ru.lightstar.clinic.persistence.hibernate;
 
 import org.hibernate.SessionFactory;
 import org.junit.Test;
-import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.SessionFactoryMocker;
 import ru.lightstar.clinic.exception.NameException;
 import ru.lightstar.clinic.exception.ServiceException;
+import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.persistence.PersistentClinicServiceTest;
 import ru.lightstar.clinic.pet.Pet;
 
 import javax.persistence.PersistenceException;
-import javax.servlet.ServletContext;
 import java.sql.SQLException;
 
 /**
@@ -31,13 +30,9 @@ public class HibernateClinicServiceTest extends PersistentClinicServiceTest {
      */
     public HibernateClinicServiceTest() {
         super();
-        final ServletContext context = mock(ServletContext.class);
-
         this.hibernateMocker = new SessionFactoryMocker();
         final SessionFactory sessionFactory = this.hibernateMocker.getSessionFactory();
-        when(context.getAttribute("sessionFactory")).thenReturn(sessionFactory);
-
-        this.clinicService = new HibernateClinicService(context);
+        this.clinicService = new HibernateClinicService(sessionFactory);
     }
 
     /**

@@ -6,7 +6,6 @@ import ru.lightstar.clinic.JdbcConnectionMocker;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.persistence.PersistentDrugServiceTest;
 
-import javax.servlet.ServletContext;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -28,11 +27,9 @@ public class JdbcDrugServiceTest extends PersistentDrugServiceTest {
      */
     public JdbcDrugServiceTest() {
         super();
-        final ServletContext context = mock(ServletContext.class);
         this.jdbcMocker = new JdbcConnectionMocker();
         final Connection connection = jdbcMocker.getConnection();
-        when(context.getAttribute("jdbcConnection")).thenReturn(connection);
-        this.drugService = new JdbcDrugService(new Clinic(CLINIC_SIZE), context);
+        this.drugService = new JdbcDrugService(new Clinic(CLINIC_SIZE), connection);
     }
 
     /**

@@ -5,7 +5,6 @@ import org.hibernate.SessionFactory;
 import ru.lightstar.clinic.exception.ServiceException;
 
 import javax.persistence.PersistenceException;
-import javax.servlet.ServletContext;
 
 /**
  * Base class for service for operating on some model using hibernate.
@@ -22,10 +21,12 @@ public abstract class HibernateService {
 
     /**
      * Constructs <code>HibernateService</code> object.
+     *
+     * @param sessionFactory hibernate's session factory.
      */
-    public HibernateService(final ServletContext context) {
+    public HibernateService(final SessionFactory sessionFactory) {
         super();
-        this.sessionFactory = (SessionFactory) context.getAttribute("sessionFactory");
+        this.sessionFactory = sessionFactory;
     }
 
     /**
