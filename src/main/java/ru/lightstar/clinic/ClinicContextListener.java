@@ -1,11 +1,11 @@
 package ru.lightstar.clinic;
 
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import ru.lightstar.clinic.persistence.MessageService;
+import ru.lightstar.clinic.persistence.RoleService;
 import ru.lightstar.clinic.persistence.hibernate.HibernateClinicService;
 import ru.lightstar.clinic.persistence.hibernate.HibernateDrugService;
-import ru.lightstar.clinic.persistence.hibernate.HibernateMessageService;
-import ru.lightstar.clinic.persistence.hibernate.HibernateRoleService;
 import ru.lightstar.clinic.persistence.jdbc.*;
 
 import javax.servlet.ServletContext;
@@ -30,6 +30,11 @@ public class ClinicContextListener implements ServletContextListener {
     private final JdbcSettings settings = new JdbcSettings();
 
     /**
+     * Spring's application context.
+     */
+    private ApplicationContext context = new ClassPathXmlApplicationContext("spring-context.xml");
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -52,7 +57,6 @@ public class ClinicContextListener implements ServletContextListener {
     public void contextDestroyed(final ServletContextEvent servletContextEvent) {
         final ServletContext servletContext = servletContextEvent.getServletContext();
         this.destroyJdbc(servletContext);
-        this.destroyHibernate(servletContext);
     }
 
     /**
@@ -61,20 +65,16 @@ public class ClinicContextListener implements ServletContextListener {
      * @param servletContext servlet context.
      */
     private void initHibernate(final ServletContext servletContext) {
-        final SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
-        servletContext.setAttribute("sessionFactory", sessionFactory);
-
-        final HibernateClinicService clinicService = new HibernateClinicService(sessionFactory);
+        final HibernateClinicService clinicService = this.context.getBean(HibernateClinicService.class);
         clinicService.loadClinic();
         servletContext.setAttribute("clinicService", clinicService);
 
-        final HibernateDrugService drugService = new HibernateDrugService(clinicService.getClinic(),
-                sessionFactory);
+        final HibernateDrugService drugService = this.context.getBean(HibernateDrugService.class);
         drugService.loadDrugs();
         servletContext.setAttribute("drugService", drugService);
 
-        servletContext.setAttribute("roleService", new HibernateRoleService(sessionFactory));
-        servletContext.setAttribute("messageService", new HibernateMessageService(sessionFactory));
+        servletContext.setAttribute("roleService", this.context.getBean(RoleService.class));
+        servletContext.setAttribute("messageService",this.context.getBean(MessageService.class));
     }
 
     /**
@@ -101,18 +101,6 @@ public class ClinicContextListener implements ServletContextListener {
             servletContext.setAttribute("messageService", new JdbcMessageService(connection));
         } catch (SQLException | ReflectiveOperationException e) {
             throw new IllegalStateException(e);
-        }
-    }
-
-    /**
-     * Close hibernate session factory if it is exists.
-     *
-     * @param servletContext servlet context.
-     */
-    private void destroyHibernate(final ServletContext servletContext) {
-        final SessionFactory sessionFactory = (SessionFactory) servletContext.getAttribute("sessionFactory");
-        if (sessionFactory != null) {
-            sessionFactory.close();
         }
     }
 

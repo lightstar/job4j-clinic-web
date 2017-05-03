@@ -1,8 +1,9 @@
 package ru.lightstar.clinic;
 
-import org.hibernate.SessionFactory;
 import org.junit.Test;
 import org.mockito.Mockito;
+import ru.lightstar.clinic.persistence.MessageService;
+import ru.lightstar.clinic.persistence.RoleService;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -52,21 +53,18 @@ public class ClinicContextListenerTest extends Mockito {
     public void whenContextInitializedAndDestroyedWithHibernateThenResult() throws SQLException {
         final ServletContextEvent event = mock(ServletContextEvent.class);
         final ServletContext context = mock(ServletContext.class);
-        final SessionFactory sessionFactory = new SessionFactoryMocker().getSessionFactory();
 
         when(event.getServletContext()).thenReturn(context);
         when(context.getInitParameter("useHibernate")).thenReturn("true");
-        when(context.getAttribute("sessionFactory")).thenReturn(sessionFactory);
 
         final ClinicContextListener listener = new ClinicContextListener();
         listener.contextInitialized(event);
 
-        verify(context, atLeastOnce()).setAttribute(eq("sessionFactory"), any(SessionFactory.class));
         verify(context, atLeastOnce()).setAttribute(eq("clinicService"), any(ClinicService.class));
         verify(context, atLeastOnce()).setAttribute(eq("drugService"), any(DrugService.class));
+        verify(context, atLeastOnce()).setAttribute(eq("roleService"), any(RoleService.class));
+        verify(context, atLeastOnce()).setAttribute(eq("messageService"), any(MessageService.class));
 
         listener.contextDestroyed(event);
-
-        verify(sessionFactory, times(1)).close();
     }
 }

@@ -1,7 +1,10 @@
 package ru.lightstar.clinic.persistence.hibernate;
 
+import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
+import org.junit.Before;
 import org.junit.Test;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 import ru.lightstar.clinic.SessionFactoryMocker;
 import ru.lightstar.clinic.exception.NameException;
 import ru.lightstar.clinic.exception.ServiceException;
@@ -9,7 +12,6 @@ import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.persistence.PersistentClinicServiceTest;
 import ru.lightstar.clinic.pet.Pet;
 
-import javax.persistence.PersistenceException;
 import java.sql.SQLException;
 
 /**
@@ -23,16 +25,18 @@ public class HibernateClinicServiceTest extends PersistentClinicServiceTest {
     /**
      * Helper object used to mock hibernate session factory.
      */
-    private final SessionFactoryMocker hibernateMocker;
+    private SessionFactoryMocker hibernateMocker;
 
     /**
-     * Constructs <code>HibernateClinicServiceTest</code> object.
+     * Initialize test.
      */
-    public HibernateClinicServiceTest() {
-        super();
+    @Before
+    public void initTest() {
         this.hibernateMocker = new SessionFactoryMocker();
         final SessionFactory sessionFactory = this.hibernateMocker.getSessionFactory();
-        this.clinicService = new HibernateClinicService(sessionFactory);
+        final HibernateTemplate hibernateTemplate = new HibernateTemplate();
+        hibernateTemplate.setSessionFactory(sessionFactory);
+        this.clinicService = new HibernateClinicService(hibernateTemplate);
     }
 
     /**
@@ -51,13 +55,8 @@ public class HibernateClinicServiceTest extends PersistentClinicServiceTest {
     @Override
     public void whenAddClientThenItAdds() throws ServiceException, NameException, SQLException {
         super.whenAddClientThenItAdds();
-
-        verify(this.hibernateMocker.getSession(), atLeastOnce())
-                .beginTransaction();
         verify(this.hibernateMocker.getSession(), times(1))
                 .save(any(Client.class));
-        verify(this.hibernateMocker.getTransaction(), atLeastOnce())
-                .commit();
     }
 
 
@@ -67,7 +66,7 @@ public class HibernateClinicServiceTest extends PersistentClinicServiceTest {
     @Test(expected = ServiceException.class)
     @Override
     public void whenAddClientWithExceptionThenItDoNotAdds() throws ServiceException, NameException, SQLException {
-        doThrow(PersistenceException.class).when(this.hibernateMocker.getSession()).save(any(Client.class));
+        doThrow(HibernateException.class).when(this.hibernateMocker.getSession()).save(any(Client.class));
         super.whenAddClientWithExceptionThenItDoNotAdds();
     }
 
@@ -78,13 +77,8 @@ public class HibernateClinicServiceTest extends PersistentClinicServiceTest {
     @Override
     public void whenSetClientPetThenItSets() throws ServiceException, NameException, SQLException {
         super.whenSetClientPetThenItSets();
-
-        verify(this.hibernateMocker.getSession(), atLeastOnce())
-                .beginTransaction();
         verify(this.hibernateMocker.getSession(), times(1))
                 .saveOrUpdate(any(Pet.class));
-        verify(this.hibernateMocker.getTransaction(), atLeastOnce())
-                .commit();
     }
 
     /**
@@ -94,7 +88,7 @@ public class HibernateClinicServiceTest extends PersistentClinicServiceTest {
     @Override
     public void whenSetClientPetWithExceptionThenItDoNotSets()
             throws ServiceException, NameException, SQLException {
-        doThrow(PersistenceException.class).when(this.hibernateMocker.getSession()).saveOrUpdate(any(Pet.class));
+        doThrow(HibernateException.class).when(this.hibernateMocker.getSession()).saveOrUpdate(any(Pet.class));
         super.whenSetClientPetWithExceptionThenItDoNotSets();
     }
 
@@ -106,7 +100,7 @@ public class HibernateClinicServiceTest extends PersistentClinicServiceTest {
     public void whenSetClientPetWithExceptionAndClientHavingPetThenItDoNotSets()
             throws ServiceException, NameException, SQLException {
         this.addClientWithPet();
-        doThrow(PersistenceException.class).when(this.hibernateMocker.getSession()).saveOrUpdate(any(Pet.class));
+        doThrow(HibernateException.class).when(this.hibernateMocker.getSession()).saveOrUpdate(any(Pet.class));
         super.whenSetClientPetWithExceptionAndClientHavingPetThenItDoNotSets();
     }
 
@@ -117,13 +111,8 @@ public class HibernateClinicServiceTest extends PersistentClinicServiceTest {
     @Override
     public void whenUpdateClientThenItUpdates() throws NameException, ServiceException, SQLException {
         super.whenUpdateClientThenItUpdates();
-
-        verify(this.hibernateMocker.getSession(), atLeastOnce())
-                .beginTransaction();
         verify(this.hibernateMocker.getSession(), times(1))
                 .update(any(Client.class));
-        verify(this.hibernateMocker.getTransaction(), atLeastOnce())
-                .commit();
     }
 
     /**
@@ -133,7 +122,7 @@ public class HibernateClinicServiceTest extends PersistentClinicServiceTest {
     @Override
     public void whenUpdateClientWithExceptionThenItDoNotUpdates()
             throws NameException, ServiceException, SQLException {
-        doThrow(PersistenceException.class).when(this.hibernateMocker.getSession()).update(any(Client.class));
+        doThrow(HibernateException.class).when(this.hibernateMocker.getSession()).update(any(Client.class));
         super.whenUpdateClientWithExceptionThenItDoNotUpdates();
     }
 
@@ -144,13 +133,8 @@ public class HibernateClinicServiceTest extends PersistentClinicServiceTest {
     @Override
     public void whenUpdateClientPetThenItUpdates() throws NameException, ServiceException, SQLException {
         super.whenUpdateClientPetThenItUpdates();
-
-        verify(this.hibernateMocker.getSession(), atLeastOnce())
-                .beginTransaction();
         verify(this.hibernateMocker.getSession(), times(1))
                 .update(any(Pet.class));
-        verify(this.hibernateMocker.getTransaction(), atLeastOnce())
-                .commit();
     }
 
     /**
@@ -160,7 +144,7 @@ public class HibernateClinicServiceTest extends PersistentClinicServiceTest {
     @Override
     public void whenUpdateClientPetWithExceptionThenItDoNotUpdates()
             throws NameException, ServiceException, SQLException {
-        doThrow(PersistenceException.class).when(this.hibernateMocker.getSession()).update(any(Pet.class));
+        doThrow(HibernateException.class).when(this.hibernateMocker.getSession()).update(any(Pet.class));
         super.whenUpdateClientPetWithExceptionThenItDoNotUpdates();
     }
 
@@ -168,15 +152,11 @@ public class HibernateClinicServiceTest extends PersistentClinicServiceTest {
      * {@inheritDoc}
      */
     @Test
+    @Override
     public void whenDeleteClientPetThenItDeletes() throws NameException, ServiceException, SQLException {
         super.whenDeleteClientPetThenItDeletes();
-
-        verify(this.hibernateMocker.getSession(), atLeastOnce())
-                .beginTransaction();
         verify(this.hibernateMocker.getSession(), times(1))
                 .delete(any(Pet.class));
-        verify(this.hibernateMocker.getTransaction(), atLeastOnce())
-                .commit();
     }
 
     /**
@@ -186,7 +166,7 @@ public class HibernateClinicServiceTest extends PersistentClinicServiceTest {
     @Override
     public void whenDeleteClientPetWithExceptionThenItDoNotDeletes()
             throws NameException, ServiceException, SQLException {
-        doThrow(PersistenceException.class).when(this.hibernateMocker.getSession()).delete(any(Pet.class));
+        doThrow(HibernateException.class).when(this.hibernateMocker.getSession()).delete(any(Pet.class));
         super.whenDeleteClientPetWithExceptionThenItDoNotDeletes();
     }
 
@@ -194,15 +174,11 @@ public class HibernateClinicServiceTest extends PersistentClinicServiceTest {
      * {@inheritDoc}
      */
     @Test
+    @Override
     public void whenDeleteClientThenItDeletes() throws NameException, ServiceException, SQLException {
         super.whenDeleteClientThenItDeletes();
-
-        verify(this.hibernateMocker.getSession(), atLeastOnce())
-                .beginTransaction();
         verify(this.hibernateMocker.getSession(), times(1))
                 .delete(any(Client.class));
-        verify(this.hibernateMocker.getTransaction(), atLeastOnce())
-                .commit();
     }
 
     /**
@@ -212,7 +188,7 @@ public class HibernateClinicServiceTest extends PersistentClinicServiceTest {
     @Override
     public void whenDeleteClientWithExceptionThenItDoNotDeletes()
             throws NameException, ServiceException, SQLException {
-        doThrow(PersistenceException.class).when(this.hibernateMocker.getSession()).delete(any(Client.class));
+        doThrow(HibernateException.class).when(this.hibernateMocker.getSession()).delete(any(Client.class));
         super.whenDeleteClientWithExceptionThenItDoNotDeletes();
     }
 }

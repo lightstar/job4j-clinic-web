@@ -1,17 +1,15 @@
 package ru.lightstar.clinic.persistence.hibernate;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.lightstar.clinic.Clinic;
 import ru.lightstar.clinic.drug.Drug;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.persistence.PersistentDrugService;
 
-import javax.persistence.PersistenceException;
 import java.util.List;
 
 /**
@@ -24,20 +22,20 @@ import java.util.List;
 public class HibernateDrugService extends PersistentDrugService {
 
     /**
-     * Hibernate's session factory.
+     * Spring's hibernate template.
      */
-    private final SessionFactory sessionFactory;
+    private final HibernateTemplate hibernateTemplate;
 
     /**
      * Constructs <code>HibernateDrugService</code> object.
      *
      * @param clinic clinic object.
-     * @param sessionFactory hibernate's session factory.
+     * @param hibernateTemplate spring's hibernate template.
      */
     @Autowired
-    public HibernateDrugService(final Clinic clinic, final SessionFactory sessionFactory) {
+    public HibernateDrugService(final Clinic clinic, final HibernateTemplate hibernateTemplate) {
         super(clinic);
-        this.sessionFactory = sessionFactory;
+        this.hibernateTemplate = hibernateTemplate;
     }
 
     /**
@@ -46,36 +44,29 @@ public class HibernateDrugService extends PersistentDrugService {
     @SuppressWarnings("unchecked")
     @Override
     public synchronized void loadDrugs() {
-        try (final Session session = this.sessionFactory.openSession()) {
-            final Transaction transaction = session.beginTransaction();
-            try {
-                final List<Drug> list = session.createQuery("from Drug").list();
-                for (final Drug drug : list) {
-                    super.addDrug(drug);
-                }
-                transaction.commit();
-            } catch (HibernateException | ServiceException e){
-                throw new IllegalStateException("Can't load data from database", e);
+        try {
+            final List<Drug> drugs = (List<Drug>) this.hibernateTemplate.find("from Drug");
+            for (final Drug drug : drugs) {
+                super.addDrug(drug);
             }
+        } catch (DataAccessException | ServiceException e){
+            throw new IllegalStateException("Can't load data from database", e);
         }
     }
 
     /**
      * {@inheritDoc}
      */
+    @Transactional(rollbackFor = {ServiceException.class})
     @Override
     public synchronized Drug addDrug(final String name) throws ServiceException {
         final Drug drug = super.addDrug(name);
 
-        try (final Session session = this.sessionFactory.openSession()) {
-            final Transaction transaction = session.beginTransaction();
-            try {
-                session.save(drug);
-                transaction.commit();
-            } catch (PersistenceException e) {
-                super.takeDrug(drug);
-                throw new ServiceException(String.format("Can't insert drug into database: %s", e.getMessage()));
-            }
+        try {
+            this.hibernateTemplate.save(drug);
+        } catch (DataAccessException e) {
+            super.takeDrug(drug);
+            throw new ServiceException(String.format("Can't insert drug into database: %s", e.getMessage()));
         }
 
         return drug;
@@ -84,19 +75,16 @@ public class HibernateDrugService extends PersistentDrugService {
     /**
      * {@inheritDoc}
      */
+    @Transactional(rollbackFor = {ServiceException.class})
     @Override
     public synchronized Drug takeDrug(final String name) throws ServiceException {
         final Drug drug = super.takeDrug(name);
 
-        try (final Session session = this.sessionFactory.openSession()) {
-            final Transaction transaction = session.beginTransaction();
-            try {
-                session.delete(drug);
-                transaction.commit();
-            } catch (PersistenceException e) {
-                super.addDrug(drug);
-                throw new ServiceException(String.format("Can't remove drug from database: %s", e.getMessage()));
-            }
+        try {
+            this.hibernateTemplate.delete(drug);
+        } catch (DataAccessException e) {
+            super.addDrug(drug);
+            throw new ServiceException(String.format("Can't remove drug from database: %s", e.getMessage()));
         }
 
         return drug;

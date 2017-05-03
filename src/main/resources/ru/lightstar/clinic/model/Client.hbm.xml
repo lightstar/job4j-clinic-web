@@ -22,7 +22,7 @@
 
         <many-to-one name="role" column="role_id" class="ru.lightstar.clinic.model.Role" lazy="false" fetch="join"/>
 
-        <set name="messages" table="message" lazy="true" inverse="true">
+        <set name="messages" table="message" lazy="true" inverse="true" cascade="all">
             <key column="client_id" not-null="true"/>
             <one-to-many class="ru.lightstar.clinic.model.Message"/>
         </set>

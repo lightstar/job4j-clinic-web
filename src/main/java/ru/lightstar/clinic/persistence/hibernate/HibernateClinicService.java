@@ -1,10 +1,10 @@
 package ru.lightstar.clinic.persistence.hibernate;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.lightstar.clinic.exception.NameException;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.model.Client;
@@ -13,7 +13,6 @@ import ru.lightstar.clinic.persistence.PersistentClinicService;
 import ru.lightstar.clinic.pet.Pet;
 import ru.lightstar.clinic.pet.Sex;
 
-import javax.persistence.PersistenceException;
 import java.util.List;
 
 /**
@@ -26,19 +25,19 @@ import java.util.List;
 public class HibernateClinicService extends PersistentClinicService {
 
     /**
-     * Hibernate's session factory.
+     * Spring's hibernate template.
      */
-    private final SessionFactory sessionFactory;
+    private final HibernateTemplate hibernateTemplate;
 
     /**
      * Constructs <code>HibernateClinicService</code> object.
      *
-     * @param sessionFactory hibernate's session factory.
+     * @param hibernateTemplate spring's hibernate template.
      */
     @Autowired
-    public HibernateClinicService(final SessionFactory sessionFactory) {
+    public HibernateClinicService(final HibernateTemplate hibernateTemplate) {
         super();
-        this.sessionFactory = sessionFactory;
+        this.hibernateTemplate = hibernateTemplate;
     }
 
     /**
@@ -47,44 +46,37 @@ public class HibernateClinicService extends PersistentClinicService {
     @SuppressWarnings("unchecked")
     @Override
     public synchronized void loadClinic() {
-        try (final Session session = this.sessionFactory.openSession()) {
-            final Transaction transaction = session.beginTransaction();
-            try {
-                final List<Client> list = session.createQuery("from Client").list();
-                for (final Client client : list) {
-                    final Pet pet = client.getPet();
-                    client.setPet(Pet.NONE);
+        try {
+            final List<Client> clients = (List<Client>) hibernateTemplate.find("from Client");
+            for (final Client client : clients) {
+                final Pet pet = client.getPet();
+                client.setPet(Pet.NONE);
 
-                    super.addClient(client.getPosition(), client);
-                    if (pet != null) {
-                        super.setClientPet(client, pet);
-                    }
+                super.addClient(client.getPosition(), client);
+                if (pet != null) {
+                    super.setClientPet(client, pet);
                 }
-                transaction.commit();
-            } catch (PersistenceException | ServiceException | NameException e) {
-                throw new IllegalStateException("Can't load data from database", e);
             }
+        } catch (DataAccessException | ServiceException | NameException e) {
+            throw new IllegalStateException("Can't load data from database", e);
         }
     }
 
     /**
      * {@inheritDoc}
      */
+    @Transactional(rollbackFor = {ServiceException.class, NameException.class})
     @Override
     public synchronized Client addClient(final int position, final String name, final String email,
                                          final String phone, final Role role)
             throws ServiceException, NameException {
         final Client client = super.addClient(position, name, email, phone, role);
 
-        try (final Session session = this.sessionFactory.openSession()) {
-            final Transaction transaction = session.beginTransaction();
-            try {
-                session.save(client);
-                transaction.commit();
-            } catch (PersistenceException e) {
-                this.undoAddClient(client);
-                throw new ServiceException(String.format("Can't insert client into database: %s", e.getMessage()));
-            }
+        try {
+            this.hibernateTemplate.save(client);
+        } catch (DataAccessException e) {
+            this.undoAddClient(client);
+            throw new ServiceException(String.format("Can't insert client into database: %s", e.getMessage()));
         }
 
         return client;
@@ -93,6 +85,7 @@ public class HibernateClinicService extends PersistentClinicService {
     /**
      * {@inheritDoc}
      */
+    @Transactional(rollbackFor = {ServiceException.class, NameException.class})
     @Override
     public synchronized Pet setClientPet(final String name, final String petType, final String petName,
                                          final int petAge, final Sex petSex)
@@ -101,15 +94,11 @@ public class HibernateClinicService extends PersistentClinicService {
         final Pet oldPet = client.getPet();
         final Pet pet = super.setClientPet(client, petType, petName, petAge, petSex);
 
-        try (final Session session = this.sessionFactory.openSession()) {
-            final Transaction transaction = session.beginTransaction();
-            try {
-                session.saveOrUpdate(pet);
-                transaction.commit();
-            } catch (PersistenceException e) {
-                this.undoSetClientPet(client, oldPet);
-                throw new ServiceException(String.format("Can't insert client's pet into database: %s", e.getMessage()));
-            }
+        try {
+            this.hibernateTemplate.saveOrUpdate(pet);
+        } catch (DataAccessException e) {
+            this.undoSetClientPet(client, oldPet);
+            throw new ServiceException(String.format("Can't insert client's pet into database: %s", e.getMessage()));
         }
 
         return pet;
@@ -118,6 +107,7 @@ public class HibernateClinicService extends PersistentClinicService {
     /**
      * {@inheritDoc}
      */
+    @Transactional(rollbackFor = {ServiceException.class, NameException.class})
     @Override
     public synchronized void updateClient(final String name, final String newName,
                                           final String newEmail, final String newPhone,
@@ -129,21 +119,18 @@ public class HibernateClinicService extends PersistentClinicService {
         final Role oldRole = client.getRole();
         super.updateClient(client, newName, newEmail, newPhone, newRole);
 
-        try (final Session session = this.sessionFactory.openSession()) {
-            final Transaction transaction = session.beginTransaction();
-            try {
-                session.update(client);
-                transaction.commit();
-            } catch (PersistenceException e) {
-                this.undoUpdateClient(client, name, oldEmail, oldPhone, oldRole);
-                throw new ServiceException(String.format("Can't update client's name in database: %s", e.getMessage()));
-            }
+        try {
+            this.hibernateTemplate.update(client);
+        } catch (DataAccessException e) {
+            this.undoUpdateClient(client, name, oldEmail, oldPhone, oldRole);
+            throw new ServiceException(String.format("Can't update client's name in database: %s", e.getMessage()));
         }
     }
 
     /**
      * {@inheritDoc}
      */
+    @Transactional(rollbackFor = {ServiceException.class, NameException.class})
     @Override
     public synchronized void updateClientPet(final String name, final String petName,
                                              final int petAge, final Sex petSex)
@@ -155,56 +142,46 @@ public class HibernateClinicService extends PersistentClinicService {
         final Sex oldPetSex = pet.getSex();
         super.updateClientPet(client, petName, petAge, petSex);
 
-        try (final Session session = this.sessionFactory.openSession()) {
-            final Transaction transaction = session.beginTransaction();
-            try {
-                session.update(pet);
-                transaction.commit();
-            } catch (PersistenceException e) {
-                this.undoUpdateClientPet(client, oldPetName, oldPetAge, oldPetSex);
-                throw new ServiceException(String.format("Can't update client pet's name in database: %s", e.getMessage()));
-            }
+        try {
+            this.hibernateTemplate.update(pet);
+        } catch (DataAccessException e) {
+            this.undoUpdateClientPet(client, oldPetName, oldPetAge, oldPetSex);
+            throw new ServiceException(String.format("Can't update client pet's name in database: %s", e.getMessage()));
         }
     }
 
     /**
      * {@inheritDoc}
      */
+    @Transactional(rollbackFor = {ServiceException.class})
     @Override
     public synchronized void deleteClientPet(final String name) throws ServiceException {
         final Client client = this.findClientByName(name);
         final Pet pet = client.getPet();
         super.deleteClientPet(client);
 
-        try (final Session session = this.sessionFactory.openSession()) {
-            final Transaction transaction = session.beginTransaction();
-            try {
-                session.delete(pet);
-                transaction.commit();
-            } catch (PersistenceException e) {
-                this.undoDeleteClientPet(client, pet);
-                throw new ServiceException(String.format("Can't delete client's pet from database: %s", e.getMessage()));
-            }
+        try {
+            this.hibernateTemplate.delete(pet);
+        } catch (DataAccessException e) {
+            this.undoDeleteClientPet(client, pet);
+            throw new ServiceException(String.format("Can't delete client's pet from database: %s", e.getMessage()));
         }
     }
 
     /**
      * {@inheritDoc}
      */
+    @Transactional(rollbackFor = {ServiceException.class})
     @Override
     public synchronized void deleteClient(final String name) throws ServiceException {
         final Client client = this.findClientByName(name);
         super.deleteClient(client);
 
-        try (final Session session = this.sessionFactory.openSession()) {
-            final Transaction transaction = session.beginTransaction();
-            try {
-                session.delete(client);
-                transaction.commit();
-            } catch (PersistenceException e) {
-                this.undoDeleteClient(client);
-                throw new ServiceException(String.format("Can't delete client from database: %s", e.getMessage()));
-            }
+        try {
+            this.hibernateTemplate.delete(client);
+        } catch (DataAccessException e) {
+            this.undoDeleteClient(client);
+            throw new ServiceException(String.format("Can't delete client from database: %s", e.getMessage()));
         }
     }
 }

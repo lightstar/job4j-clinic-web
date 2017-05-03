@@ -1,9 +1,6 @@
 package ru.lightstar.clinic;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.query.Query;
+import org.hibernate.*;
 import org.mockito.Mockito;
 import ru.lightstar.clinic.drug.Aspirin;
 import ru.lightstar.clinic.drug.Drug;
@@ -20,6 +17,7 @@ import ru.lightstar.clinic.pet.Pet;
 import ru.lightstar.clinic.pet.Sex;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Helper object used to get mocked hibernate session factory with some test data.
@@ -45,14 +43,9 @@ public class SessionFactoryMocker extends Mockito {
     private Query allRolesQuery;
 
     /**
-     * Mocked <code>Query</code> object for get role by name query when name equals to 'client'.
+     * Mocked <code>Query</code> object for get role by name query.
      */
-    private Query roleByNameClientQuery;
-
-    /**
-     * Mocked <code>Query</code> object for get role by name query when name equals to 'manager'.
-     */
-    private Query roleByNameManagerQuery;
+    private Query roleByNameQuery;
 
     /**
      * Mocked <code>Query</code> object for delete role query.
@@ -87,6 +80,7 @@ public class SessionFactoryMocker extends Mockito {
         when(sessionFactory.openSession()).thenReturn(this.session);
         when(this.session.beginTransaction()).thenReturn(this.transaction);
         when(this.session.getTransaction()).thenReturn(this.transaction);
+        when(this.session.getFlushMode()).thenReturn(FlushMode.AUTO);
 
         this.mockLoadClinicQuery(this.session);
         this.mockAddClientQuery(this.session);
@@ -133,21 +127,12 @@ public class SessionFactoryMocker extends Mockito {
     }
 
     /**
-     * Get mocked <code>Query</code> object for get role by name query when name equals to 'client'.
+     * Get mocked <code>Query</code> object for get role by name query.
      *
      * @return mocked query object.
      */
-    public Query getRoleByNameClientQuery() {
-        return this.roleByNameClientQuery;
-    }
-
-    /**
-     * Get mocked <code>Query</code> object for get role by name query when name equals to 'manager'.
-     *
-     * @return mocked query object.
-     */
-    public Query getRoleByNameManagerQuery() {
-        return this.roleByNameManagerQuery;
+    public Query getRoleByNameQuery() {
+        return this.roleByNameQuery;
     }
 
     /**
@@ -288,26 +273,26 @@ public class SessionFactoryMocker extends Mockito {
      * @param session mocked session.
      */
     private void mockRoleByNameQuery(final Session session) {
-        final Query roleByNameQuery = mock(Query.class);
+        this.roleByNameQuery = mock(Query.class);
+
         when(session.createQuery(HibernateRoleService.ROLE_BY_NAME_HQL))
-                .thenReturn(roleByNameQuery);
+                .thenReturn(this.roleByNameQuery);
 
-        this.roleByNameClientQuery = mock(Query.class);
-        when(roleByNameQuery.setParameter("name", "client"))
-                .thenReturn(this.roleByNameClientQuery);
+        final Role role = new Role();
 
-        final Role clientRole = new Role("client");
-        clientRole.setId(2);
-        when(this.roleByNameClientQuery.uniqueResult()).thenReturn(clientRole);
+        doAnswer(invocation -> {
+            role.setName("client");
+            role.setId(2);
+            return SessionFactoryMocker.this.clientMessagesQuery;
+        }).when(this.roleByNameQuery).setParameter("name", "client");
 
-        this.roleByNameManagerQuery = mock(Query.class);
-        when(roleByNameQuery.setParameter("name", "manager"))
-                .thenReturn(this.roleByNameManagerQuery);
+        doAnswer(invocation -> {
+            role.setName("manager");
+            role.setId(3);
+            return SessionFactoryMocker.this.roleByNameQuery;
+        }).when(this.roleByNameQuery).setParameter("name", "manager");
 
-        final Role managerRole = new Role("manager");
-        managerRole.setId(3);
-
-        when(this.roleByNameManagerQuery.uniqueResult()).thenReturn(managerRole);
+        when(this.roleByNameQuery.list()).thenReturn(Collections.singletonList(role));
     }
 
     /**
@@ -334,13 +319,11 @@ public class SessionFactoryMocker extends Mockito {
                 .thenReturn(this.isRoleBusyQuery);
         when(this.isRoleBusyQuery.setParameter("name", "client"))
                 .thenReturn(this.isRoleBusyQuery);
-        when(this.isRoleBusyQuery.setMaxResults(1))
-                .thenReturn(this.isRoleBusyQuery);
 
         final Client client = new Client("Vasya", Pet.NONE, 0);
         client.setId(1);
 
-        when(this.isRoleBusyQuery.uniqueResult()).thenReturn(client);
+        when(this.isRoleBusyQuery.list()).thenReturn(Collections.singletonList(client));
     }
 
     /**

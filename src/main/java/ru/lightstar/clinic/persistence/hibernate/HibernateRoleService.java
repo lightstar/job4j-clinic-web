@@ -1,9 +1,11 @@
 package ru.lightstar.clinic.persistence.hibernate;
 
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.model.Role;
 import ru.lightstar.clinic.persistence.RoleService;
@@ -17,7 +19,12 @@ import java.util.List;
  * @since 0.0.1
  */
 @Service
-public class HibernateRoleService extends HibernateService implements RoleService {
+public class HibernateRoleService implements RoleService {
+
+    /**
+     * Spring's hibernate template.
+     */
+    private final HibernateTemplate hibernateTemplate;
 
     /**
      * HQL used to get all roles from database.
@@ -37,16 +44,17 @@ public class HibernateRoleService extends HibernateService implements RoleServic
     /**
      * HQL used to get client by role's name from database.
      */
-    public static final String CLIENT_BY_ROLE_HQL = "select c from Client c inner join Role r where r.name = :name";
+    public static final String CLIENT_BY_ROLE_HQL = "from Client where role.name = :name";
 
     /**
      * Constructs <code>HibernateRoleService</code> object.
      *
-     * @param sessionFactory hibernate's session factory.
+     * @param hibernateTemplate spring's hibernate template.
      */
     @Autowired
-    public HibernateRoleService(final SessionFactory sessionFactory) {
-        super(sessionFactory);
+    public HibernateRoleService(final HibernateTemplate hibernateTemplate) {
+        super();
+        this.hibernateTemplate = hibernateTemplate;
     }
 
     /**
@@ -55,79 +63,79 @@ public class HibernateRoleService extends HibernateService implements RoleServic
     @SuppressWarnings("unchecked")
     @Override
     public List<Role> getAllRoles() throws ServiceException {
-        return this.doInTransaction(session -> session.createQuery(ALL_ROLES_HQL).list());
+        try {
+            return (List<Role>) this.hibernateTemplate.find(ALL_ROLES_HQL);
+        } catch(DataAccessException e) {
+            throw new ServiceException(String.format("Database error: %s", e.getMessage()));
+        }
     }
 
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     public Role getRoleByName(final String name) throws ServiceException {
-        return this.doInTransaction(session -> {
-            final Role role = this.getRoleByName(session, name);
-            if (role == null) {
+        try {
+            final List<Role> roles = (List<Role>) this.hibernateTemplate.findByNamedParam(ROLE_BY_NAME_HQL,
+                    "name", name);
+            if (roles.size() == 0) {
                 throw new ServiceException("Role doesn't exists");
             }
-            return role;
-        });
+            return roles.get(0);
+        } catch(DataAccessException e) {
+            throw new ServiceException(String.format("Database error: %s", e.getMessage()));
+        }
     }
 
     /**
      * {@inheritDoc}
      */
+    @Transactional(rollbackFor = {ServiceException.class})
     @Override
     public void addRole(final String name) throws ServiceException {
         if (name.isEmpty()) {
             throw new ServiceException("Name is empty");
         }
 
-        this.doInTransaction(session -> {
-            if (this.getRoleByName(session, name) != null) {
+        try {
+            if (this.hibernateTemplate.findByNamedParam(ROLE_BY_NAME_HQL, "name", name).size() > 0) {
                 throw new ServiceException("Role already exists");
             }
-            session.save(new Role(name));
-            return null;
-        });
+            this.hibernateTemplate.save(new Role(name));
+        } catch(DataAccessException e) {
+            throw new ServiceException(String.format("Database error: %s", e.getMessage()));
+        }
     }
 
     /**
      * {@inheritDoc}
      */
+    @Transactional(rollbackFor = {ServiceException.class})
     @Override
     public void deleteRole(final String name) throws ServiceException {
-        this.doInTransaction(session -> {
-            if (this.isRoleBusy(session, name)) {
+        try {
+            if (this.isRoleBusy(name)) {
                 throw new ServiceException("Some client has this role");
             }
-
-            session.createQuery(DELETE_ROLE_HQL)
-                    .setParameter("name", name)
-                    .executeUpdate();
-            return null;
-        });
+            this.hibernateTemplate.executeWithNativeSession((final Session session) -> {
+                session.createQuery(DELETE_ROLE_HQL)
+                        .setParameter("name", name)
+                        .executeUpdate();
+                return null;
+            });
+        } catch(DataAccessException e) {
+            throw new ServiceException(String.format("Database error: %s", e.getMessage()));
+        }
     }
 
     /**
-     * Get role by name with already opened session and in already created transaction.
+     * Check if role is busy with some client.
      *
-     * @param session already opened session.
-     * @param name role's name.
-     * @return role object.
-     */
-    private Role getRoleByName(final Session session, final String name) {
-        return (Role) session.createQuery(ROLE_BY_NAME_HQL)
-                .setParameter("name", name).uniqueResult();
-    }
-
-    /**
-     * Check if role is busy with some client. Session must be already opened.
-     *
-     * @param session already opened session.
      * @param name role's name.
      * @return <code>true</code> if some client has this role and <code>false</code> - otherwise.
      */
-    private boolean isRoleBusy(final Session session, final String name) {
-        return session.createQuery(CLIENT_BY_ROLE_HQL)
-                .setParameter("name", name).setMaxResults(1).uniqueResult() != null;
+    private boolean isRoleBusy(final String name) {
+        return this.hibernateTemplate.findByNamedParam(CLIENT_BY_ROLE_HQL, "name", name).size() > 0;
     }
 }

@@ -1,8 +1,11 @@
 package ru.lightstar.clinic.persistence.hibernate;
 
-import org.hibernate.SessionFactory;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.model.Message;
@@ -17,7 +20,12 @@ import java.util.List;
  * @since 0.0.1
  */
 @Service
-public class HibernateMessageService extends HibernateService implements MessageService {
+public class HibernateMessageService implements MessageService {
+
+    /**
+     * Spring's hibernate template.
+     */
+    private final HibernateTemplate hibernateTemplate;
 
     /**
      * HQL used to get client messages from database.
@@ -32,11 +40,12 @@ public class HibernateMessageService extends HibernateService implements Message
     /**
      * Constructs <code>HibernateMessageService</code> object.
      *
-     * @param sessionFactory hibernate's session factory.
+     * @param hibernateTemplate spring's hibernate template.
      */
     @Autowired
-    public HibernateMessageService(final SessionFactory sessionFactory) {
-        super(sessionFactory);
+    public HibernateMessageService(final HibernateTemplate hibernateTemplate) {
+        super();
+        this.hibernateTemplate = hibernateTemplate;
     }
 
     /**
@@ -45,38 +54,47 @@ public class HibernateMessageService extends HibernateService implements Message
     @SuppressWarnings("unchecked")
     @Override
     public List<Message> getClientMessages(final Client client) throws ServiceException {
-        return this.doInTransaction(session -> session
-                .createQuery(CLIENT_MESSAGES_HQL)
-                .setParameter("client", client)
-                .list());
+        try {
+            return (List<Message>) this.hibernateTemplate.findByNamedParam(CLIENT_MESSAGES_HQL,
+                    "client", client);
+        } catch(DataAccessException e) {
+            throw new ServiceException(String.format("Database error: %s", e.getMessage()));
+        }
     }
 
     /**
      * {@inheritDoc}
      */
+    @Transactional(rollbackFor = {ServiceException.class})
     @Override
     public void addMessage(final Client client, final String text) throws ServiceException {
         if (text.isEmpty()) {
             throw new ServiceException("Text is empty");
         }
 
-        this.doInTransaction(session -> {
-            session.save(new Message(client, text));
-            return null;
-        });
+        try {
+            this.hibernateTemplate.save(new Message(client, text));
+        } catch(DataAccessException e) {
+            throw new ServiceException(String.format("Database error: %s", e.getMessage()));
+        }
     }
 
     /**
      * {@inheritDoc}
      */
+    @Transactional(rollbackFor = {ServiceException.class})
     @Override
     public void deleteMessage(final Client client, final int id) throws ServiceException {
-        this.doInTransaction(session -> {
-            session.createQuery(DELETE_MESSAGE_HQL)
-                    .setParameter("client", client)
-                    .setParameter("id", id)
-                    .executeUpdate();
-            return null;
-        });
+        try {
+            this.hibernateTemplate.executeWithNativeSession((final Session session) -> {
+                session.createQuery(DELETE_MESSAGE_HQL)
+                        .setParameter("client", client)
+                        .setParameter("id", id)
+                        .executeUpdate();
+                return null;
+            });
+        } catch(DataAccessException e) {
+            throw new ServiceException(String.format("Database error: %s", e.getMessage()));
+        }
     }
 }

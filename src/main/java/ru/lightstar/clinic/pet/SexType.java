@@ -1,7 +1,7 @@
 package ru.lightstar.clinic.pet;
 
 import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SharedSessionContractImplementor;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.usertype.UserType;
 
 import java.io.Serializable;
@@ -62,7 +62,7 @@ public class SexType implements UserType {
      */
     @Override
     public Object nullSafeGet(final ResultSet resultSet, final String[] names,
-                              final SharedSessionContractImplementor implementor,
+                              final SessionImplementor sessionImplementor,
                               final Object owner)
             throws HibernateException, SQLException {
         final String value = resultSet.getString(names[0]);
@@ -77,7 +77,7 @@ public class SexType implements UserType {
      */
     @Override
     public void nullSafeSet(final PreparedStatement statement, final Object value, final int index,
-                            final SharedSessionContractImplementor implementor)
+                            final SessionImplementor sessionImplementor)
             throws HibernateException, SQLException {
         if (value == null) {
             statement.setNull(index, Types.OTHER);

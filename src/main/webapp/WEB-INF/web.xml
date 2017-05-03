@@ -10,7 +10,7 @@
 
     <context-param>
         <param-name>useHibernate</param-name>
-        <param-value>false</param-value>
+        <param-value>true</param-value>
     </context-param>
 
     <!-- serving static content with default container servlet -->
