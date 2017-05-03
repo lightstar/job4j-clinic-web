@@ -32,8 +32,6 @@ public abstract class PersistentClinicServiceTest extends Mockito {
      * Test correctness of <code>loadClinic</code> method.
      */
     public void whenLoadClinicThenItLoads() throws ServiceException {
-        this.clinicService.loadClinic();
-
         final Client vasya = this.clinicService.findClientByName("Vasya");
         final Client masha = this.clinicService.findClientByName("Masha");
         final Client vova = this.clinicService.findClientByName("Vova");
@@ -170,13 +168,13 @@ public abstract class PersistentClinicServiceTest extends Mockito {
         final Role newRole = new Role("admin");
         newRole.setId(1);
         this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", role);
-        this.clinicService.updateClient("Petya", "Vova", "vova@mail.ru", "456456",
+        this.clinicService.updateClient("Petya", "Sasha", "sasha@mail.ru", "456456",
                 newRole);
 
-        final Client vova = this.clinicService.findClientByName("Vova");
+        final Client vova = this.clinicService.findClientByName("Sasha");
         assertThat(vova.getId(), is(4));
-        assertThat(vova.getName(), is("Vova"));
-        assertThat(vova.getEmail(), is("vova@mail.ru"));
+        assertThat(vova.getName(), is("Sasha"));
+        assertThat(vova.getEmail(), is("sasha@mail.ru"));
         assertThat(vova.getPhone(), is("456456"));
         assertThat(vova.getPosition(), is(7));
         assertThat(vova.getRole().getName(), is("admin"));
@@ -196,7 +194,7 @@ public abstract class PersistentClinicServiceTest extends Mockito {
 
         Throwable expectedException = null;
         try {
-            this.clinicService.updateClient("Petya", "Vova", "vova@mail.ru",
+            this.clinicService.updateClient("Petya", "Sasha", "sasha@mail.ru",
                     "456456", newRole);
         } catch (ServiceException e) {
             expectedException = e;

@@ -32,7 +32,7 @@ public class DeleteMessageTest extends ServletTest {
                 .doPost(this.request, this.response);
 
         verify(this.messageService, atLeastOnce()).deleteMessage(client, 1);
-        verify(this.response, atLeastOnce()).sendRedirect("/context/client/message?name=Vasya");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/client/message?name=Vasya");
     }
 
     /**
@@ -45,7 +45,7 @@ public class DeleteMessageTest extends ServletTest {
         new DeleteMessage(this.clinicService, this.roleService, this.messageService)
                 .doPost(this.request, this.response);
 
-        verify(this.response, atLeastOnce()).sendRedirect("/context/");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/");
     }
 
     /**
@@ -60,7 +60,7 @@ public class DeleteMessageTest extends ServletTest {
         new DeleteMessage(this.clinicService, this.roleService, this.messageService)
                 .doPost(this.request, this.response);
 
-        verify(this.response, atLeastOnce()).sendRedirect("/context/");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/");
     }
 
     /**
@@ -77,7 +77,7 @@ public class DeleteMessageTest extends ServletTest {
                 .doPost(this.request, this.response);
 
         verify(this.session, atLeastOnce()).setAttribute(eq("error"), anyString());
-        verify(this.response, atLeastOnce()).sendRedirect("/context/client/message?name=Vasya");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/client/message?name=Vasya");
     }
 
     /**
@@ -95,7 +95,7 @@ public class DeleteMessageTest extends ServletTest {
                 .doPost(this.request, this.response);
 
         verify(this.session, atLeastOnce()).setAttribute(eq("error"), anyString());
-        verify(this.response, atLeastOnce()).sendRedirect("/context/client/message?name=Vasya");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/client/message?name=Vasya");
     }
 
     /**
@@ -114,6 +114,6 @@ public class DeleteMessageTest extends ServletTest {
                 .doPost(this.request, this.response);
 
         verify(this.session, atLeastOnce()).setAttribute("error", "Test error.");
-        verify(this.response, atLeastOnce()).sendRedirect("/context/client/message?name=Vasya");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/client/message?name=Vasya");
     }
 }

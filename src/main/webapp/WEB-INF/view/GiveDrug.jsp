@@ -1,3 +1,5 @@
+<%--@elvariable id="prefix" type="java.lang.String"--%>
+
 <%@ page language="java" pageEncoding="utf-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
@@ -5,7 +7,7 @@
 <c:set var="current" value="drug" scope="page"/>
 <%@include file="Header.jsp" %>
 
-<c:url value='/drug/give' var="action">
+<c:url value='${prefix}/drug/give' var="action">
     <c:param name="name" value="${param.name}"/>
 </c:url>
 <form action="${action}" method="post" class="form" onsubmit="return validateForm(this);">
@@ -22,7 +24,7 @@
 
     <div>
         <input type="submit" class="button" value="Give">
-        <input type="button" class="button" value="Cancel" onclick="document.location.href='<c:url value="/drug"/>';">
+        <input type="button" class="button" value="Cancel" onclick="document.location.href='<c:url value="${prefix}/drug"/>';">
     </div>
 
     <input type="hidden" name="name" value="<c:out value='${param.name}'/>">

@@ -32,11 +32,6 @@ public abstract class PersistentClinicService extends ClinicService {
     }
 
     /**
-     * Load all data from database to inner clinic object.
-     */
-    public abstract void loadClinic();
-
-    /**
      * Undo <code>AddClient</code> operation.
      *
      * @param client added client.

@@ -1,3 +1,4 @@
+<%--@elvariable id="prefix" type="java.lang.String"--%>
 <%--@elvariable id="clients" type="ru.lightstar.clinic.model.Client[]"--%>
 
 <%@ page language="java" pageEncoding="UTF-8" %>
@@ -56,27 +57,27 @@
                 </td>
                 <td>
                     <c:if test="${client == null}">
-                        <c:url value='/client/add' var="addUrl">
+                        <c:url value='${prefix}/client/add' var="addUrl">
                             <c:param name="pos" value="${status.count}"/>
                         </c:url>
                         <a href="${addUrl}">Add</a>
                     </c:if>
 
                     <c:if test="${client != null}">
-                        <c:url value='/client/update' var="updateUrl">
+                        <c:url value='${prefix}/client/update' var="updateUrl">
                             <c:param name="name" value="${client.name}"/>
                         </c:url>
                         <a href="${updateUrl}">Update</a>
 
                         <c:if test="${client.pet.name == ''}">
-                            <c:url value='/client/pet/set' var="setPetUrl">
+                            <c:url value='${prefix}/client/pet/set' var="setPetUrl">
                                 <c:param name="name" value="${client.name}"/>
                             </c:url>
                             <a href="${setPetUrl}">Set pet</a>
                         </c:if>
 
                         <c:if test="${client.pet.name != ''}">
-                            <c:url value='/client/pet/update' var="updatePetUrl">
+                            <c:url value='${prefix}/client/pet/update' var="updatePetUrl">
                                 <c:param name="name" value="${client.name}"/>
                             </c:url>
                             <a href="${updatePetUrl}">Update pet</a>
@@ -86,7 +87,7 @@
 
                         <a href="#" onclick="deleteClient('<c:out value="${client.name}"/>');">Delete</a>
 
-                        <c:url value='/client/message' var="messagesUrl">
+                        <c:url value='${prefix}/client/message' var="messagesUrl">
                             <c:param name="name" value="${client.name}"/>
                         </c:url>
                         <a href="${messagesUrl}">Messages</a>

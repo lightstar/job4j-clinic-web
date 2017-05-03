@@ -69,7 +69,7 @@ public class AddClientTest extends ServletTest {
         verify(this.session, atLeastOnce()).setAttribute(eq("message"), anyString());
         verify(this.clinicService, times(1)).addClient(0, "Vasya",
                 "vasya@mail.ru", "2323", role);
-        verify(this.response, atLeastOnce()).sendRedirect("/context/");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/");
     }
 
     /**

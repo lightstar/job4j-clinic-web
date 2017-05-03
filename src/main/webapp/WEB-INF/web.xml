@@ -13,6 +13,11 @@
         <param-value>true</param-value>
     </context-param>
 
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:spring-context.xml</param-value>
+    </context-param>
+
     <!-- serving static content with default container servlet -->
 
     <servlet-mapping>
@@ -44,7 +49,7 @@
 
     <servlet-mapping>
         <servlet-name>ShowClients</servlet-name>
-        <url-pattern>/</url-pattern>
+        <url-pattern>/servlets/</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -54,7 +59,7 @@
 
     <servlet-mapping>
         <servlet-name>AddClient</servlet-name>
-        <url-pattern>/client/add</url-pattern>
+        <url-pattern>/servlets/client/add</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -64,7 +69,7 @@
 
     <servlet-mapping>
         <servlet-name>UpdateClientName</servlet-name>
-        <url-pattern>/client/update</url-pattern>
+        <url-pattern>/servlets/client/update</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -74,7 +79,7 @@
 
     <servlet-mapping>
         <servlet-name>SetClientPet</servlet-name>
-        <url-pattern>/client/pet/set</url-pattern>
+        <url-pattern>/servlets/client/pet/set</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -84,7 +89,7 @@
 
     <servlet-mapping>
         <servlet-name>UpdateClientPetName</servlet-name>
-        <url-pattern>/client/pet/update</url-pattern>
+        <url-pattern>/servlets/client/pet/update</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -94,7 +99,7 @@
 
     <servlet-mapping>
         <servlet-name>DeleteClientPet</servlet-name>
-        <url-pattern>/client/pet/delete</url-pattern>
+        <url-pattern>/servlets/client/pet/delete</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -104,7 +109,7 @@
 
     <servlet-mapping>
         <servlet-name>DeleteClient</servlet-name>
-        <url-pattern>/client/delete</url-pattern>
+        <url-pattern>/servlets/client/delete</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -114,7 +119,7 @@
 
     <servlet-mapping>
         <servlet-name>ShowPets</servlet-name>
-        <url-pattern>/client/pet</url-pattern>
+        <url-pattern>/servlets/client/pet</url-pattern>
     </servlet-mapping>
 
     <!-- drug servlets -->
@@ -126,7 +131,7 @@
 
     <servlet-mapping>
         <servlet-name>ShowDrugs</servlet-name>
-        <url-pattern>/drug</url-pattern>
+        <url-pattern>/servlets/drug</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -136,7 +141,7 @@
 
     <servlet-mapping>
         <servlet-name>GiveDrug</servlet-name>
-        <url-pattern>/drug/give</url-pattern>
+        <url-pattern>/servlets/drug/give</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -146,7 +151,7 @@
 
     <servlet-mapping>
         <servlet-name>AddDrug</servlet-name>
-        <url-pattern>/drug/add</url-pattern>
+        <url-pattern>/servlets/drug/add</url-pattern>
     </servlet-mapping>
 
     <!-- role servlets -->
@@ -158,7 +163,7 @@
 
     <servlet-mapping>
         <servlet-name>ShowRoles</servlet-name>
-        <url-pattern>/role</url-pattern>
+        <url-pattern>/servlets/role</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -168,7 +173,7 @@
 
     <servlet-mapping>
         <servlet-name>AddRole</servlet-name>
-        <url-pattern>/role/add</url-pattern>
+        <url-pattern>/servlets/role/add</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -178,7 +183,7 @@
 
     <servlet-mapping>
         <servlet-name>DeleteRole</servlet-name>
-        <url-pattern>/role/delete</url-pattern>
+        <url-pattern>/servlets/role/delete</url-pattern>
     </servlet-mapping>
 
     <!-- message servlets -->
@@ -190,7 +195,7 @@
 
     <servlet-mapping>
         <servlet-name>ShowMessages</servlet-name>
-        <url-pattern>/client/message</url-pattern>
+        <url-pattern>/servlets/client/message</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -200,7 +205,7 @@
 
     <servlet-mapping>
         <servlet-name>AddMessage</servlet-name>
-        <url-pattern>/client/message/add</url-pattern>
+        <url-pattern>/servlets/client/message/add</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -210,7 +215,24 @@
 
     <servlet-mapping>
         <servlet-name>DeleteMessage</servlet-name>
-        <url-pattern>/client/message/delete</url-pattern>
+        <url-pattern>/servlets/client/message/delete</url-pattern>
+    </servlet-mapping>
+
+    <!-- spring mvc servlet -->
+
+    <servlet>
+        <servlet-name>SpringMVC</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:spring-web-context.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>SpringMVC</servlet-name>
+        <url-pattern>/</url-pattern>
     </servlet-mapping>
 
     <!-- filters -->
@@ -230,6 +252,12 @@
     <listener>
         <listener-class>
             ru.lightstar.clinic.ClinicContextListener
+        </listener-class>
+    </listener>
+
+    <listener>
+        <listener-class>
+            org.springframework.web.context.ContextLoaderListener
         </listener-class>
     </listener>
 </web-app>

@@ -1,3 +1,4 @@
+<%--@elvariable id="prefix" type="java.lang.String"--%>
 <%--@elvariable id="roles" type="java.util.List<ru.lightstar.clinic.model.Role>"--%>
 
 <%@ page language="java" pageEncoding="utf-8" %>
@@ -14,7 +15,7 @@
 </c:if>
 
 <c:if test="${roles.size() > 0}">
-<c:url value='/client/add' var="action">
+<c:url value='${prefix}/client/add' var="action">
     <c:param name="pos" value="${param.pos}"/>
 </c:url>
 <form action="${action}" method="post" class="form" onsubmit="return validateForm(this);">
@@ -52,7 +53,7 @@
 
     <div>
         <input type="submit" class="button" value="Add">
-        <input type="button" class="button" value="Cancel" onclick="document.location.href='<c:url value="/"/>';">
+        <input type="button" class="button" value="Cancel" onclick="document.location.href='<c:url value="${prefix}/"/>';">
     </div>
 
     <input type="hidden" name="pos" value="<c:out value='${param.pos}'/>">

@@ -1,3 +1,4 @@
+<%--@elvariable id="prefix" type="java.lang.String"--%>
 <%--@elvariable id="drugService" type="ru.lightstar.clinic.DrugService"--%>
 <%--@elvariable id="drugs" type="java.util.Map<ru.lightstar.clinic.drug.Drug,java.lang.Integer>"--%>
 
@@ -8,7 +9,7 @@
 <c:set var="current" value="drug" scope="page"/>
 <%@include file="Header.jsp" %>
 
-<form action="<c:url value='/drug/add'/>" method="post" class="above-list">
+<form action="<c:url value='${prefix}/drug/add'/>" method="post" class="above-list">
     <label for="name">Name:</label>
     <select id="name" name="name">
         <c:forEach items="${drugService.knownDrugNames}" var="name">
@@ -48,7 +49,7 @@
                     <c:out value="${drug.value}"/>
                 </td>
                 <td>
-                    <c:url value='/drug/give' var="giveUrl">
+                    <c:url value='${prefix}/drug/give' var="giveUrl">
                         <c:param name="name" value="${drug.key.name}"/>
                     </c:url>
                     <a href="${giveUrl}">Give</a>

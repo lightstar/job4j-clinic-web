@@ -41,7 +41,7 @@ public class GiveDrugTest extends ServletTest {
         verify(this.session, atLeastOnce()).setAttribute(eq("message"), anyString());
         verify(this.clinicService, times(1)).getClientPet("Vasya");
         verify(this.drugService, times(1)).takeDrug("aspirin");
-        verify(this.response, atLeastOnce()).sendRedirect("/context/drug");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/drug");
     }
 
     /**

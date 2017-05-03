@@ -38,6 +38,7 @@ public class ShowClients extends ClinicServlet {
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
+        super.doGet(request, response);
 
         final String filterType = request.getParameter("filterType");
         final String filterName = request.getParameter("filterName");

@@ -45,7 +45,7 @@ public class SetClientPetTest extends ServletTest {
         verify(this.session, atLeastOnce()).setAttribute(eq("message"), anyString());
         verify(this.clinicService, times(1)).setClientPet("Vasya", "cat",
                 "Murka", 5, Sex.F);
-        verify(this.response, atLeastOnce()).sendRedirect("/context/");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/");
     }
 
     /**

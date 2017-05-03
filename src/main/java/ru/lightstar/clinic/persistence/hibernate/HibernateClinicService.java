@@ -38,28 +38,7 @@ public class HibernateClinicService extends PersistentClinicService {
     public HibernateClinicService(final HibernateTemplate hibernateTemplate) {
         super();
         this.hibernateTemplate = hibernateTemplate;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public synchronized void loadClinic() {
-        try {
-            final List<Client> clients = (List<Client>) hibernateTemplate.find("from Client");
-            for (final Client client : clients) {
-                final Pet pet = client.getPet();
-                client.setPet(Pet.NONE);
-
-                super.addClient(client.getPosition(), client);
-                if (pet != null) {
-                    super.setClientPet(client, pet);
-                }
-            }
-        } catch (DataAccessException | ServiceException | NameException e) {
-            throw new IllegalStateException("Can't load data from database", e);
-        }
+        this.loadClinic();
     }
 
     /**
@@ -182,6 +161,27 @@ public class HibernateClinicService extends PersistentClinicService {
         } catch (DataAccessException e) {
             this.undoDeleteClient(client);
             throw new ServiceException(String.format("Can't delete client from database: %s", e.getMessage()));
+        }
+    }
+
+    /**
+     * Load all data from database to inner clinic object.
+     */
+    @SuppressWarnings("unchecked")
+    private synchronized void loadClinic() {
+        try {
+            final List<Client> clients = (List<Client>) hibernateTemplate.find("from Client");
+            for (final Client client : clients) {
+                final Pet pet = client.getPet();
+                client.setPet(Pet.NONE);
+
+                super.addClient(client.getPosition(), client);
+                if (pet != null) {
+                    super.setClientPet(client, pet);
+                }
+            }
+        } catch (DataAccessException | ServiceException | NameException e) {
+            throw new IllegalStateException("Can't load data from database", e);
         }
     }
 }

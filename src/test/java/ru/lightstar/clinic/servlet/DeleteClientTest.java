@@ -27,7 +27,7 @@ public class DeleteClientTest extends ServletTest {
 
         verify(this.session, atLeastOnce()).setAttribute(eq("message"), anyString());
         verify(this.clinicService, times(1)).deleteClient("Vasya");
-        verify(this.response, atLeastOnce()).sendRedirect("/context/");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/");
     }
 
     /**
@@ -39,7 +39,7 @@ public class DeleteClientTest extends ServletTest {
         new DeleteClient(this.clinicService, this.roleService).doPost(this.request, this.response);
 
         verify(this.session, atLeastOnce()).setAttribute(eq("error"), anyString());
-        verify(this.response, atLeastOnce()).sendRedirect("/context/");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/");
     }
 
     /**
@@ -54,6 +54,6 @@ public class DeleteClientTest extends ServletTest {
         new DeleteClient(this.clinicService, this.roleService).doPost(this.request, this.response);
 
         verify(this.session, atLeastOnce()).setAttribute("error", "Test error.");
-        verify(this.response, atLeastOnce()).sendRedirect("/context/");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/");
     }
 }

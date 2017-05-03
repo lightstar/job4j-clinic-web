@@ -41,6 +41,7 @@ public class GiveDrug extends DrugServlet {
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
+        super.doGet(request, response);
         request.getRequestDispatcher("/WEB-INF/view/GiveDrug.jsp").forward(request, response);
     }
 

@@ -2,6 +2,7 @@ package ru.lightstar.clinic.tool;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import ru.lightstar.clinic.drug.Drug;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.model.Message;
@@ -10,6 +11,8 @@ import ru.lightstar.clinic.persistence.MessageService;
 import ru.lightstar.clinic.persistence.PersistentClinicService;
 import ru.lightstar.clinic.persistence.PersistentDrugService;
 import ru.lightstar.clinic.persistence.RoleService;
+
+import java.util.Map;
 
 /**
  * Class used to manipulate clinic data using spring.
@@ -28,9 +31,7 @@ public class DbTool {
         final ApplicationContext context = new ClassPathXmlApplicationContext("spring-context.xml");
 
         final PersistentClinicService clinicService = context.getBean(PersistentClinicService.class);
-        clinicService.loadClinic();
         final PersistentDrugService drugService = context.getBean(PersistentDrugService.class);
-        drugService.loadDrugs();
 
         final RoleService roleService = context.getBean(RoleService.class);
         final MessageService messageService = context.getBean(MessageService.class);
@@ -51,5 +52,12 @@ public class DbTool {
                 }
             }
         }
+
+        System.out.println();
+        System.out.println("Drugs:");
+        for (final Map.Entry<Drug, Integer> drugEntry : drugService.getAllDrugs().entrySet()) {
+            System.out.println(String.format("%s - %d", drugEntry.getKey(), drugEntry.getValue()));
+        }
+
     }
 }

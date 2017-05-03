@@ -1,3 +1,4 @@
+<%--@elvariable id="prefix" type="java.lang.String"--%>
 <%--@elvariable id="messages" type="java.util.List<ru.lightstar.clinic.model.Message>"--%>
 
 <%@ page language="java" pageEncoding="UTF-8" %>
@@ -11,7 +12,7 @@
     Client: <b><c:out value="${param.name}"/></b>
 </p>
 
-<form action="<c:url value='/client/message/add'/>" method="post" class="above-list message-form"
+<form action="<c:url value='${prefix}/client/message/add'/>" method="post" class="above-list message-form"
       onsubmit="return validateForm(this);">
     <label for="text">Text:</label>
     <textarea id="text" name="text"><c:out value="${param.text}"/></textarea>

@@ -1,3 +1,4 @@
+<%--@elvariable id="prefix" type="java.lang.String"--%>
 <%--@elvariable id="roles" type="java.util.List<ru.lightstar.clinic.model.Role>"--%>
 
 <%@ page language="java" pageEncoding="UTF-8" %>
@@ -7,7 +8,7 @@
 <c:set var="current" value="role" scope="page"/>
 <%@include file="Header.jsp" %>
 
-<form action="<c:url value='/role/add'/>" method="post" class="above-list" onsubmit="return validateForm(this);">
+<form action="<c:url value='${prefix}/role/add'/>" method="post" class="above-list" onsubmit="return validateForm(this);">
     <label for="name">Name:</label>
     <input type="text" id="name" name="name" value="<c:out value='${param.name}'/>"/>
     <input type="submit" class="button" value="Add">

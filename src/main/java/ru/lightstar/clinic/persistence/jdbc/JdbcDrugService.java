@@ -47,25 +47,7 @@ public class JdbcDrugService extends PersistentDrugService {
     public JdbcDrugService(final Clinic clinic, final Connection connection) {
         super(clinic);
         this.connection = connection;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public synchronized void loadDrugs() {
-        try (final Statement statement = this.connection.createStatement()) {
-            try (final ResultSet rs = statement.executeQuery(LOAD_SQL)) {
-                while (rs.next()) {
-                    final int id = rs.getInt("id");
-                    final String name = rs.getString("name");
-                    final Drug drug = super.addDrug(name);
-                    drug.setId(id);
-                }
-            }
-        } catch(SQLException | ServiceException e) {
-            throw new IllegalStateException("Can't load data from database", e);
-        }
+        this.loadDrugs();
     }
 
     /**
@@ -110,5 +92,23 @@ public class JdbcDrugService extends PersistentDrugService {
         }
 
         return drug;
+    }
+
+    /**
+     * Load all data from database to inner clinic object.
+     */
+    private synchronized void loadDrugs() {
+        try (final Statement statement = this.connection.createStatement()) {
+            try (final ResultSet rs = statement.executeQuery(LOAD_SQL)) {
+                while (rs.next()) {
+                    final int id = rs.getInt("id");
+                    final String name = rs.getString("name");
+                    final Drug drug = super.addDrug(name);
+                    drug.setId(id);
+                }
+            }
+        } catch(SQLException | ServiceException e) {
+            throw new IllegalStateException("Can't load data from database", e);
+        }
     }
 }

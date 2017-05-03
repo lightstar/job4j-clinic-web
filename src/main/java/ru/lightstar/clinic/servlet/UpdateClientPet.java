@@ -40,6 +40,8 @@ public class UpdateClientPet extends ClinicServlet {
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
+        super.doGet(request, response);
+
         final Pet pet;
         try {
             final String name = request.getParameter("name");

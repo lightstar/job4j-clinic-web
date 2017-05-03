@@ -36,6 +36,7 @@ public class ShowPets extends ClinicServlet {
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
+        super.doGet(request, response);
 
         request.setAttribute("pets", this.clinicService.getAllPets());
         request.getRequestDispatcher("/WEB-INF/view/ShowPets.jsp").forward(request, response);

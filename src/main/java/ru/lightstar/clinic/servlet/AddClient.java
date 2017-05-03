@@ -39,6 +39,7 @@ public class AddClient extends ClinicServlet {
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
+        super.doGet(request, response);
         this.setRolesAttribute(request);
         request.getRequestDispatcher("/WEB-INF/view/AddClient.jsp").forward(request, response);
     }

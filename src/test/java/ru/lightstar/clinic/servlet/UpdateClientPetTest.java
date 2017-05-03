@@ -74,7 +74,7 @@ public class UpdateClientPetTest extends ServletTest {
         verify(this.session, atLeastOnce()).setAttribute(eq("message"), anyString());
         verify(this.clinicService, times(1)).updateClientPet("Vasya",
                 "Murka", 5, Sex.F);
-        verify(this.response, atLeastOnce()).sendRedirect("/context/");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/");
     }
 
     /**

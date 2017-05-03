@@ -35,8 +35,6 @@ public class PersistentDrugServiceTest extends Mockito {
      * Test correctness of <code>loadDrugs</code> method.
      */
     public void whenLoadDrugsThenItLoads() throws ServiceException {
-        this.drugService.loadDrugs();
-
         final Map<Drug, Integer> drugs = this.drugService.getAllDrugs();
         assertThat(drugs.size(), is(2));
         assertThat(drugs.get(new Aspirin()), is(3));
@@ -50,8 +48,8 @@ public class PersistentDrugServiceTest extends Mockito {
         this.drugService.addDrug("aspirin");
 
         final Map<Drug, Integer> drugs = this.drugService.getAllDrugs();
-        assertThat(drugs.size(), is(1));
-        assertThat(drugs.get(new Aspirin()), is(1));
+        assertThat(drugs.size(), is(2));
+        assertThat(drugs.get(new Aspirin()), is(4));
     }
 
     /**
@@ -68,21 +66,19 @@ public class PersistentDrugServiceTest extends Mockito {
         assertThat(expectedException, instanceOf(ServiceException.class));
 
         final Map<Drug, Integer> drugs = this.drugService.getAllDrugs();
-        assertThat(drugs.size(), is(0));
+        assertThat(drugs.size(), is(2));
+        assertThat(drugs.get(new Aspirin()), is(3));
     }
 
     /**
      * Test correctness of <code>takeDrug</code> method.
      */
     public void whenTakeDrugThenItDeletes() throws ServiceException, SQLException {
-        this.drugService.addDrug("aspirin");
-        this.drugService.addDrug("glucose");
         this.drugService.takeDrug("aspirin");
 
         final Map<Drug, Integer> drugs = this.drugService.getAllDrugs();
-        assertThat(drugs.size(), is(1));
-        assertThat(drugs.containsKey(new Aspirin()), is(false));
-        assertThat(drugs.containsKey(new Glucose()), is(true));
+        assertThat(drugs.size(), is(2));
+        assertThat(drugs.get(new Aspirin()), is(2));
     }
 
     /**
@@ -91,8 +87,6 @@ public class PersistentDrugServiceTest extends Mockito {
     public void whenTakeDrugWithExceptionThenItDoNotDeletes() throws ServiceException, SQLException {
         Throwable expectedException = null;
         try {
-            this.drugService.addDrug("aspirin");
-            this.drugService.addDrug("glucose");
             this.drugService.takeDrug("aspirin");
         } catch (ServiceException e) {
             expectedException = e;
@@ -102,7 +96,6 @@ public class PersistentDrugServiceTest extends Mockito {
 
         final Map<Drug, Integer> drugs = this.drugService.getAllDrugs();
         assertThat(drugs.size(), is(2));
-        assertThat(drugs.containsKey(new Aspirin()), is(true));
-        assertThat(drugs.containsKey(new Glucose()), is(true));
+        assertThat(drugs.get(new Aspirin()), is(3));
     }
 }

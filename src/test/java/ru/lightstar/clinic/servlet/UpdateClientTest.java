@@ -55,7 +55,7 @@ public class UpdateClientTest extends ServletTest {
 
         new UpdateClient(this.clinicService, this.roleService).doGet(this.request, this.response);
 
-        verify(this.response, atLeastOnce()).sendRedirect("/context/");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/");
     }
 
     /**
@@ -70,7 +70,7 @@ public class UpdateClientTest extends ServletTest {
 
         new UpdateClient(this.clinicService, this.roleService).doGet(this.request, this.response);
 
-        verify(this.response, atLeastOnce()).sendRedirect("/context/");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/");
     }
 
     /**
@@ -112,7 +112,7 @@ public class UpdateClientTest extends ServletTest {
         verify(this.session, atLeastOnce()).setAttribute(eq("message"), anyString());
         verify(this.clinicService, times(1)).updateClient("Vasya", "Vova",
                 "vova@mail.ru", "22222", role);
-        verify(this.response, atLeastOnce()).sendRedirect("/context/");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/");
     }
 
     /**

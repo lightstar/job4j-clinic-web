@@ -38,7 +38,7 @@ public class ShowDrugs extends DrugServlet {
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
-
+        super.doGet(request, response);
         request.setAttribute("drugs", this.drugService.getAllDrugs());
         request.getRequestDispatcher("/WEB-INF/view/ShowDrugs.jsp").forward(request, response);
     }

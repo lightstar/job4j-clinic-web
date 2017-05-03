@@ -27,7 +27,7 @@ public class AddDrugTest extends ServletTest {
 
         verify(this.session, atLeastOnce()).setAttribute(eq("message"), anyString());
         verify(this.drugService, times(1)).addDrug("aspirin");
-        verify(this.response, atLeastOnce()).sendRedirect("/context/drug");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/drug");
     }
 
     /**
@@ -39,7 +39,7 @@ public class AddDrugTest extends ServletTest {
         new AddDrug(this.clinicService, this.roleService, this.drugService).doPost(this.request, this.response);
 
         verify(this.session, atLeastOnce()).setAttribute(eq("error"), anyString());
-        verify(this.response, atLeastOnce()).sendRedirect("/context/drug");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/drug");
     }
 
     /**
@@ -55,6 +55,6 @@ public class AddDrugTest extends ServletTest {
         new AddDrug(this.clinicService, this.roleService, this.drugService).doPost(this.request, this.response);
 
         verify(this.session, atLeastOnce()).setAttribute("error", "Test error.");
-        verify(this.response, atLeastOnce()).sendRedirect("/context/drug");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/drug");
     }
 }

@@ -39,6 +39,7 @@ public class SetClientPet extends ClinicServlet {
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
+        super.doGet(request, response);
         request.getRequestDispatcher("/WEB-INF/view/SetClientPet.jsp").forward(request, response);
     }
 

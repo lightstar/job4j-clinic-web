@@ -40,6 +40,7 @@ public class ShowMessages extends MessageServlet {
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
+        super.doGet(request, response);
 
         final Client client = this.getClientByNameParameterOrGoHome(request, response);
         if (client == Client.NONE) {

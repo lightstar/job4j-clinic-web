@@ -68,7 +68,7 @@ public class ShowMessagesTest extends ServletTest {
 
         new ShowMessages(this.clinicService, this.roleService, this.messageService).doGet(this.request, this.response);
 
-        verify(this.response, atLeastOnce()).sendRedirect("/context/");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/");
     }
 
     /**
@@ -82,6 +82,6 @@ public class ShowMessagesTest extends ServletTest {
 
         new ShowMessages(this.clinicService, this.roleService, this.messageService).doGet(this.request, this.response);
 
-        verify(this.response, atLeastOnce()).sendRedirect("/context/");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/");
     }
 }

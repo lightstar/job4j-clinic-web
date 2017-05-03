@@ -36,22 +36,7 @@ public class HibernateDrugService extends PersistentDrugService {
     public HibernateDrugService(final Clinic clinic, final HibernateTemplate hibernateTemplate) {
         super(clinic);
         this.hibernateTemplate = hibernateTemplate;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public synchronized void loadDrugs() {
-        try {
-            final List<Drug> drugs = (List<Drug>) this.hibernateTemplate.find("from Drug");
-            for (final Drug drug : drugs) {
-                super.addDrug(drug);
-            }
-        } catch (DataAccessException | ServiceException e){
-            throw new IllegalStateException("Can't load data from database", e);
-        }
+        this.loadDrugs();
     }
 
     /**
@@ -88,5 +73,20 @@ public class HibernateDrugService extends PersistentDrugService {
         }
 
         return drug;
+    }
+
+    /**
+     * Load all data from database to inner clinic object.
+     */
+    @SuppressWarnings("unchecked")
+    private synchronized void loadDrugs() {
+        try {
+            final List<Drug> drugs = (List<Drug>) this.hibernateTemplate.find("from Drug");
+            for (final Drug drug : drugs) {
+                super.addDrug(drug);
+            }
+        } catch (DataAccessException | ServiceException e){
+            throw new IllegalStateException("Can't load data from database", e);
+        }
     }
 }

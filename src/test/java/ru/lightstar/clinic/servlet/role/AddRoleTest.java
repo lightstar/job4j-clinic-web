@@ -26,7 +26,7 @@ public class AddRoleTest extends ServletTest {
 
         verify(this.session, atLeastOnce()).setAttribute(eq("message"), anyString());
         verify(this.roleService, times(1)).addRole("client");
-        verify(this.response, atLeastOnce()).sendRedirect("/context/role");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/role");
     }
 
     /**
@@ -37,7 +37,7 @@ public class AddRoleTest extends ServletTest {
         new AddRole(this.clinicService, this.roleService).doPost(this.request, this.response);
 
         verify(this.session, atLeastOnce()).setAttribute(eq("error"), anyString());
-        verify(this.response, atLeastOnce()).sendRedirect("/context/role");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/role");
     }
 
     /**
@@ -52,6 +52,6 @@ public class AddRoleTest extends ServletTest {
         new AddRole(this.clinicService, this.roleService).doPost(this.request, this.response);
 
         verify(this.session, atLeastOnce()).setAttribute("error", "Test error.");
-        verify(this.response, atLeastOnce()).sendRedirect("/context/role");
+        verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/role");
     }
 }

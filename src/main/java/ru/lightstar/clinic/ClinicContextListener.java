@@ -65,14 +65,8 @@ public class ClinicContextListener implements ServletContextListener {
      * @param servletContext servlet context.
      */
     private void initHibernate(final ServletContext servletContext) {
-        final HibernateClinicService clinicService = this.context.getBean(HibernateClinicService.class);
-        clinicService.loadClinic();
-        servletContext.setAttribute("clinicService", clinicService);
-
-        final HibernateDrugService drugService = this.context.getBean(HibernateDrugService.class);
-        drugService.loadDrugs();
-        servletContext.setAttribute("drugService", drugService);
-
+        servletContext.setAttribute("clinicService", this.context.getBean(HibernateClinicService.class));
+        servletContext.setAttribute("drugService", this.context.getBean(HibernateDrugService.class));
         servletContext.setAttribute("roleService", this.context.getBean(RoleService.class));
         servletContext.setAttribute("messageService",this.context.getBean(MessageService.class));
     }
@@ -90,11 +84,9 @@ public class ClinicContextListener implements ServletContextListener {
             servletContext.setAttribute("jdbcConnection", connection);
 
             final JdbcClinicService clinicService = new JdbcClinicService(connection);
-            clinicService.loadClinic();
             servletContext.setAttribute("clinicService", clinicService);
 
             final JdbcDrugService drugService = new JdbcDrugService(clinicService.getClinic(), connection);
-            drugService.loadDrugs();
             servletContext.setAttribute("drugService", drugService);
 
             servletContext.setAttribute("roleService", new JdbcRoleService(connection));

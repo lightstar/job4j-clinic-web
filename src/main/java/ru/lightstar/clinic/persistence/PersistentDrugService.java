@@ -17,9 +17,4 @@ public abstract class PersistentDrugService extends DrugService {
     public PersistentDrugService(final Clinic clinic) {
         super(clinic);
     }
-
-    /**
-     * Load all drug data from database to inner clinic object.
-     */
-    public abstract void loadDrugs();
 }

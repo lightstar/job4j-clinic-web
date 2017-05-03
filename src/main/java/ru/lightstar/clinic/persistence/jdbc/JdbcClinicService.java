@@ -78,43 +78,7 @@ public class JdbcClinicService extends PersistentClinicService {
     public JdbcClinicService(final Connection connection) {
         super();
         this.connection = connection;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public synchronized void loadClinic() {
-        try (final Statement statement = this.connection.createStatement()) {
-            try (final ResultSet rs = statement.executeQuery(LOAD_SQL)) {
-                while (rs.next()) {
-                    final int id = rs.getInt("id");
-                    final int position = rs.getInt("position");
-                    final String name = rs.getString("name");
-                    final String email = rs.getString("email");
-                    final String phone = rs.getString("phone");
-                    final int petId = rs.getInt("petId");
-                    final String petType = rs.getString("petType");
-                    final String petName = rs.getString("petName");
-                    final int petAge = rs.getInt("petAge");
-                    final String petSex = rs.getString("petSex");
-                    final int roleId = rs.getInt("roleId");
-                    final String roleName = rs.getString("roleName");
-
-                    final Role role = new Role(roleName);
-                    role.setId(roleId);
-                    final Client client = super.addClient(position, name, email, phone, role);
-                    client.setId(id);
-                    if (petType != null) {
-                        final Pet pet = super.setClientPet(client, petType, petName, petAge,
-                                petSex.toLowerCase().equals("m") ? Sex.M : Sex.F);
-                        pet.setId(petId);
-                    }
-                 }
-            }
-        } catch (SQLException | ServiceException | NameException e) {
-            throw new IllegalStateException("Can't load data from database", e);
-        }
+        this.loadClinic();
     }
 
     /**
@@ -266,6 +230,42 @@ public class JdbcClinicService extends PersistentClinicService {
         } catch (SQLException e) {
             this.undoDeleteClient(client);
             throw new ServiceException(String.format("Can't delete client from database: %s", e.getMessage()));
+        }
+    }
+
+    /**
+     * Load all data from database to inner clinic object.
+     */
+    private synchronized void loadClinic() {
+        try (final Statement statement = this.connection.createStatement()) {
+            try (final ResultSet rs = statement.executeQuery(LOAD_SQL)) {
+                while (rs.next()) {
+                    final int id = rs.getInt("id");
+                    final int position = rs.getInt("position");
+                    final String name = rs.getString("name");
+                    final String email = rs.getString("email");
+                    final String phone = rs.getString("phone");
+                    final int petId = rs.getInt("petId");
+                    final String petType = rs.getString("petType");
+                    final String petName = rs.getString("petName");
+                    final int petAge = rs.getInt("petAge");
+                    final String petSex = rs.getString("petSex");
+                    final int roleId = rs.getInt("roleId");
+                    final String roleName = rs.getString("roleName");
+
+                    final Role role = new Role(roleName);
+                    role.setId(roleId);
+                    final Client client = super.addClient(position, name, email, phone, role);
+                    client.setId(id);
+                    if (petType != null) {
+                        final Pet pet = super.setClientPet(client, petType, petName, petAge,
+                                petSex.toLowerCase().equals("m") ? Sex.M : Sex.F);
+                        pet.setId(petId);
+                    }
+                }
+            }
+        } catch (SQLException | ServiceException | NameException e) {
+            throw new IllegalStateException("Can't load data from database", e);
         }
     }
 }

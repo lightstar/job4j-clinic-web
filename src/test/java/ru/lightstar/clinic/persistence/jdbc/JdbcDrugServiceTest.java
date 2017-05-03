@@ -78,7 +78,7 @@ public class JdbcDrugServiceTest extends PersistentDrugServiceTest {
         super.whenTakeDrugThenItDeletes();
 
         verify(this.jdbcMocker.getDeleteDrugStatement(), times(1))
-                .setInt(1, 6);
+                .setInt(1, 1);
         verify(this.jdbcMocker.getDeleteDrugStatement(), times(1))
                 .executeUpdate();
     }

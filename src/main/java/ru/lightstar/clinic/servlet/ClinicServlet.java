@@ -20,6 +20,11 @@ import java.io.IOException;
 public abstract class ClinicServlet extends HttpServlet {
 
     /**
+     * Global prefix in url for all servlets.
+     */
+    private static final String PREFIX = "/servlets";
+
+    /**
      * Global clinic service used by all servlets. Usually it is set in {@link #init} method but in tests it is
      * provided in constructor.
      */
@@ -60,6 +65,12 @@ public abstract class ClinicServlet extends HttpServlet {
         this.roleService = (RoleService) this.getServletContext().getAttribute("roleService");
     }
 
+    @Override
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
+            throws ServletException, IOException {
+        request.setAttribute("prefix", PREFIX);
+    }
+
     /**
      * Set given request attribute to the corresponding request parameter with some default value if it is null.
      *
@@ -96,7 +107,7 @@ public abstract class ClinicServlet extends HttpServlet {
             this.doGet(request, response);
         } else {
             request.getSession().setAttribute("message",  String.format("%s.", messageString));
-            response.sendRedirect(request.getContextPath() + redirectUrl);
+            response.sendRedirect(request.getContextPath() + PREFIX + redirectUrl);
         }
     }
 
@@ -119,7 +130,7 @@ public abstract class ClinicServlet extends HttpServlet {
             request.getSession().setAttribute("message", String.format("%s.", messageString));
         }
 
-        response.sendRedirect(request.getContextPath() + redirectUrl);
+        response.sendRedirect(request.getContextPath() + PREFIX + redirectUrl);
     }
 
     /**
@@ -153,7 +164,7 @@ public abstract class ClinicServlet extends HttpServlet {
             }
             return this.clinicService.findClientByName(name);
         } catch (ServiceException | NullPointerException e) {
-            response.sendRedirect(request.getContextPath() + "/");
+            response.sendRedirect(request.getContextPath() + PREFIX + "/");
             return Client.NONE;
         }
     }
