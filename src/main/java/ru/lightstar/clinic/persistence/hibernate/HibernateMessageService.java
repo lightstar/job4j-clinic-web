@@ -2,7 +2,6 @@ package ru.lightstar.clinic.persistence.hibernate;
 
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,48 +52,36 @@ public class HibernateMessageService implements MessageService {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<Message> getClientMessages(final Client client) throws ServiceException {
-        try {
-            return (List<Message>) this.hibernateTemplate.findByNamedParam(CLIENT_MESSAGES_HQL,
-                    "client", client);
-        } catch(DataAccessException e) {
-            throw new ServiceException(String.format("Database error: %s", e.getMessage()));
-        }
+    public List<Message> getClientMessages(final Client client) {
+        return (List<Message>) this.hibernateTemplate.findByNamedParam(CLIENT_MESSAGES_HQL,
+                "client", client);
     }
 
     /**
      * {@inheritDoc}
      */
-    @Transactional(rollbackFor = {ServiceException.class})
+    @Transactional
     @Override
     public void addMessage(final Client client, final String text) throws ServiceException {
         if (text.isEmpty()) {
             throw new ServiceException("Text is empty");
         }
 
-        try {
-            this.hibernateTemplate.save(new Message(client, text));
-        } catch(DataAccessException e) {
-            throw new ServiceException(String.format("Database error: %s", e.getMessage()));
-        }
+        this.hibernateTemplate.save(new Message(client, text));
     }
 
     /**
      * {@inheritDoc}
      */
-    @Transactional(rollbackFor = {ServiceException.class})
+    @Transactional
     @Override
-    public void deleteMessage(final Client client, final int id) throws ServiceException {
-        try {
-            this.hibernateTemplate.executeWithNativeSession((final Session session) -> {
-                session.createQuery(DELETE_MESSAGE_HQL)
-                        .setParameter("client", client)
-                        .setParameter("id", id)
-                        .executeUpdate();
-                return null;
-            });
-        } catch(DataAccessException e) {
-            throw new ServiceException(String.format("Database error: %s", e.getMessage()));
-        }
+    public void deleteMessage(final Client client, final int id) {
+        this.hibernateTemplate.executeWithNativeSession((final Session session) -> {
+            session.createQuery(DELETE_MESSAGE_HQL)
+                    .setParameter("client", client)
+                    .setParameter("id", id)
+                    .executeUpdate();
+            return null;
+        });
     }
 }

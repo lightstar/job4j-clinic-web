@@ -1,7 +1,6 @@
 package ru.lightstar.clinic.servlet.message;
 
 import ru.lightstar.clinic.ClinicService;
-import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.persistence.MessageService;
 import ru.lightstar.clinic.persistence.RoleService;
@@ -53,8 +52,8 @@ public class DeleteMessage extends MessageServlet {
             this.messageService.deleteMessage(client, Integer.valueOf(request.getParameter("id")));
         } catch (NullPointerException | NumberFormatException e) {
             errorString = "Invalid request parameters";
-        } catch (ServiceException e) {
-            errorString = e.getMessage();
+        } catch (RuntimeException e) {
+            errorString = "Unknown error";
         }
 
         final String encodedName = URLEncoder.encode(client.getName(), "utf-8");

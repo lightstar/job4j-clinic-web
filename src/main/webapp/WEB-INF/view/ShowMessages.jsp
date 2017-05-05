@@ -35,7 +35,7 @@
         <c:forEach items="${messages}" var="message">
             <tr>
                 <td>
-                    <c:out value="${message.text}"/>
+                    ${message.formattedText}
                 </td>
                 <td>
                     <a href="#" onclick="deleteMessage('<c:out value="${param.name}"/>', '<c:out value="${message.id}"/>');">

@@ -1,7 +1,6 @@
 package ru.lightstar.clinic.servlet.message;
 
 import ru.lightstar.clinic.ClinicService;
-import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.persistence.MessageService;
 import ru.lightstar.clinic.persistence.RoleService;
@@ -49,8 +48,8 @@ public class ShowMessages extends MessageServlet {
 
         try {
             request.setAttribute("messages", this.messageService.getClientMessages(client));
-        } catch (ServiceException e) {
-            request.getSession().setAttribute("error", String.format("%s.", e.getMessage()));
+        } catch (RuntimeException e) {
+            request.getSession().setAttribute("error", "Unknown error.");
         }
 
         request.getRequestDispatcher("/WEB-INF/view/ShowMessages.jsp").forward(request, response);

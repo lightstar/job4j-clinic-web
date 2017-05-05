@@ -32,7 +32,7 @@ public class ClinicContextListener implements ServletContextListener {
     /**
      * Spring's application context.
      */
-    private ApplicationContext context = new ClassPathXmlApplicationContext("spring-context.xml");
+    private final ApplicationContext context = new ClassPathXmlApplicationContext("spring-context.xml");
 
     /**
      * {@inheritDoc}

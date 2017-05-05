@@ -73,6 +73,8 @@ public class UpdateClient extends ClinicServlet {
             errorString = "Invalid request parameters";
         } catch (NameException | ServiceException e) {
             errorString = e.getMessage();
+        } catch (RuntimeException e) {
+            errorString = "Unknown error";
         }
 
         this.finishUpdateForm(request, response, "Client updated", errorString, "/");

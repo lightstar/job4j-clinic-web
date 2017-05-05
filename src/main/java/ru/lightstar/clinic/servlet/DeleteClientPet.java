@@ -45,6 +45,8 @@ public class DeleteClientPet extends ClinicServlet {
             errorString = "Invalid request parameters";
         } catch (ServiceException e) {
             errorString = e.getMessage();
+        } catch (RuntimeException e) {
+            errorString = "Unknown error";
         }
 
         this.finishUpdate(request, response, "Pet deleted", errorString, "/");

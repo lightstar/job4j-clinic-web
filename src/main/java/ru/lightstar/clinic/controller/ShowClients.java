@@ -7,8 +7,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import ru.lightstar.clinic.ClinicService;
+import ru.lightstar.clinic.DrugService;
 import ru.lightstar.clinic.exception.ServiceException;
+import ru.lightstar.clinic.form.FilterForm;
 import ru.lightstar.clinic.model.Client;
+import ru.lightstar.clinic.persistence.MessageService;
+import ru.lightstar.clinic.persistence.RoleService;
 
 /**
  * <code>ShowClients</code> controller.
@@ -18,33 +22,27 @@ import ru.lightstar.clinic.model.Client;
  */
 @Controller
 @RequestMapping("/")
-public class ShowClients {
+public class ShowClients extends ClinicController {
 
     /**
-     * Clinic service bean.
-     */
-    private final ClinicService clinicService;
-
-    /**
-     * Constructs <code>ShowClients</code> controller object.
-     *
-     * @param clinicService autowired clinic service bean.
+     * {@inheritDoc}
      */
     @Autowired
-    public ShowClients(final ClinicService clinicService) {
-        this.clinicService = clinicService;
+    public ShowClients(final ClinicService clinicService, final DrugService drugService,
+                       final RoleService roleService, final MessageService messageService) {
+        super(clinicService, drugService, roleService, messageService);
     }
 
     /**
-     * Processing main page showing list of all clients in clinic.
+     * Show main page that displays list of all clients in clinic.
      * Also some filters may be used.
      *
-     * @param filter contents of filter form.
+     * @param filter filter form filled by user.
      * @param model model that will be sent to view.
-     * @return view's name.
+     * @return view name.
      */
-    @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String show(@ModelAttribute final Filter filter, final ModelMap model) {
+    @RequestMapping(method = RequestMethod.GET)
+    public String show(@ModelAttribute final FilterForm filter, final ModelMap model) {
         Client[] clients = null;
 
         if (!filter.isEmpty()) {
@@ -67,75 +65,5 @@ public class ShowClients {
 
         model.addAttribute("clients", clients);
         return "ShowClients";
-    }
-
-    /**
-     * Objects of this class contains filter form parameters.
-     */
-    public static class Filter {
-
-        /**
-         * Filter's type.
-         */
-        private String filterType;
-
-        /**
-         * Filter's name value.
-         */
-        private String filterName;
-
-        /**
-         * Constructs <code>Filter</code> object.
-         */
-        public Filter() {
-            this.filterType = "";
-            this.filterName = "";
-        }
-
-        /**
-         * Get filter's type.
-         *
-         * @return filter's type.
-         */
-        public String getFilterType() {
-            return this.filterType;
-        }
-
-        /**
-         * Set filter's type.
-         *
-         * @param filterType filter's type.
-         */
-        public void setFilterType(final String filterType) {
-            this.filterType = filterType;
-        }
-
-        /**
-         * Get filter's name value.
-         *
-         * @return filter's name value.
-         */
-        public String getFilterName() {
-            return this.filterName;
-        }
-
-        /**
-         * Set filter's name value.
-         *
-         * @param filterName filter's name value.
-         */
-        public void setFilterName(final String filterName) {
-            this.filterName = filterName;
-        }
-
-        /**
-         * Check if filter is empty.
-         *
-         * @return <code>true</code> if filter is empty (i.e. efficiently not present)
-         * and <code>false</code> - otherwise.
-         */
-        public boolean isEmpty() {
-            return this.filterName.isEmpty();
-        }
     }
 }

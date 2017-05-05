@@ -59,11 +59,11 @@ public class PersistentDrugServiceTest extends Mockito {
         Throwable expectedException = null;
         try {
             this.drugService.addDrug("aspirin");
-        } catch (ServiceException e) {
+        } catch (RuntimeException e) {
             expectedException = e;
         }
 
-        assertThat(expectedException, instanceOf(ServiceException.class));
+        assertThat(expectedException, instanceOf(RuntimeException.class));
 
         final Map<Drug, Integer> drugs = this.drugService.getAllDrugs();
         assertThat(drugs.size(), is(2));
@@ -88,11 +88,11 @@ public class PersistentDrugServiceTest extends Mockito {
         Throwable expectedException = null;
         try {
             this.drugService.takeDrug("aspirin");
-        } catch (ServiceException e) {
+        } catch (RuntimeException e) {
             expectedException = e;
         }
 
-        assertThat(expectedException, instanceOf(ServiceException.class));
+        assertThat(expectedException, instanceOf(RuntimeException.class));
 
         final Map<Drug, Integer> drugs = this.drugService.getAllDrugs();
         assertThat(drugs.size(), is(2));

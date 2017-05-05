@@ -17,9 +17,8 @@ public interface RoleService {
      * Get all roles from database.
      *
      * @return list of all roles.
-     * @throws ServiceException thrown if can't get data.
      */
-    List<Role> getAllRoles() throws ServiceException;
+    List<Role> getAllRoles();
 
     /**
      * Get role by given name or null if it doesn't exists.

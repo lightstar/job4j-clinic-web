@@ -43,7 +43,7 @@ public class JdbcRoleServiceTest extends RoleServiceTest {
     /**
      * Test correctness of <code>getAllRoles</code> method when exception is thrown.
      */
-    @Test(expected = ServiceException.class)
+    @Test(expected = RuntimeException.class)
     public void whenGetAllRolesWithExceptionThenException() throws ServiceException, SQLException {
         doThrow(SQLException.class).when(this.jdbcMocker.getAllRolesResultSet()).next();
         super.whenGetAllRolesThenResult();
@@ -72,7 +72,7 @@ public class JdbcRoleServiceTest extends RoleServiceTest {
     /**
      * Test correctness of <code>getRoleByName</code> method when exception is thrown.
      */
-    @Test(expected = ServiceException.class)
+    @Test(expected = RuntimeException.class)
     public void whenGetRoleByNameWithExceptionThenException() throws ServiceException, SQLException {
         doThrow(SQLException.class).when(this.jdbcMocker.getRoleByNameResultSet()).next();
         super.whenGetRoleByNameThenResult();
@@ -113,7 +113,7 @@ public class JdbcRoleServiceTest extends RoleServiceTest {
     /**
      * Test correctness of <code>addRole</code> method when exception is thrown.
      */
-    @Test(expected = ServiceException.class)
+    @Test(expected = RuntimeException.class)
     public void whenAddRoleWithExceptionThenException() throws ServiceException, SQLException {
         when(this.jdbcMocker.getRoleByNameResultSet().next()).thenReturn(false);
         doThrow(SQLException.class).when(this.jdbcMocker.getAddRoleStatement()).executeUpdate();
@@ -145,7 +145,7 @@ public class JdbcRoleServiceTest extends RoleServiceTest {
     /**
      * Test correctness of <code>deleteRole</code> method when exception is thrown.
      */
-    @Test(expected = ServiceException.class)
+    @Test(expected = RuntimeException.class)
     public void whenDeleteRoleWithExceptionThenException() throws ServiceException, SQLException {
         doThrow(SQLException.class).when(this.jdbcMocker.getDeleteRoleStatement()).executeUpdate();
         this.roleService.deleteRole("client");
@@ -154,7 +154,7 @@ public class JdbcRoleServiceTest extends RoleServiceTest {
     /**
      * Test correctness of <code>deleteRole</code> method when exception in method <code>isRoleBusy</code> is thrown.
      */
-    @Test(expected = ServiceException.class)
+    @Test(expected = RuntimeException.class)
     public void whenDeleteRoleWithExceptionInIsRoleBusyThenException() throws ServiceException, SQLException {
         doThrow(SQLException.class).when(this.jdbcMocker.getRoleBusyResultSet()).next();
         this.roleService.deleteRole("client");

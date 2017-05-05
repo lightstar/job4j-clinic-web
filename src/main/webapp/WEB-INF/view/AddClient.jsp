@@ -55,8 +55,6 @@
         <input type="submit" class="button" value="Add">
         <input type="button" class="button" value="Cancel" onclick="document.location.href='<c:url value="${prefix}/"/>';">
     </div>
-
-    <input type="hidden" name="pos" value="<c:out value='${param.pos}'/>">
 </form>
 </c:if>
 

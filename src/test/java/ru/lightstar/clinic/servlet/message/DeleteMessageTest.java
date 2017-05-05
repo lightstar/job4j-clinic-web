@@ -108,12 +108,12 @@ public class DeleteMessageTest extends ServletTest {
         when(this.request.getParameter("name")).thenReturn("Vasya");
         when(this.clinicService.findClientByName("Vasya")).thenReturn(client);
         when(this.request.getParameter("id")).thenReturn("1");
-        doThrow(new ServiceException("Test error")).when(this.messageService).deleteMessage(client, 1);
+        doThrow(new RuntimeException("Some error")).when(this.messageService).deleteMessage(client, 1);
 
         new DeleteMessage(this.clinicService, this.roleService, this.messageService)
                 .doPost(this.request, this.response);
 
-        verify(this.session, atLeastOnce()).setAttribute("error", "Test error.");
+        verify(this.session, atLeastOnce()).setAttribute("error", "Unknown error.");
         verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/client/message?name=Vasya");
     }
 }

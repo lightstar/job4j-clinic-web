@@ -49,7 +49,7 @@ public class HibernateMessageServiceTest extends MessageServiceTest {
     /**
      * Test correctness of <code>getClientMessages</code> method when exception is thrown.
      */
-    @Test(expected = ServiceException.class)
+    @Test(expected = RuntimeException.class)
     public void whenGetClientMessagesWithExceptionThenException() throws ServiceException {
         doThrow(HibernateException.class).when(this.hibernateMocker.getClientMessagesQuery()).list();
         super.whenGetClientMessagesThenResult();
@@ -76,7 +76,7 @@ public class HibernateMessageServiceTest extends MessageServiceTest {
     /**
      * Test correctness of <code>addMessage</code> method when exception is thrown.
      */
-    @Test(expected = ServiceException.class)
+    @Test(expected = RuntimeException.class)
     public void whenAddMessageWithExceptionThenException() throws ServiceException, SQLException {
         doThrow(HibernateException.class).when(this.hibernateMocker.getSession()).save(any(Message.class));
         this.messageService.addMessage(this.client, "Some message");
@@ -100,7 +100,7 @@ public class HibernateMessageServiceTest extends MessageServiceTest {
     /**
      * Test correctness of <code>deleteMessage</code> method when exception is thrown.
      */
-    @Test(expected = ServiceException.class)
+    @Test(expected = RuntimeException.class)
     public void whenDeleteRoleWithExceptionThenException() throws ServiceException, SQLException {
         doThrow(HibernateException.class).when(this.hibernateMocker.getDeleteMessageQuery()).executeUpdate();
         this.messageService.deleteMessage(this.client, 1);

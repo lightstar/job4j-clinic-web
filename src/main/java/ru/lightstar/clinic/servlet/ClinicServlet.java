@@ -141,8 +141,8 @@ public abstract class ClinicServlet extends HttpServlet {
     protected void setRolesAttribute(final HttpServletRequest request) {
         try {
             request.setAttribute("roles", this.roleService.getAllRoles());
-        } catch (ServiceException e) {
-            request.getSession().setAttribute("error", String.format("%s.", e.getMessage()));
+        } catch (RuntimeException e) {
+            request.getSession().setAttribute("error", "Unknown error.");
         }
     }
 

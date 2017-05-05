@@ -50,12 +50,13 @@ public class AddMessage extends MessageServlet {
         String errorString = "";
         try {
             this.checkParameters(request);
-            this.messageService.addMessage(client, request.getParameter("text")
-                    .replaceAll("/r?/n","<br>"));
+            this.messageService.addMessage(client, request.getParameter("text"));
         } catch (NullPointerException e) {
             errorString = "Invalid request parameters";
         } catch (ServiceException e) {
             errorString = e.getMessage();
+        } catch (RuntimeException e) {
+            errorString = "Unknown error";
         }
 
         final String encodedName = URLEncoder.encode(client.getName(), "utf-8");

@@ -46,6 +46,8 @@ public class DeleteRole extends ClinicServlet {
             errorString = "Invalid request parameters";
         } catch (ServiceException e) {
             errorString = e.getMessage();
+        } catch (RuntimeException e) {
+            errorString = "Unknown error";
         }
 
         this.finishUpdate(request, response, "Role deleted", errorString, "/role");

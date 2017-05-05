@@ -2,7 +2,6 @@ package ru.lightstar.clinic.persistence.hibernate;
 
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,12 +61,8 @@ public class HibernateRoleService implements RoleService {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<Role> getAllRoles() throws ServiceException {
-        try {
-            return (List<Role>) this.hibernateTemplate.find(ALL_ROLES_HQL);
-        } catch(DataAccessException e) {
-            throw new ServiceException(String.format("Database error: %s", e.getMessage()));
-        }
+    public List<Role> getAllRoles() {
+        return (List<Role>) this.hibernateTemplate.find(ALL_ROLES_HQL);
     }
 
     /**
@@ -76,57 +71,47 @@ public class HibernateRoleService implements RoleService {
     @SuppressWarnings("unchecked")
     @Override
     public Role getRoleByName(final String name) throws ServiceException {
-        try {
-            final List<Role> roles = (List<Role>) this.hibernateTemplate.findByNamedParam(ROLE_BY_NAME_HQL,
-                    "name", name);
-            if (roles.size() == 0) {
-                throw new ServiceException("Role doesn't exists");
-            }
-            return roles.get(0);
-        } catch(DataAccessException e) {
-            throw new ServiceException(String.format("Database error: %s", e.getMessage()));
+        final List<Role> roles = (List<Role>) this.hibernateTemplate.findByNamedParam(ROLE_BY_NAME_HQL,
+                "name", name);
+        if (roles.size() == 0) {
+            throw new ServiceException("Role doesn't exists");
         }
+        return roles.get(0);
     }
 
     /**
      * {@inheritDoc}
      */
-    @Transactional(rollbackFor = {ServiceException.class})
+    @Transactional
     @Override
     public void addRole(final String name) throws ServiceException {
         if (name.isEmpty()) {
             throw new ServiceException("Name is empty");
         }
 
-        try {
-            if (this.hibernateTemplate.findByNamedParam(ROLE_BY_NAME_HQL, "name", name).size() > 0) {
-                throw new ServiceException("Role already exists");
-            }
-            this.hibernateTemplate.save(new Role(name));
-        } catch(DataAccessException e) {
-            throw new ServiceException(String.format("Database error: %s", e.getMessage()));
+        if (this.hibernateTemplate.findByNamedParam(ROLE_BY_NAME_HQL, "name", name).size() > 0) {
+            throw new ServiceException("Role already exists");
         }
+
+        this.hibernateTemplate.save(new Role(name));
     }
 
     /**
      * {@inheritDoc}
      */
-    @Transactional(rollbackFor = {ServiceException.class})
+    @Transactional
     @Override
     public void deleteRole(final String name) throws ServiceException {
-        try {
-            if (this.isRoleBusy(name)) {
-                throw new ServiceException("Some client has this role");
-            }
-            this.hibernateTemplate.executeWithNativeSession((final Session session) -> {
-                session.createQuery(DELETE_ROLE_HQL)
-                        .setParameter("name", name)
-                        .executeUpdate();
-                return null;
-            });
-        } catch(DataAccessException e) {
-            throw new ServiceException(String.format("Database error: %s", e.getMessage()));
+        if (this.isRoleBusy(name)) {
+            throw new ServiceException("Some client has this role");
         }
+
+        this.hibernateTemplate.executeWithNativeSession((final Session session) -> {
+            session.createQuery(DELETE_ROLE_HQL)
+                    .setParameter("name", name)
+                    .executeUpdate();
+            return null;
+        });
     }
 
     /**

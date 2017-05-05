@@ -50,7 +50,7 @@ public class HibernateRoleServiceTest extends RoleServiceTest {
     /**
      * Test correctness of <code>getAllRoles</code> method when exception is thrown.
      */
-    @Test(expected = ServiceException.class)
+    @Test(expected = RuntimeException.class)
     public void whenGetAllRolesWithExceptionThenException() throws ServiceException {
         doThrow(HibernateException.class).when(this.hibernateMocker.getAllRolesQuery()).list();
         super.whenGetAllRolesThenResult();
@@ -77,7 +77,7 @@ public class HibernateRoleServiceTest extends RoleServiceTest {
     /**
      * Check correctness of <code>getRoleByName</code> method when exception is thrown.
      */
-    @Test(expected = ServiceException.class)
+    @Test(expected = RuntimeException.class)
     public void whenGetRoleByNameWithExceptionThenException() throws ServiceException, SQLException {
         doThrow(HibernateException.class).when(this.hibernateMocker.getRoleByNameQuery()).list();
         super.whenGetRoleByNameThenResult();
@@ -114,7 +114,7 @@ public class HibernateRoleServiceTest extends RoleServiceTest {
     /**
      * Test correctness of <code>addRole</code> method when exception is thrown.
      */
-    @Test(expected = ServiceException.class)
+    @Test(expected = RuntimeException.class)
     public void whenAddRoleWithExceptionThenException() throws ServiceException, SQLException {
         when(this.hibernateMocker.getRoleByNameQuery().list()).thenReturn(Collections.emptyList());
         doThrow(HibernateException.class).when(this.hibernateMocker.getSession()).save(any(Role.class));
@@ -146,7 +146,7 @@ public class HibernateRoleServiceTest extends RoleServiceTest {
     /**
      * Test correctness of <code>deleteRole</code> method when exception is thrown.
      */
-    @Test(expected = ServiceException.class)
+    @Test(expected = RuntimeException.class)
     public void whenDeleteRoleWithExceptionThenException() throws ServiceException, SQLException {
         when(this.hibernateMocker.getIsRoleBusyQuery().list()).thenReturn(Collections.emptyList());
         doThrow(HibernateException.class).when(this.hibernateMocker.getDeleteRoleQuery()).executeUpdate();
@@ -156,7 +156,7 @@ public class HibernateRoleServiceTest extends RoleServiceTest {
     /**
      * Test correctness of <code>deleteRole</code> method when exception in method <code>IsRoleBusy</code> is thrown.
      */
-    @Test(expected = ServiceException.class)
+    @Test(expected = RuntimeException.class)
     public void whenDeleteRoleWithExceptionInIsRoleBusyThenException() throws ServiceException, SQLException {
         doThrow(HibernateException.class).when(this.hibernateMocker.getIsRoleBusyQuery()).list();
         this.roleService.deleteRole("client");

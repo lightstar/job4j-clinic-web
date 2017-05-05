@@ -106,7 +106,8 @@ public class JdbcClinicService extends PersistentClinicService {
             }
         } catch (SQLException e) {
             this.undoAddClient(client);
-            throw new ServiceException(String.format("Can't insert client into database: %s", e.getMessage()));
+            throw new IllegalStateException(String.format("Can't insert client into database: %s",
+                    e.getMessage()));
         }
 
         return client;
@@ -139,7 +140,8 @@ public class JdbcClinicService extends PersistentClinicService {
             }
         } catch (SQLException e) {
             this.undoSetClientPet(client, oldPet);
-            throw new ServiceException(String.format("Can't insert client's pet into database: %s", e.getMessage()));
+            throw new IllegalStateException(String.format("Can't insert client's pet into database: %s",
+                    e.getMessage()));
         }
 
         return pet;
@@ -168,7 +170,8 @@ public class JdbcClinicService extends PersistentClinicService {
             statement.executeUpdate();
         } catch (SQLException e) {
             this.undoUpdateClient(client, name, oldEmail, oldPhone, oldRole);
-            throw new ServiceException(String.format("Can't update client's name in database: %s", e.getMessage()));
+            throw new IllegalStateException(String.format("Can't update client's name in database: %s",
+                    e.getMessage()));
         }
     }
 
@@ -194,7 +197,8 @@ public class JdbcClinicService extends PersistentClinicService {
             statement.executeUpdate();
         } catch (SQLException e) {
             this.undoUpdateClientPet(client, oldPetName, oldPetAge, oldPetSex);
-            throw new ServiceException(String.format("Can't update client pet's name in database: %s", e.getMessage()));
+            throw new IllegalStateException(String.format("Can't update client pet's name in database: %s",
+                    e.getMessage()));
         }
     }
 
@@ -212,7 +216,8 @@ public class JdbcClinicService extends PersistentClinicService {
             statement.executeUpdate();
         } catch (SQLException e) {
             this.undoDeleteClientPet(client, oldPet);
-            throw new ServiceException(String.format("Can't delete client's pet from database: %s", e.getMessage()));
+            throw new IllegalStateException(String.format("Can't delete client's pet from database: %s",
+                    e.getMessage()));
         }
     }
 
@@ -229,7 +234,8 @@ public class JdbcClinicService extends PersistentClinicService {
             statement.executeUpdate();
         } catch (SQLException e) {
             this.undoDeleteClient(client);
-            throw new ServiceException(String.format("Can't delete client from database: %s", e.getMessage()));
+            throw new IllegalStateException(String.format("Can't delete client from database: %s",
+                    e.getMessage()));
         }
     }
 

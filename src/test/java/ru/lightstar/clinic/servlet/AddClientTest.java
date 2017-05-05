@@ -40,11 +40,11 @@ public class AddClientTest extends ServletTest {
     @Test
     public void whenDoGetAndNoRolesThenError() throws ServletException, IOException, ServiceException {
         when(this.request.getRequestDispatcher("/WEB-INF/view/AddClient.jsp")).thenReturn(this.dispatcher);
-        when(this.roleService.getAllRoles()).thenThrow(new ServiceException("Test error"));
+        when(this.roleService.getAllRoles()).thenThrow(new RuntimeException("Some error"));
 
         new AddClient(this.clinicService, this.roleService).doGet(this.request, this.response);
 
-        verify(this.session, atLeastOnce()).setAttribute("error", "Test error.");
+        verify(this.session, atLeastOnce()).setAttribute("error", "Unknown error.");
         verify(this.dispatcher, atLeastOnce()).forward(this.request, this.response);
     }
 

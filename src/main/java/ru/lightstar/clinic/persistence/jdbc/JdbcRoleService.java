@@ -61,7 +61,7 @@ public class JdbcRoleService extends JdbcService implements RoleService {
      * {@inheritDoc}
      */
     @Override
-    public synchronized List<Role> getAllRoles() throws ServiceException {
+    public synchronized List<Role> getAllRoles() {
         final List<Role> roles = new ArrayList<>();
 
         try (final Statement statement = this.connection.createStatement()) {
@@ -76,7 +76,7 @@ public class JdbcRoleService extends JdbcService implements RoleService {
                 }
             }
         } catch (SQLException e) {
-            throw new ServiceException(String.format("Can't get data from database: %s", e.getMessage()));
+            throw new IllegalStateException(String.format("Can't get data from database: %s", e.getMessage()));
         }
 
         return roles;
@@ -100,7 +100,7 @@ public class JdbcRoleService extends JdbcService implements RoleService {
                 }
             }
         } catch (SQLException e) {
-            throw new ServiceException(String.format("Can't get data from database: %s", e.getMessage()));
+            throw new IllegalStateException(String.format("Can't get data from database: %s", e.getMessage()));
         }
 
         return role;
@@ -130,7 +130,7 @@ public class JdbcRoleService extends JdbcService implements RoleService {
             statement.setString(1, name);
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new ServiceException(String.format("Can't insert role into database: %s", e.getMessage()));
+            throw new IllegalStateException(String.format("Can't insert role into database: %s", e.getMessage()));
         }
     }
 
@@ -147,7 +147,7 @@ public class JdbcRoleService extends JdbcService implements RoleService {
             statement.setString(1, name);
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new ServiceException(String.format("Can't delete role from database: %s", e.getMessage()));
+            throw new IllegalStateException(String.format("Can't delete role from database: %s", e.getMessage()));
         }
     }
 
@@ -156,16 +156,15 @@ public class JdbcRoleService extends JdbcService implements RoleService {
      *
      * @param name role's name.
      * @return <code>true</code> if some client has given role and <code>false</code> otherwise.
-     * @throws ServiceException thrown if can't get data from database.
      */
-    private boolean isRoleBusy(final String name) throws ServiceException {
+    private boolean isRoleBusy(final String name) {
         try (final PreparedStatement statement = this.connection.prepareStatement(CLIENT_BY_ROLE_SQL)) {
             statement.setString(1, name);
             try (final ResultSet rs = statement.executeQuery()) {
                 return rs.next();
             }
         } catch (SQLException e) {
-            throw new ServiceException(String.format("Can't get data from database: %s", e.getMessage()));
+            throw new IllegalStateException(String.format("Can't get data from database: %s", e.getMessage()));
         }
     }
 }

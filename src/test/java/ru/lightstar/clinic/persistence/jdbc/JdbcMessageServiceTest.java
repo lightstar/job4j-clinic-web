@@ -43,7 +43,7 @@ public class JdbcMessageServiceTest extends MessageServiceTest {
     /**
      * Test correctness of <code>getClientMessages</code> method when exception is thrown.
      */
-    @Test(expected = ServiceException.class)
+    @Test(expected = RuntimeException.class)
     public void whenGetClientMessagesWithExceptionThenException() throws ServiceException, SQLException {
         doThrow(SQLException.class).when(this.jdbcMocker.getClientMessagesResultSet()).next();
         super.whenGetClientMessagesThenResult();
@@ -75,7 +75,7 @@ public class JdbcMessageServiceTest extends MessageServiceTest {
     /**
      * Test correctness of <code>addMessage</code> method when exception is thrown.
      */
-    @Test(expected = ServiceException.class)
+    @Test(expected = RuntimeException.class)
     public void whenAddMessageWithExceptionThenException() throws ServiceException, SQLException {
         doThrow(SQLException.class).when(this.jdbcMocker.getAddMessageStatement()).executeUpdate();
         this.messageService.addMessage(this.client, "Some message");
@@ -99,7 +99,7 @@ public class JdbcMessageServiceTest extends MessageServiceTest {
     /**
      * Test correctness of <code>deleteMessage</code> method when exception is thrown.
      */
-    @Test(expected = ServiceException.class)
+    @Test(expected = RuntimeException.class)
     public void whenDeleteRoleWithExceptionThenException() throws ServiceException, SQLException {
         doThrow(SQLException.class).when(this.jdbcMocker.getDeleteMessageStatement()).executeUpdate();
         this.messageService.deleteMessage(this.client, 1);

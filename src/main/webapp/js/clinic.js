@@ -81,22 +81,22 @@ function invalidField(errorElement, element, message) {
 
 function deleteClientPet(name) {
     if (!confirm("Really delete this client's pet?")) return;
-    submitForm({ name: name }, "client/pet/delete?name=" + name);
+    submitForm({ name: name }, "client/pet/delete");
 }
 
 function deleteClient(name) {
     if (!confirm("Really delete this client?")) return;
-    submitForm({ name: name }, "client/delete?name=" + name);
+    submitForm({ name: name }, "client/delete");
 }
 
 function deleteRole(name) {
     if (!confirm("Really delete this role?")) return;
-    submitForm({ name: name }, "role/delete?name=" + name);
+    submitForm({ name: name }, "role/delete");
 }
 
 function deleteMessage(name, id) {
     if (!confirm("Really delete this message?")) return;
-    submitForm({ name: name, id: id }, "message/delete?name=" + name);
+    submitForm({ name: name, id: id }, "message/delete");
 }
 
 function submitForm(params, action, method) {

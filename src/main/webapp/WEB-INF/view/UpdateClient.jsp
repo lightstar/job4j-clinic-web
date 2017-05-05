@@ -47,8 +47,6 @@
         <input type="submit" class="button" value="Update">
         <input type="button" class="button" value="Cancel" onclick="document.location.href='<c:url value="${prefix}/"/>';">
     </div>
-
-    <input type="hidden" name="name" value="<c:out value='${param.name}'/>">
 </form>
 </c:if>
 

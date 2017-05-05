@@ -70,7 +70,7 @@ public class JdbcDrugService extends PersistentDrugService {
             }
         } catch(SQLException e) {
             super.takeDrug(drug);
-            throw new ServiceException(String.format("Can't insert drug into database: %s", e.getMessage()));
+            throw new IllegalStateException(String.format("Can't insert drug into database: %s", e.getMessage()));
         }
 
         return drug;
@@ -88,7 +88,7 @@ public class JdbcDrugService extends PersistentDrugService {
             statement.executeUpdate();
         } catch(SQLException e) {
             super.addDrug(drug);
-            throw new ServiceException(String.format("Can't remove drug from database: %s", e.getMessage()));
+            throw new IllegalStateException(String.format("Can't remove drug from database: %s", e.getMessage()));
         }
 
         return drug;

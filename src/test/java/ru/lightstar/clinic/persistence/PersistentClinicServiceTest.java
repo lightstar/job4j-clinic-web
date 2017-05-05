@@ -93,11 +93,11 @@ public abstract class PersistentClinicServiceTest extends Mockito {
         Throwable expectedException = null;
         try {
             this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", new Role());
-        } catch (ServiceException e) {
+        } catch (RuntimeException e) {
             expectedException = e;
         }
 
-        assertThat(expectedException, instanceOf(ServiceException.class));
+        assertThat(expectedException, instanceOf(RuntimeException.class));
         this.clinicService.findClientByName("Petya");
     }
 
@@ -126,11 +126,11 @@ public abstract class PersistentClinicServiceTest extends Mockito {
         Throwable expectedException = null;
         try {
             this.clinicService.setClientPet("Petya", "fish", "Beauty", 2, Sex.F);
-        } catch (ServiceException e) {
+        } catch (RuntimeException e) {
             expectedException = e;
         }
 
-        assertThat(expectedException, instanceOf(ServiceException.class));
+        assertThat(expectedException, instanceOf(RuntimeException.class));
 
         final Client petya = this.clinicService.findClientByName("Petya");
         assertThat(petya.getPet(), is(Pet.NONE));
@@ -145,11 +145,11 @@ public abstract class PersistentClinicServiceTest extends Mockito {
         Throwable expectedException = null;
         try {
             this.clinicService.setClientPet("Petya", "fish", "Beauty", 2, Sex.F);
-        } catch (ServiceException e) {
+        } catch (RuntimeException e) {
             expectedException = e;
         }
 
-        assertThat(expectedException, instanceOf(ServiceException.class));
+        assertThat(expectedException, instanceOf(RuntimeException.class));
 
         final Client petya = this.clinicService.findClientByName("Petya");
         assertThat(petya.getPet().getId(), is(5));
@@ -196,11 +196,11 @@ public abstract class PersistentClinicServiceTest extends Mockito {
         try {
             this.clinicService.updateClient("Petya", "Sasha", "sasha@mail.ru",
                     "456456", newRole);
-        } catch (ServiceException e) {
+        } catch (RuntimeException e) {
             expectedException = e;
         }
 
-        assertThat(expectedException, instanceOf(ServiceException.class));
+        assertThat(expectedException, instanceOf(RuntimeException.class));
 
         final Client petya = this.clinicService.findClientByName("Petya");
         assertThat(petya.getId(), is(4));
@@ -239,11 +239,11 @@ public abstract class PersistentClinicServiceTest extends Mockito {
         Throwable expectedException = null;
         try {
             this.clinicService.updateClientPet("Petya", "Summer", 3, Sex.M);
-        } catch (ServiceException e) {
+        } catch (RuntimeException e) {
             expectedException = e;
         }
 
-        assertThat(expectedException, instanceOf(ServiceException.class));
+        assertThat(expectedException, instanceOf(RuntimeException.class));
 
         final Client petya = this.clinicService.findClientByName("Petya");
         assertThat(petya.getPet().getId(), is(5));
@@ -278,11 +278,11 @@ public abstract class PersistentClinicServiceTest extends Mockito {
         Throwable expectedException = null;
         try {
             this.clinicService.deleteClientPet("Petya");
-        } catch (ServiceException e) {
+        } catch (RuntimeException e) {
             expectedException = e;
         }
 
-        assertThat(expectedException, instanceOf(ServiceException.class));
+        assertThat(expectedException, instanceOf(RuntimeException.class));
 
         final Client petya = this.clinicService.findClientByName("Petya");
         assertThat(petya.getPet().getId(), is(5));
@@ -319,11 +319,11 @@ public abstract class PersistentClinicServiceTest extends Mockito {
         Throwable expectedException = null;
         try {
             this.clinicService.deleteClient("Petya");
-        } catch (ServiceException e) {
+        } catch (RuntimeException e) {
             expectedException = e;
         }
 
-        assertThat(expectedException, instanceOf(ServiceException.class));
+        assertThat(expectedException, instanceOf(RuntimeException.class));
 
         final Client petya = this.clinicService.findClientByName("Petya");
         assertThat(petya.getId(), is(4));

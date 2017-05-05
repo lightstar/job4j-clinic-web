@@ -2,6 +2,7 @@ package ru.lightstar.clinic.persistence.hibernate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.NonTransientDataAccessResourceException;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +43,7 @@ public class HibernateDrugService extends PersistentDrugService {
     /**
      * {@inheritDoc}
      */
-    @Transactional(rollbackFor = {ServiceException.class})
+    @Transactional
     @Override
     public synchronized Drug addDrug(final String name) throws ServiceException {
         final Drug drug = super.addDrug(name);
@@ -51,7 +52,7 @@ public class HibernateDrugService extends PersistentDrugService {
             this.hibernateTemplate.save(drug);
         } catch (DataAccessException e) {
             super.takeDrug(drug);
-            throw new ServiceException(String.format("Can't insert drug into database: %s", e.getMessage()));
+            throw e;
         }
 
         return drug;
@@ -60,7 +61,7 @@ public class HibernateDrugService extends PersistentDrugService {
     /**
      * {@inheritDoc}
      */
-    @Transactional(rollbackFor = {ServiceException.class})
+    @Transactional
     @Override
     public synchronized Drug takeDrug(final String name) throws ServiceException {
         final Drug drug = super.takeDrug(name);
@@ -69,7 +70,7 @@ public class HibernateDrugService extends PersistentDrugService {
             this.hibernateTemplate.delete(drug);
         } catch (DataAccessException e) {
             super.addDrug(drug);
-            throw new ServiceException(String.format("Can't remove drug from database: %s", e.getMessage()));
+            throw e;
         }
 
         return drug;
@@ -85,8 +86,8 @@ public class HibernateDrugService extends PersistentDrugService {
             for (final Drug drug : drugs) {
                 super.addDrug(drug);
             }
-        } catch (DataAccessException | ServiceException e){
-            throw new IllegalStateException("Can't load data from database", e);
+        } catch (ServiceException e) {
+            throw new NonTransientDataAccessResourceException("Wrong drug data in database", e);
         }
     }
 }

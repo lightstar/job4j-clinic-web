@@ -19,9 +19,8 @@ public interface MessageService {
      *
      * @param client client object.
      * @return list of client's messages.
-     * @throws ServiceException thrown if can't get data.
      */
-    List<Message> getClientMessages(Client client) throws ServiceException;
+    List<Message> getClientMessages(Client client);
 
     /**
      * Add new client's message.
@@ -37,7 +36,6 @@ public interface MessageService {
      *
      * @param client client object.
      * @param id message's id.
-     * @throws ServiceException thrown if can't delete message.
      */
-    void deleteMessage(Client client, int id) throws ServiceException;
+    void deleteMessage(Client client, int id);
 }

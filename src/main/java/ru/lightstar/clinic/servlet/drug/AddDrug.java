@@ -47,6 +47,8 @@ public class AddDrug extends DrugServlet {
             errorString = "Invalid request parameters";
         } catch (ServiceException e) {
             errorString = e.getMessage();
+        } catch (RuntimeException e) {
+            errorString = "Unknown error";
         }
 
         this.finishUpdate(request, response, "Drug added", errorString, "/drug");

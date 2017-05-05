@@ -2,6 +2,7 @@ package ru.lightstar.clinic.persistence.hibernate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.NonTransientDataAccessResourceException;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +45,7 @@ public class HibernateClinicService extends PersistentClinicService {
     /**
      * {@inheritDoc}
      */
-    @Transactional(rollbackFor = {ServiceException.class, NameException.class})
+    @Transactional
     @Override
     public synchronized Client addClient(final int position, final String name, final String email,
                                          final String phone, final Role role)
@@ -55,7 +56,7 @@ public class HibernateClinicService extends PersistentClinicService {
             this.hibernateTemplate.save(client);
         } catch (DataAccessException e) {
             this.undoAddClient(client);
-            throw new ServiceException(String.format("Can't insert client into database: %s", e.getMessage()));
+            throw e;
         }
 
         return client;
@@ -64,7 +65,7 @@ public class HibernateClinicService extends PersistentClinicService {
     /**
      * {@inheritDoc}
      */
-    @Transactional(rollbackFor = {ServiceException.class, NameException.class})
+    @Transactional
     @Override
     public synchronized Pet setClientPet(final String name, final String petType, final String petName,
                                          final int petAge, final Sex petSex)
@@ -77,7 +78,7 @@ public class HibernateClinicService extends PersistentClinicService {
             this.hibernateTemplate.saveOrUpdate(pet);
         } catch (DataAccessException e) {
             this.undoSetClientPet(client, oldPet);
-            throw new ServiceException(String.format("Can't insert client's pet into database: %s", e.getMessage()));
+            throw e;
         }
 
         return pet;
@@ -86,7 +87,7 @@ public class HibernateClinicService extends PersistentClinicService {
     /**
      * {@inheritDoc}
      */
-    @Transactional(rollbackFor = {ServiceException.class, NameException.class})
+    @Transactional
     @Override
     public synchronized void updateClient(final String name, final String newName,
                                           final String newEmail, final String newPhone,
@@ -102,14 +103,14 @@ public class HibernateClinicService extends PersistentClinicService {
             this.hibernateTemplate.update(client);
         } catch (DataAccessException e) {
             this.undoUpdateClient(client, name, oldEmail, oldPhone, oldRole);
-            throw new ServiceException(String.format("Can't update client's name in database: %s", e.getMessage()));
+            throw e;
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    @Transactional(rollbackFor = {ServiceException.class, NameException.class})
+    @Transactional
     @Override
     public synchronized void updateClientPet(final String name, final String petName,
                                              final int petAge, final Sex petSex)
@@ -125,14 +126,14 @@ public class HibernateClinicService extends PersistentClinicService {
             this.hibernateTemplate.update(pet);
         } catch (DataAccessException e) {
             this.undoUpdateClientPet(client, oldPetName, oldPetAge, oldPetSex);
-            throw new ServiceException(String.format("Can't update client pet's name in database: %s", e.getMessage()));
+            throw e;
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    @Transactional(rollbackFor = {ServiceException.class})
+    @Transactional
     @Override
     public synchronized void deleteClientPet(final String name) throws ServiceException {
         final Client client = this.findClientByName(name);
@@ -143,14 +144,14 @@ public class HibernateClinicService extends PersistentClinicService {
             this.hibernateTemplate.delete(pet);
         } catch (DataAccessException e) {
             this.undoDeleteClientPet(client, pet);
-            throw new ServiceException(String.format("Can't delete client's pet from database: %s", e.getMessage()));
+            throw e;
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    @Transactional(rollbackFor = {ServiceException.class})
+    @Transactional
     @Override
     public synchronized void deleteClient(final String name) throws ServiceException {
         final Client client = this.findClientByName(name);
@@ -160,7 +161,7 @@ public class HibernateClinicService extends PersistentClinicService {
             this.hibernateTemplate.delete(client);
         } catch (DataAccessException e) {
             this.undoDeleteClient(client);
-            throw new ServiceException(String.format("Can't delete client from database: %s", e.getMessage()));
+            throw e;
         }
     }
 
@@ -180,8 +181,8 @@ public class HibernateClinicService extends PersistentClinicService {
                     super.setClientPet(client, pet);
                 }
             }
-        } catch (DataAccessException | ServiceException | NameException e) {
-            throw new IllegalStateException("Can't load data from database", e);
+        } catch (ServiceException | NameException e) {
+            throw new NonTransientDataAccessResourceException("Wrong client data in database", e);
         }
     }
 }

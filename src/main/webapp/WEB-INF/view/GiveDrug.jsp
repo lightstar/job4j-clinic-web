@@ -26,8 +26,6 @@
         <input type="submit" class="button" value="Give">
         <input type="button" class="button" value="Cancel" onclick="document.location.href='<c:url value="${prefix}/drug"/>';">
     </div>
-
-    <input type="hidden" name="name" value="<c:out value='${param.name}'/>">
 </form>
 
 <%@include file="Footer.jsp" %>

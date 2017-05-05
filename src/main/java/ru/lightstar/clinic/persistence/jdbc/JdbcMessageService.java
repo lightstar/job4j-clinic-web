@@ -51,7 +51,7 @@ public class JdbcMessageService extends JdbcService implements MessageService {
      * {@inheritDoc}
      */
     @Override
-    public List<Message> getClientMessages(final Client client) throws ServiceException {
+    public List<Message> getClientMessages(final Client client) {
         final List<Message> messages = new ArrayList<>();
 
         try (final PreparedStatement statement = this.connection.prepareStatement(CLIENT_MESSAGES_SQL)) {
@@ -67,7 +67,7 @@ public class JdbcMessageService extends JdbcService implements MessageService {
                 }
             }
         } catch (SQLException e) {
-            throw new ServiceException(String.format("Can't get data from database: %s", e.getMessage()));
+            throw new IllegalStateException(String.format("Can't get data from database: %s", e.getMessage()));
         }
 
         return messages;
@@ -87,7 +87,7 @@ public class JdbcMessageService extends JdbcService implements MessageService {
             statement.setInt(2, client.getId());
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new ServiceException(String.format("Can't insert message into database: %s", e.getMessage()));
+            throw new IllegalStateException(String.format("Can't insert message into database: %s", e.getMessage()));
         }
     }
 
@@ -95,13 +95,13 @@ public class JdbcMessageService extends JdbcService implements MessageService {
      * {@inheritDoc}
      */
     @Override
-    public void deleteMessage(final Client client, final int id) throws ServiceException {
+    public void deleteMessage(final Client client, final int id) {
         try (final PreparedStatement statement = this.connection.prepareStatement(DELETE_MESSAGE_SQL)) {
             statement.setInt(1, client.getId());
             statement.setInt(2, id);
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new ServiceException(String.format("Can't delete message from database: %s", e.getMessage()));
+            throw new IllegalStateException(String.format("Can't delete message from database: %s", e.getMessage()));
         }
     }
 }

@@ -51,11 +51,11 @@ public class ShowMessagesTest extends ServletTest {
         when(this.request.getParameter("name")).thenReturn("Vasya");
         when(this.request.getRequestDispatcher("/WEB-INF/view/ShowMessages.jsp")).thenReturn(this.dispatcher);
         when(this.clinicService.findClientByName("Vasya")).thenReturn(client);
-        when(this.messageService.getClientMessages(client)).thenThrow(new ServiceException("Test error"));
+        when(this.messageService.getClientMessages(client)).thenThrow(new RuntimeException("Some error"));
 
         new ShowMessages(this.clinicService, this.roleService, this.messageService).doGet(this.request, this.response);
 
-        verify(this.session, atLeastOnce()).setAttribute("error", "Test error.");
+        verify(this.session, atLeastOnce()).setAttribute("error", "Unknown error.");
         verify(this.dispatcher, atLeastOnce()).forward(this.request, this.response);
     }
 
