@@ -3,8 +3,7 @@ package ru.lightstar.clinic.controller;
 import org.springframework.dao.DataAccessException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import javax.servlet.http.HttpServletRequest;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * Controller that globally handles exceptions in all other controllers.
@@ -18,35 +17,35 @@ public class GlobalExceptionHandler {
     /**
      * Data access exception handler.
      *
-     * @param request user's request.
+     * @param redirectAttributes redirect attributes object.
      * @return view name.
      */
     @ExceptionHandler(DataAccessException.class)
-    public String dataAccessExceptionHandler(final HttpServletRequest request) {
-        return this.exceptionHandler(request, "Database error");
+    public String dataAccessExceptionHandler(final RedirectAttributes redirectAttributes) {
+        return this.exceptionHandler(redirectAttributes, "Database error");
     }
 
     /**
      * Default exception handler.
      *
-     * @param request user's request.
+     * @param redirectAttributes redirect attributes object.
      * @return view name.
      */
     @ExceptionHandler(RuntimeException.class)
-    public String defaultExceptionHandler(final HttpServletRequest request) {
-        return this.exceptionHandler(request, "Unknown error");
+    public String defaultExceptionHandler(final RedirectAttributes redirectAttributes) {
+        return this.exceptionHandler(redirectAttributes, "Unknown error");
 
     }
 
     /**
      * Generic exception handler.
      *
-     * @param request user's request.
+     * @param redirectAttributes redirect attributes object.
      * @param errorMessage error's message.
      * @return view name.
      */
-    private String exceptionHandler(final HttpServletRequest request, final String errorMessage) {
-        request.getSession().setAttribute("error", String.format("%s.", errorMessage));
+    private String exceptionHandler(final RedirectAttributes redirectAttributes, final String errorMessage) {
+        redirectAttributes.addFlashAttribute("error", String.format("%s.", errorMessage));
         return "redirect:/error";
     }
 }

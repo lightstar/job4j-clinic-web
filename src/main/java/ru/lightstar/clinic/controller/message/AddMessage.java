@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.DrugService;
 import ru.lightstar.clinic.controller.ClinicController;
@@ -39,6 +40,7 @@ public class AddMessage extends ClinicController {
      *
      * @param name client's name.
      * @param text message's text.
+     * @param redirectAttributes redirect attributes object.
      * @param request user's request.
      * @return view name.
      * @throws ServiceException thrown if can't add message.
@@ -46,6 +48,7 @@ public class AddMessage extends ClinicController {
     @RequestMapping(method = RequestMethod.POST)
     public String addMessage(@RequestParam("name") final String name,
                              @RequestParam("text") final String text,
+                             final RedirectAttributes redirectAttributes,
                              final HttpServletRequest request)
             throws ServiceException{
         final Client client;
@@ -56,7 +59,7 @@ public class AddMessage extends ClinicController {
         }
 
         this.messageService.addMessage(client, text);
-        this.setMessage(request,  "Message added");
+        this.setMessage(redirectAttributes,  "Message added");
         return this.redirectToForm(request);
     }
 

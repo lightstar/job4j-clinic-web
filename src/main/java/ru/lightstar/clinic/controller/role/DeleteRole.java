@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.DrugService;
 import ru.lightstar.clinic.controller.ClinicController;
@@ -37,15 +38,17 @@ public class DeleteRole extends ClinicController {
      * Handle delete role request.
      *
      * @param name role's name.
+     * @param redirectAttributes redirect attributes object.
      * @param request user's request.
      * @return view name.
      * @throws ServiceException thrown if can't delete role.
      */
     @RequestMapping(method = RequestMethod.POST)
-    public String deleteRole(@RequestParam("name") final String name, final HttpServletRequest request)
+    public String deleteRole(@RequestParam("name") final String name, final RedirectAttributes redirectAttributes,
+                             final HttpServletRequest request)
             throws ServiceException {
         this.roleService.deleteRole(name);
-        this.setMessage(request,  "Role deleted");
+        this.setMessage(redirectAttributes,  "Role deleted");
         return this.redirectToForm(request);
     }
 

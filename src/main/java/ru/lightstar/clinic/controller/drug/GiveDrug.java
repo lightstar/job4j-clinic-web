@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.DrugService;
 import ru.lightstar.clinic.controller.ClinicController;
@@ -50,16 +51,16 @@ public class GiveDrug extends ClinicController {
      * Handle give drug request.
      *
      * @param form form filled by user.
-     * @param request user's request.
+     * @param redirectAttributes redirect attributes object.
      * @return view name.
      * @throws ServiceException thrown if can't give drug.
      */
     @RequestMapping(method = RequestMethod.POST)
-    public String giveDrug(@ModelAttribute GiveDrugForm form, final HttpServletRequest request)
+    public String giveDrug(@ModelAttribute GiveDrugForm form, final RedirectAttributes redirectAttributes)
             throws ServiceException {
         final Pet pet = this.clinicService.getClientPet(form.getClientName());
         final Drug drug = this.drugService.takeDrug(form.getName());
-        this.setMessage(request,  String.format("Gave %s to %s", drug, pet));
+        this.setMessage(redirectAttributes,  String.format("Gave %s to %s", drug, pet));
         return "redirect:/drug";
     }
 

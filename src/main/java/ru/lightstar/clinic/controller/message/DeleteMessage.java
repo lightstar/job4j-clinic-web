@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.DrugService;
 import ru.lightstar.clinic.controller.ClinicController;
@@ -39,13 +40,14 @@ public class DeleteMessage extends ClinicController {
      *
      * @param name client's name.
      * @param id message's id.
+     * @param redirectAttributes redirect attributes object.
      * @param request user's request.
      * @return view name.
      * @throws ServiceException thrown if can't delete message.
      */
     @RequestMapping(method = RequestMethod.POST)
     public String deleteMessage(@RequestParam("name") final String name, @RequestParam("id") final int id,
-                             final HttpServletRequest request)
+                                final RedirectAttributes redirectAttributes, final HttpServletRequest request)
             throws ServiceException {
         final Client client;
         try {
@@ -55,7 +57,7 @@ public class DeleteMessage extends ClinicController {
         }
 
         this.messageService.deleteMessage(client, id);
-        this.setMessage(request,  "Message deleted");
+        this.setMessage(redirectAttributes,  "Message deleted");
         return this.redirectToForm(request);
     }
 

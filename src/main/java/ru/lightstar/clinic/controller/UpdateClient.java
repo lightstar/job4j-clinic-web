@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.DrugService;
 import ru.lightstar.clinic.exception.NameException;
@@ -66,18 +67,19 @@ public class UpdateClient extends ClinicController {
      * Handle update client request.
      *
      * @param form form filled by user.
-     * @param request user's request.
+     * @param redirectAttributes redirect attributes object.
      * @return view name.
      * @throws ServiceException thrown if can't update client.
      * @throws NameException thrown if client's name is invalid.
      */
     @RequestMapping(method = RequestMethod.POST)
-    public String updateClient(@ModelAttribute final UpdateClientForm form, final HttpServletRequest request)
+    public String updateClient(@ModelAttribute final UpdateClientForm form,
+                               final RedirectAttributes redirectAttributes)
             throws ServiceException, NameException {
         final Role newRole = this.roleService.getRoleByName(form.getNewRole());
         this.clinicService.updateClient(form.getName(), form.getNewName(),
                 form.getNewEmail(), form.getNewPhone(), newRole);
-        this.setMessage(request,  "Client updated");
+        this.setMessage(redirectAttributes,  "Client updated");
         return "redirect:/";
     }
 

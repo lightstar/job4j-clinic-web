@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.DrugService;
 import ru.lightstar.clinic.exception.NameException;
@@ -64,24 +65,27 @@ public abstract class ClinicController {
      * Service exceptions handler.
      *
      * @param exception exception object.
+     * @param redirectAttributes redirect attributes object.
      * @param request user's request.
      * @return view name.
      */
     @ExceptionHandler({ServiceException.class, NameException.class})
-    public String serviceException(final Exception exception, final HttpServletRequest request) {
-        this.setError(request, exception.getMessage());
+    public String serviceException(final Exception exception, final RedirectAttributes redirectAttributes,
+                                   final HttpServletRequest request) {
+        this.setError(redirectAttributes, exception.getMessage());
         return this.redirectToForm(request);
     }
 
     /**
      * Binding exceptions handler.
      *
+     * @param redirectAttributes redirect attributes object.
      * @param request user's request.
      * @return view name.
      */
     @ExceptionHandler({ServletRequestBindingException.class, BindException.class})
-    public String bindException(final HttpServletRequest request) {
-        this.setError(request, "Invalid parameters");
+    public String bindException(final RedirectAttributes redirectAttributes, final HttpServletRequest request) {
+        this.setError(redirectAttributes, "Invalid parameters");
         return this.redirectToForm(request);
     }
 
@@ -115,22 +119,22 @@ public abstract class ClinicController {
     }
 
     /**
-     * Set error message in session attributes.
+     * Set error message in redirect attributes.
      *
-     * @param request user's request.
+     * @param redirectAttributes redirect attributes object.
      * @param message error message.
      */
-    protected void setError(final HttpServletRequest request, final String message) {
-        request.getSession().setAttribute("error", String.format("%s.", message));
+    protected void setError(final RedirectAttributes redirectAttributes, final String message) {
+        redirectAttributes.addFlashAttribute("error", String.format("%s.", message));
     }
 
     /**
-     * Set informational message in session attributes.
+     * Set informational message in redirect attributes.
      *
-     * @param request user's request.
+     * @param redirectAttributes redirect attributes object.
      * @param message message.
      */
-    protected void setMessage(final HttpServletRequest request, final String message) {
-        request.getSession().setAttribute("message", String.format("%s.", message));
+    protected void setMessage(final RedirectAttributes redirectAttributes, final String message) {
+        redirectAttributes.addFlashAttribute("message", String.format("%s.", message));
     }
 }

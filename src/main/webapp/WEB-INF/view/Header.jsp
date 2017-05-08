@@ -33,3 +33,11 @@
     <p class="message"><c:out value="${sessionScope.message}"/></p>
     <c:remove var="message" scope="session" />
 </c:if>
+
+<c:if test="${requestScope.error != null}">
+    <p class="error"><c:out value="${requestScope.error}"/></p>
+</c:if>
+
+<c:if test="${requestScope.message != null}">
+    <p class="message"><c:out value="${requestScope.message}"/></p>
+</c:if>

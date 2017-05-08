@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.DrugService;
 import ru.lightstar.clinic.controller.ClinicController;
@@ -37,15 +38,17 @@ public class AddRole extends ClinicController {
      * Handle add role request.
      *
      * @param name role's name.
+     * @param redirectAttributes redirect attributes object.
      * @param request user's request.
      * @return view name.
      * @throws ServiceException thrown if can't add role.
      */
     @RequestMapping(method = RequestMethod.POST)
-    public String addRole(@RequestParam("name") final String name, final HttpServletRequest request)
+    public String addRole(@RequestParam("name") final String name, final RedirectAttributes redirectAttributes,
+                          final HttpServletRequest request)
             throws ServiceException {
         this.roleService.addRole(name);
-        this.setMessage(request,  "Role added");
+        this.setMessage(redirectAttributes,  "Role added");
         return this.redirectToForm(request);
     }
 

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.DrugService;
 import ru.lightstar.clinic.exception.NameException;
@@ -47,17 +48,18 @@ public class SetClientPet extends ClinicController {
      * Handle set client's pet request.
      *
      * @param form form filled by user.
-     * @param request user's request.
+     * @param redirectAttributes redirect attributes object.
      * @return view name.
      * @throws ServiceException thrown if can't set client's pet.
      * @throws NameException thrown if name is invalid.
      */
     @RequestMapping(method = RequestMethod.POST)
-    public String setClientPet(@ModelAttribute final SetClientPetForm form, final HttpServletRequest request)
+    public String setClientPet(@ModelAttribute final SetClientPetForm form,
+                               final RedirectAttributes redirectAttributes)
             throws ServiceException, NameException {
         this.clinicService.setClientPet(form.getName(), form.getPetType(), form.getPetName(), form.getPetAge(),
                 form.getPetSex().toLowerCase().equals("m") ? Sex.M : Sex.F);
-        this.setMessage(request,  "Pet was set");
+        this.setMessage(redirectAttributes,  "Pet was set");
         return "redirect:/";
     }
 

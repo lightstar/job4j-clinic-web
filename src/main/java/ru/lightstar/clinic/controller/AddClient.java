@@ -6,6 +6,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.DrugService;
 import ru.lightstar.clinic.exception.NameException;
@@ -52,18 +53,18 @@ public class AddClient extends ClinicController {
      * Handle add client request.
      *
      * @param form form filled by user.
-     * @param request user's request.
+     * @param redirectAttributes redirect attributes object.
      * @return view name.
      * @throws ServiceException thrown if can't add client.
      * @throws NameException thrown if client's name is invalid.
      */
     @RequestMapping(method = RequestMethod.POST)
-    public String addClient(@ModelAttribute AddClientForm form, final HttpServletRequest request)
+    public String addClient(@ModelAttribute AddClientForm form, final RedirectAttributes redirectAttributes)
             throws ServiceException, NameException {
         final Role role = this.roleService.getRoleByName(form.getRole());
         this.clinicService.addClient(form.getPos() - 1, form.getName(), form.getEmail(), form.getPhone(),
                 role);
-        this.setMessage(request,  "Client added");
+        this.setMessage(redirectAttributes,  "Client added");
         return "redirect:/";
     }
 

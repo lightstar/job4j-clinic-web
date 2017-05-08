@@ -1,18 +1,11 @@
 package ru.lightstar.clinic.controller;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-import ru.lightstar.clinic.ClinicService;
+import ru.lightstar.clinic.exception.ServiceException;
+import ru.lightstar.clinic.io.DummyOutput;
 import ru.lightstar.clinic.model.Client;
+import ru.lightstar.clinic.pet.Bird;
+import ru.lightstar.clinic.pet.Cat;
 import ru.lightstar.clinic.pet.Pet;
 
 import static org.hamcrest.Matchers.*;
@@ -25,36 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author LightStar
  * @since 0.0.1
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:spring-test-context.xml", "classpath:spring-web-context.xml"})
-@WebAppConfiguration
-public class ShowClientsTest extends Mockito {
-
-    /**
-     * Mock spring MVC runner.
-     */
-    private MockMvc mockMvc;
-
-    /**
-     * Mocked clinic service.
-     */
-    @Autowired
-    private ClinicService mockClinicService;
-
-    /**
-     * Application context used for mvc tests.
-     */
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-
-    /**
-     * Setting up test environment.
-     */
-    @Before
-    public void setUp() {
-        reset(this.mockClinicService);
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
-    }
+public class ShowClientsTest extends ControllerTest {
 
     /**
      * Test correctness of show request without filters.
@@ -63,16 +27,81 @@ public class ShowClientsTest extends Mockito {
     public void whenShowThenResult() throws Exception {
         final Client vasya = new Client("Vasya", Pet.NONE, 0);
         final Client vova = new Client("Vova", Pet.NONE, 1);
-        final Client[] clients = new Client[]{vasya, vova};
 
-        when(this.mockClinicService.getAllClients()).thenReturn(clients);
+        when(this.mockClinicService.getAllClients()).thenReturn(new Client[]{vasya, vova});
 
-        this.mockMvc.perform(get("/")).andExpect(status().isOk())
+        this.mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
                 .andExpect(view().name("ShowClients"))
                 .andExpect(forwardedUrl("/WEB-INF/view/ShowClients.jsp"))
-                .andExpect(model().attribute("clients", is(clients)));
+                .andExpect(model().attribute("clients", arrayWithSize(2)))
+                .andExpect(model().attribute("clients", arrayContaining(vasya, vova)));
 
         verify(this.mockClinicService, times(1)).getAllClients();
+        verifyNoMoreInteractions(this.mockClinicService);
+    }
+
+    /**
+     * Test correctness of show request with filter by client name.
+     */
+    @Test
+    public void whenShowWithFilterByClientThenResult() throws Exception {
+        final Client vasya = new Client("Vasya", Pet.NONE, 0);
+
+        when(this.mockClinicService.findClientByName("Vasya")).thenReturn(vasya);
+
+        this.mockMvc.perform(get("/")
+                    .param("filterType", "client")
+                    .param("filterName", "Vasya"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("ShowClients"))
+                .andExpect(forwardedUrl("/WEB-INF/view/ShowClients.jsp"))
+                .andExpect(model().attribute("clients", arrayWithSize(1)))
+                .andExpect(model().attribute("clients", arrayContaining(vasya)));
+
+        verify(this.mockClinicService, times(1)).findClientByName("Vasya");
+        verifyNoMoreInteractions(this.mockClinicService);
+    }
+
+    /**
+     * Test correctness of show request with filter by client name when client not found.
+     */
+    @Test
+    public void whenShowWithFilterByClientAndClientNotFoundThenResult() throws Exception {
+        when(this.mockClinicService.findClientByName("Vasya")).thenThrow(new ServiceException("Client not found"));
+
+        this.mockMvc.perform(get("/")
+                    .param("filterType", "client")
+                    .param("filterName", "Vasya"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("ShowClients"))
+                .andExpect(forwardedUrl("/WEB-INF/view/ShowClients.jsp"))
+                .andExpect(model().attribute("clients", emptyArray()));
+
+        verify(this.mockClinicService, times(1)).findClientByName("Vasya");
+        verifyNoMoreInteractions(this.mockClinicService);
+    }
+
+    /**
+     * Test correctness of show request with filter by pet name.
+     */
+    @Test
+    public void whenShowWithFilterByPetThenResult() throws Exception {
+        final Client vasya = new Client("Vasya", new Cat("Murka", new DummyOutput()), 0);
+        final Client vova = new Client("Vova", new Bird("Murka", new DummyOutput()), 1);
+
+        when(this.mockClinicService.findClientsByPetName("Murka")).thenReturn(new Client[]{vasya, vova});
+
+        this.mockMvc.perform(get("/")
+                    .param("filterType", "pet")
+                    .param("filterName", "Murka"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("ShowClients"))
+                .andExpect(forwardedUrl("/WEB-INF/view/ShowClients.jsp"))
+                .andExpect(model().attribute("clients", arrayWithSize(2)))
+                .andExpect(model().attribute("clients", arrayContaining(vasya, vova)));
+
+        verify(this.mockClinicService, times(1)).findClientsByPetName("Murka");
         verifyNoMoreInteractions(this.mockClinicService);
     }
 }
