@@ -23,7 +23,7 @@
             <select id="petType" name="petType">
                 <c:forEach items="${clinicService.knownPetTypes}" var="petType">
                     <option value="<c:out value='${petType}'/>"
-                        ${param.petType == petType ? ' selected="selected"' : ''}>
+                        ${requestScope.petType == petType ? ' selected="selected"' : ''}>
                         <c:out value="${petType}"/>
                     </option>
                 </c:forEach>
@@ -34,13 +34,13 @@
     <div>
         <label for="petName" class="element">Pet's name:</label>
         <input type="text" class="element text" id="petName" name="petName"
-               value="<c:out value='${param.petName}'/>">
+               value="<c:out value='${requestScope.petName}'/>">
     </div>
 
     <div>
         <label for="petAge" class="element">Pet's age:</label>
         <input type="text" class="element text" id="petAge" name="petAge"
-               value="<c:out value='${param.petAge}'/>">
+               value="<c:out value='${requestScope.petAge}'/>">
     </div>
 
     <div>
@@ -48,11 +48,11 @@
         <span class="element" id="petSex">
             <label for="petSexM">Male</label>
             <input type="radio" class="radio" id="petSexM" name="petSex" value="m"
-                   <c:if test="${param.petSex == 'm'}">checked</c:if>/>
+                   <c:if test="${requestScope.petSex == 'm'}">checked</c:if>/>
 
             <label for="petSexF">Female</label>
             <input type="radio" class="radio" id="petSexF" name="petSex" value="f"
-                   <c:if test="${param.petSex == 'f'}">checked</c:if>/>
+                   <c:if test="${requestScope.petSex == 'f'}">checked</c:if>/>
         </span>
     </div>
 

@@ -158,7 +158,7 @@ public abstract class ClinicController {
      * @param name attribute's name.
      * @param value attribute's value.
      */
-    protected void addToModelIfAbsent(final ModelMap model, final String name, final String value) {
+    protected void addToModelIfAbsent(final ModelMap model, final String name, final Object value) {
         if (!model.containsAttribute(name)) {
             model.addAttribute(name, value);
         }

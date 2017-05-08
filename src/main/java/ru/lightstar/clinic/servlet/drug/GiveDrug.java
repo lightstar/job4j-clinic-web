@@ -42,6 +42,9 @@ public class GiveDrug extends DrugServlet {
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
         super.doGet(request, response);
+
+        this.setAttributeFromParameter(request, "clientName", "");
+
         request.getRequestDispatcher("/WEB-INF/view/GiveDrug.jsp").forward(request, response);
     }
 

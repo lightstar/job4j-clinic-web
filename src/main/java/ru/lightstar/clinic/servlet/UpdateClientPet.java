@@ -55,8 +55,9 @@ public class UpdateClientPet extends ClinicServlet {
         }
 
         this.setAttributeFromParameter(request, "newName", pet.getName());
-        this.setAttributeFromParameter(request, "newAge", String.valueOf(pet.getAge()));
+        this.setAttributeFromParameter(request, "newAge", pet.getAge());
         this.setAttributeFromParameter(request, "newSex", pet.getSex() == Sex.M ? "m" : "f");
+
         request.getRequestDispatcher("/WEB-INF/view/UpdateClientPet.jsp").forward(request, response);
     }
 

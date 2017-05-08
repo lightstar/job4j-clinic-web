@@ -19,7 +19,7 @@
     <div>
         <label for="clientName" class="element">Client's name:</label>
         <input type="text" class="element text" id="clientName" name="clientName"
-               value="<c:out value='${param.clientName}'/>">
+               value="<c:out value='${requestScope.clientName}'/>">
     </div>
 
     <div>

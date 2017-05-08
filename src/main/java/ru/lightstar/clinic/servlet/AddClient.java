@@ -40,7 +40,13 @@ public class AddClient extends ClinicServlet {
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
         super.doGet(request, response);
+
         this.setRolesAttribute(request);
+        this.setAttributeFromParameter(request, "name", "");
+        this.setAttributeFromParameter(request, "email", "");
+        this.setAttributeFromParameter(request, "phone", "");
+        this.setAttributeFromParameter(request, "role", "");
+
         request.getRequestDispatcher("/WEB-INF/view/AddClient.jsp").forward(request, response);
     }
 

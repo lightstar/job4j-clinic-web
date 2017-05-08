@@ -40,6 +40,12 @@ public class SetClientPet extends ClinicServlet {
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
         super.doGet(request, response);
+
+        this.setAttributeFromParameter(request, "petType", "");
+        this.setAttributeFromParameter(request, "petName", "");
+        this.setAttributeFromParameter(request, "petAge", "");
+        this.setAttributeFromParameter(request, "petSex", "");
+
         request.getRequestDispatcher("/WEB-INF/view/SetClientPet.jsp").forward(request, response);
     }
 

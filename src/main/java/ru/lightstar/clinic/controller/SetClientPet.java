@@ -70,4 +70,16 @@ public class SetClientPet extends ClinicController {
     protected String redirectToForm(final HttpServletRequest request) {
         return "redirect:/client/pet/set?name=" + this.getEncodedParam(request, "name");
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void setEnteredFormValues(final RedirectAttributes redirectAttributes,
+                                        final HttpServletRequest request) {
+        this.addFlashAttributeFromRequestParam(redirectAttributes, request, "petType");
+        this.addFlashAttributeFromRequestParam(redirectAttributes, request, "petName");
+        this.addFlashAttributeFromRequestParam(redirectAttributes, request, "petAge");
+        this.addFlashAttributeFromRequestParam(redirectAttributes, request, "petSex");
+    }
 }

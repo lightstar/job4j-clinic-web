@@ -71,4 +71,13 @@ public class GiveDrug extends ClinicController {
     protected String redirectToForm(final HttpServletRequest request) {
         return "redirect:/drug/give?name=" + this.getEncodedParam(request, "name");
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void setEnteredFormValues(final RedirectAttributes redirectAttributes,
+                                        final HttpServletRequest request) {
+        this.addFlashAttributeFromRequestParam(redirectAttributes, request, "clientName");
+    }
 }

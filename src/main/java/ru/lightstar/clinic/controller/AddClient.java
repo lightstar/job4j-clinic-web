@@ -75,4 +75,16 @@ public class AddClient extends ClinicController {
     protected String redirectToForm(final HttpServletRequest request) {
         return "redirect:/client/add?pos=" + this.getEncodedParam(request, "pos");
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void setEnteredFormValues(final RedirectAttributes redirectAttributes,
+                                        final HttpServletRequest request) {
+        this.addFlashAttributeFromRequestParam(redirectAttributes, request, "name");
+        this.addFlashAttributeFromRequestParam(redirectAttributes, request, "email");
+        this.addFlashAttributeFromRequestParam(redirectAttributes, request, "phone");
+        this.addFlashAttributeFromRequestParam(redirectAttributes, request, "role");
+    }
 }

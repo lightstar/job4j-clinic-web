@@ -50,9 +50,10 @@ public class UpdateClientPet extends ClinicController {
             return "redirect:/";
         }
 
-        model.addAttribute("newName", pet.getName());
-        model.addAttribute("newAge", pet.getAge());
-        model.addAttribute("newSex", pet.getSex() == Sex.M ? "m" : "f");
+        this.addToModelIfAbsent(model, "newName", pet.getName());
+        this.addToModelIfAbsent(model, "newAge", pet.getAge());
+        this.addToModelIfAbsent(model, "newSex", pet.getSex() == Sex.M ? "m" : "f");
+
         return "UpdateClientPet";
     }
 
@@ -81,5 +82,16 @@ public class UpdateClientPet extends ClinicController {
     @Override
     protected String redirectToForm(HttpServletRequest request) {
         return "redirect:/client/pet/update?name=" + this.getEncodedParam(request, "name");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void setEnteredFormValues(final RedirectAttributes redirectAttributes,
+                                        final HttpServletRequest request) {
+        this.addFlashAttributeFromRequestParam(redirectAttributes, request, "newName");
+        this.addFlashAttributeFromRequestParam(redirectAttributes, request, "newAge");
+        this.addFlashAttributeFromRequestParam(redirectAttributes, request, "newSex");
     }
 }

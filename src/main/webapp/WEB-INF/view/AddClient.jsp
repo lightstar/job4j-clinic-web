@@ -26,7 +26,7 @@
 
     <div>
         <label for="name" class="element">Name:</label>
-        <input type="text" class="element text" id="name" name="name" value="<c:out value='${param.name}'/>">
+        <input type="text" class="element text" id="name" name="name" value="<c:out value='${requestScope.name}'/>">
     </div>
 
     <div>
@@ -34,7 +34,7 @@
         <select class="element" id="role" name="role">
             <c:forEach items="${roles}" var="role">
                 <option value="<c:out value='${role.name}'/>"
-                    ${param.role == role.name ? ' selected="selected"' : ''}>
+                    ${requestScope.role == role.name ? ' selected="selected"' : ''}>
                     <c:out value="${role.name}"/>
                 </option>
             </c:forEach>
@@ -43,12 +43,12 @@
 
     <div>
         <label for="email" class="element">Email:</label>
-        <input type="text" class="element text" id="email" name="email" value="<c:out value='${param.email}'/>">
+        <input type="text" class="element text" id="email" name="email" value="<c:out value='${requestScope.email}'/>">
     </div>
 
     <div>
         <label for="phone" class="element">Phone:</label>
-        <input type="text" class="element text" id="phone" name="phone" value="<c:out value='${param.phone}'/>">
+        <input type="text" class="element text" id="phone" name="phone" value="<c:out value='${requestScope.phone}'/>">
     </div>
 
     <div>

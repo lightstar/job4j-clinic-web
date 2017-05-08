@@ -79,7 +79,7 @@ public abstract class ClinicServlet extends HttpServlet {
      * @param defaultValue attribute's default value.
      */
     protected void setAttributeFromParameter(final HttpServletRequest request, final String name,
-                                             final String defaultValue) {
+                                             final Object defaultValue) {
         if (request.getParameter(name) != null) {
             request.setAttribute(name, request.getParameter(name));
         } else {
