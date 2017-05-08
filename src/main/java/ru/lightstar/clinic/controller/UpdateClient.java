@@ -42,7 +42,6 @@ public class UpdateClient extends ClinicController {
     /**
      * Show update client form.
      *
-     * @param name client's name.
      * @param model model that will be sent to view.
      * @return view name.
      */
@@ -56,10 +55,12 @@ public class UpdateClient extends ClinicController {
         }
 
         model.addAttribute("roles", this.roleService.getAllRoles());
-        model.addAttribute("newName", client.getName());
-        model.addAttribute("newEmail", client.getEmail());
-        model.addAttribute("newPhone", client.getPhone());
-        model.addAttribute("newRole", client.getRole().getName());
+
+        this.addToModelIfAbsent(model, "newName", client.getName());
+        this.addToModelIfAbsent(model, "newEmail", client.getEmail());
+        this.addToModelIfAbsent(model, "newPhone", client.getPhone());
+        this.addToModelIfAbsent(model, "newRole", client.getRole().getName());
+
         return "UpdateClient";
     }
 
@@ -76,17 +77,32 @@ public class UpdateClient extends ClinicController {
     public String updateClient(@ModelAttribute final UpdateClientForm form,
                                final RedirectAttributes redirectAttributes)
             throws ServiceException, NameException {
+
         final Role newRole = this.roleService.getRoleByName(form.getNewRole());
         this.clinicService.updateClient(form.getName(), form.getNewName(),
                 form.getNewEmail(), form.getNewPhone(), newRole);
         this.setMessage(redirectAttributes,  "Client updated");
+
         return "redirect:/";
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     protected String redirectToForm(final HttpServletRequest request) {
         return "redirect:/client/update?name=" + this.getEncodedParam(request, "name");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void setEnteredFormValues(final RedirectAttributes redirectAttributes,
+                                        final HttpServletRequest request) {
+        this.addFlashAttributeFromRequestParam(redirectAttributes, request, "newName");
+        this.addFlashAttributeFromRequestParam(redirectAttributes, request, "newEmail");
+        this.addFlashAttributeFromRequestParam(redirectAttributes, request, "newPhone");
+        this.addFlashAttributeFromRequestParam(redirectAttributes, request, "newRole");
     }
 }

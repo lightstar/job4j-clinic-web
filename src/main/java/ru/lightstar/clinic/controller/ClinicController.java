@@ -1,6 +1,7 @@
 package ru.lightstar.clinic.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -73,6 +74,7 @@ public abstract class ClinicController {
     public String serviceException(final Exception exception, final RedirectAttributes redirectAttributes,
                                    final HttpServletRequest request) {
         this.setError(redirectAttributes, exception.getMessage());
+        this.setEnteredFormValues(redirectAttributes, request);
         return this.redirectToForm(request);
     }
 
@@ -86,6 +88,7 @@ public abstract class ClinicController {
     @ExceptionHandler({ServletRequestBindingException.class, BindException.class})
     public String bindException(final RedirectAttributes redirectAttributes, final HttpServletRequest request) {
         this.setError(redirectAttributes, "Invalid parameters");
+        this.setEnteredFormValues(redirectAttributes, request);
         return this.redirectToForm(request);
     }
 
@@ -136,5 +139,42 @@ public abstract class ClinicController {
      */
     protected void setMessage(final RedirectAttributes redirectAttributes, final String message) {
         redirectAttributes.addFlashAttribute("message", String.format("%s.", message));
+    }
+
+    /**
+     * Set entered form values from request parameters into flash redirect attributes.
+     *
+     * @param redirectAttributes redirect attributes object.
+     * @param request user's request.
+     */
+    protected void setEnteredFormValues(final RedirectAttributes redirectAttributes,
+                                        final HttpServletRequest request) {
+    }
+
+    /**
+     * Add attribute to model only if it is not exists here already.
+     *
+     * @param model request's model object.
+     * @param name attribute's name.
+     * @param value attribute's value.
+     */
+    protected void addToModelIfAbsent(final ModelMap model, final String name, final String value) {
+        if (!model.containsAttribute(name)) {
+            model.addAttribute(name, value);
+        }
+    }
+
+    /**
+     * Add flash redirect attribute using according request parameter.
+     *
+     * @param redirectAttributes redirect attributes object.
+     * @param request user's request.
+     * @param name attribute's name.
+     */
+    protected void addFlashAttributeFromRequestParam(final RedirectAttributes redirectAttributes,
+                                                     final HttpServletRequest request, final String name) {
+        if (request.getParameterMap().containsKey(name)) {
+            redirectAttributes.addFlashAttribute(name, request.getParameter(name));
+        }
     }
 }
