@@ -6,6 +6,7 @@ import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.model.Role;
 import ru.lightstar.clinic.pet.Pet;
+import ru.lightstar.clinic.security.SecurityUtil;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
@@ -105,13 +106,14 @@ public class UpdateClientTest extends ServletTest {
         when(this.request.getParameter("newEmail")).thenReturn("vova@mail.ru");
         when(this.request.getParameter("newPhone")).thenReturn("22222");
         when(this.request.getParameter("newRole")).thenReturn("client");
+        when(this.request.getParameter("newPassword")).thenReturn("qwerty");
         when(this.roleService.getRoleByName("client")).thenReturn(role);
 
         new UpdateClient(this.clinicService, this.roleService).doPost(this.request, this.response);
 
         verify(this.session, atLeastOnce()).setAttribute(eq("message"), anyString());
         verify(this.clinicService, times(1)).updateClient("Vasya", "Vova",
-                "vova@mail.ru", "22222", role);
+                "vova@mail.ru", "22222", role, SecurityUtil.getHashedPassword("qwerty"));
         verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/");
     }
 
@@ -146,9 +148,10 @@ public class UpdateClientTest extends ServletTest {
         when(this.request.getParameter("newEmail")).thenReturn("vova@mail.ru");
         when(this.request.getParameter("newPhone")).thenReturn("22222");
         when(this.request.getParameter("newRole")).thenReturn("client");
+        when(this.request.getParameter("newPassword")).thenReturn("qwerty");
         when(this.request.getRequestDispatcher("/WEB-INF/view/UpdateClient.jsp")).thenReturn(this.dispatcher);
         doThrow(new ServiceException("Test error")).when(this.clinicService).updateClient("Vasya", "Vova",
-                "vova@mail.ru", "22222", role);
+                "vova@mail.ru", "22222", role, SecurityUtil.getHashedPassword("qwerty"));
         when(this.roleService.getRoleByName("client")).thenReturn(role);
         when(this.clinicService.findClientByName("Vasya")).thenReturn(new Client("Vasya", Pet.NONE, 0));
         when(this.request.getSession()).thenReturn(this.session);

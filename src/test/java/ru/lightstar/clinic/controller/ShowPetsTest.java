@@ -29,7 +29,7 @@ public class ShowPetsTest extends ControllerTest {
 
         when(this.mockClinicService.getAllPets()).thenReturn(new Pet[]{cat, dog});
 
-        this.mockMvc.perform(get("/client/pet"))
+        this.mockMvc.perform(get("/pet"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("ShowPets"))
                 .andExpect(forwardedUrl("/WEB-INF/view/ShowPets.jsp"))

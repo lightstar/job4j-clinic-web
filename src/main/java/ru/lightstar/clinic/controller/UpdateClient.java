@@ -17,6 +17,7 @@ import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.model.Role;
 import ru.lightstar.clinic.persistence.MessageService;
 import ru.lightstar.clinic.persistence.RoleService;
+import ru.lightstar.clinic.security.SecurityUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -80,7 +81,8 @@ public class UpdateClient extends ClinicController {
 
         final Role newRole = this.roleService.getRoleByName(form.getNewRole());
         this.clinicService.updateClient(form.getName(), form.getNewName(),
-                form.getNewEmail(), form.getNewPhone(), newRole);
+                form.getNewEmail(), form.getNewPhone(), newRole,
+                SecurityUtil.getHashedPassword(form.getNewPassword()));
         this.setMessage(redirectAttributes,  "Client updated");
 
         return "redirect:/";

@@ -48,9 +48,9 @@ public class HibernateClinicService extends PersistentClinicService {
     @Transactional
     @Override
     public synchronized Client addClient(final int position, final String name, final String email,
-                                         final String phone, final Role role)
+                                         final String phone, final Role role, final String password)
             throws ServiceException, NameException {
-        final Client client = super.addClient(position, name, email, phone, role);
+        final Client client = super.addClient(position, name, email, phone, role, password);
 
         try {
             this.hibernateTemplate.save(client);
@@ -91,18 +91,22 @@ public class HibernateClinicService extends PersistentClinicService {
     @Override
     public synchronized void updateClient(final String name, final String newName,
                                           final String newEmail, final String newPhone,
-                                          final Role newRole)
+                                          final Role newRole, String newPassword)
             throws ServiceException, NameException {
         final Client client = this.findClientByName(name);
         final String oldEmail = client.getEmail();
         final String oldPhone = client.getPhone();
         final Role oldRole = client.getRole();
-        super.updateClient(client, newName, newEmail, newPhone, newRole);
+        final String oldPassword = client.getPassword();
+        if (newPassword.isEmpty()) {
+            newPassword = oldPassword;
+        }
+        super.updateClient(client, newName, newEmail, newPhone, newRole, newPassword);
 
         try {
             this.hibernateTemplate.update(client);
         } catch (DataAccessException e) {
-            this.undoUpdateClient(client, name, oldEmail, oldPhone, oldRole);
+            this.undoUpdateClient(client, name, oldEmail, oldPhone, oldRole, oldPassword);
             throw e;
         }
     }

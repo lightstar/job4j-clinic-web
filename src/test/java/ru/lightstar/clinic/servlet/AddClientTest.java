@@ -4,6 +4,7 @@ import org.junit.Test;
 import ru.lightstar.clinic.exception.NameException;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.model.Role;
+import ru.lightstar.clinic.security.SecurityUtil;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
@@ -62,13 +63,14 @@ public class AddClientTest extends ServletTest {
         when(this.request.getParameter("email")).thenReturn("vasya@mail.ru");
         when(this.request.getParameter("phone")).thenReturn("2323");
         when(this.request.getParameter("role")).thenReturn("client");
+        when(this.request.getParameter("password")).thenReturn("qwerty");
         when(this.roleService.getRoleByName("client")).thenReturn(role);
 
         new AddClient(this.clinicService, this.roleService).doPost(this.request, this.response);
 
         verify(this.session, atLeastOnce()).setAttribute(eq("message"), anyString());
         verify(this.clinicService, times(1)).addClient(0, "Vasya",
-                "vasya@mail.ru", "2323", role);
+                "vasya@mail.ru", "2323", role, SecurityUtil.getHashedPassword("qwerty"));
         verify(this.response, atLeastOnce()).sendRedirect("/context/servlets/");
     }
 
@@ -86,6 +88,7 @@ public class AddClientTest extends ServletTest {
         when(this.request.getParameter("email")).thenReturn("vasya@mail.ru");
         when(this.request.getParameter("phone")).thenReturn("2323");
         when(this.request.getParameter("role")).thenReturn("client");
+        when(this.request.getParameter("password")).thenReturn("qwerty");
         when(this.roleService.getRoleByName("client")).thenReturn(role);
 
         when(this.request.getRequestDispatcher("/WEB-INF/view/AddClient.jsp")).thenReturn(this.dispatcher);
@@ -125,9 +128,11 @@ public class AddClientTest extends ServletTest {
         when(this.request.getParameter("email")).thenReturn("vasya@mail.ru");
         when(this.request.getParameter("phone")).thenReturn("2323");
         when(this.request.getParameter("role")).thenReturn("client");
+        when(this.request.getParameter("password")).thenReturn("qwerty");
         when(this.request.getRequestDispatcher("/WEB-INF/view/AddClient.jsp")).thenReturn(this.dispatcher);
         when(this.roleService.getRoleByName("client")).thenReturn(role);
-        when(this.clinicService.addClient(0, "Vasya", "vasya@mail.ru", "2323", role))
+        when(this.clinicService.addClient(0, "Vasya", "vasya@mail.ru", "2323", role,
+                    SecurityUtil.getHashedPassword("qwerty")))
                 .thenThrow(new ServiceException("Test error"));
 
         new AddClient(this.clinicService, this.roleService).doPost(this.request, this.response);

@@ -47,6 +47,7 @@ public class ClinicServlet extends HttpServlet {
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
+        response.setContentType("text/html");
 
         final PrintWriter writer = response.getWriter();
         writer.append("<!DOCTYPE html><html>");
@@ -110,7 +111,7 @@ public class ClinicServlet extends HttpServlet {
         try {
             this.clinicService.addClient(Integer.valueOf(request.getParameter("position")) - 1,
                     request.getParameter("name"), request.getParameter("email"),
-                    request.getParameter("phone"), new Role());
+                    request.getParameter("phone"), new Role(), "");
             request.setAttribute("message", "Client added");
         } catch (NullPointerException e) {
             request.setAttribute("error", "Wrong parameters");
@@ -181,7 +182,8 @@ public class ClinicServlet extends HttpServlet {
     private void updateClient(final HttpServletRequest request) {
         try {
             this.clinicService.updateClient(request.getParameter("name"), request.getParameter("newName"),
-                    request.getParameter("newEmail"), request.getParameter("newPhone"), new Role());
+                    request.getParameter("newEmail"), request.getParameter("newPhone"), new Role(),
+                    "");
             request.setAttribute("message", "Client updated");
         } catch (NullPointerException e) {
             request.setAttribute("error", "Wrong parameters");

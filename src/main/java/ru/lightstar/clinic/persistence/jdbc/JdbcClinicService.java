@@ -22,7 +22,7 @@ public class JdbcClinicService extends PersistentClinicService {
      * SQL used to load all client data from database.
      */
     public static final String LOAD_SQL =
-            "SELECT client.id, client.position, client.name, client.email, client.phone, " +
+            "SELECT client.id, client.position, client.name, client.email, client.phone, client.password, " +
                     "role.id AS roleId, role.name AS roleName, " +
                     "pet.id AS petId, pet.type AS petType, pet.name AS petName, pet.age AS petAge," +
                     "pet.sex AS petSex " +
@@ -33,19 +33,20 @@ public class JdbcClinicService extends PersistentClinicService {
     /**
      * SQL used to add new client to database.
      */
-    public static final String ADD_CLIENT_SQL = "INSERT INTO client (`position`, `name`,`email`,`phone`,`role_id`) " +
-            "VALUES (?,?,?,?,?)";
+    public static final String ADD_CLIENT_SQL = "INSERT INTO client " +
+            "(`position`, `name`,`email`,`phone`,`role_id`,`password`) VALUES (?,?,?,?,?,?)";
 
     /**
      * SQL used to set client's pet in database.
      */
-    public static final String SET_CLIENT_PET_SQL = "REPLACE INTO pet (`client_id`, `type`, `name`,`age`,`sex`) " +
-            "VALUES (?,?,?,?,?)";
+    public static final String SET_CLIENT_PET_SQL = "REPLACE INTO pet " +
+            "(`client_id`, `type`, `name`,`age`,`sex`) VALUES (?,?,?,?,?)";
 
     /**
      * SQL used to update client in database.
      */
-    public static final String UPDATE_CLIENT_SQL = "UPDATE client SET name = ?, email = ?, phone = ?, role_id = ? " +
+    public static final String UPDATE_CLIENT_SQL = "UPDATE client " +
+            "SET name = ?, email = ?, phone = ?, role_id = ?, password = ? " +
             "WHERE name = ?";
 
     /**
@@ -86,9 +87,9 @@ public class JdbcClinicService extends PersistentClinicService {
      */
     @Override
     public synchronized Client addClient(final int position, final String name, final String email,
-                                         final String phone, final Role role)
+                                         final String phone, final Role role, final String password)
             throws ServiceException, NameException {
-        final Client client = super.addClient(position, name, email, phone, role);
+        final Client client = super.addClient(position, name, email, phone, role, password);
 
         try (final PreparedStatement statement = this.connection.prepareStatement(ADD_CLIENT_SQL,
                 Statement.RETURN_GENERATED_KEYS)) {
@@ -97,6 +98,7 @@ public class JdbcClinicService extends PersistentClinicService {
             statement.setString(3, client.getEmail());
             statement.setString(4, client.getPhone());
             statement.setInt(5, client.getRole().getId());
+            statement.setString(6, client.getPassword());
             statement.executeUpdate();
 
             try (final ResultSet generatedKeys = statement.getGeneratedKeys()) {
@@ -153,23 +155,28 @@ public class JdbcClinicService extends PersistentClinicService {
     @Override
     public synchronized void updateClient(final String name, final String newName,
                                           final String newEmail, final String newPhone,
-                                          final Role newRole)
+                                          final Role newRole, String newPassword)
             throws ServiceException, NameException {
         final Client client = this.findClientByName(name);
         final String oldEmail = client.getEmail();
         final String oldPhone = client.getPhone();
         final Role oldRole = client.getRole();
-        super.updateClient(client, newName, newEmail, newPhone, newRole);
+        final String oldPassword = client.getPassword();
+        if (newPassword.isEmpty()) {
+            newPassword = oldPassword;
+        }
+        super.updateClient(client, newName, newEmail, newPhone, newRole, newPassword);
 
         try (final PreparedStatement statement = this.connection.prepareStatement(UPDATE_CLIENT_SQL)) {
             statement.setString(1, newName);
             statement.setString(2, newEmail);
             statement.setString(3, newPhone);
             statement.setInt(4, newRole.getId());
-            statement.setString(5, name);
+            statement.setString(5, newPassword);
+            statement.setString(6, name);
             statement.executeUpdate();
         } catch (SQLException e) {
-            this.undoUpdateClient(client, name, oldEmail, oldPhone, oldRole);
+            this.undoUpdateClient(client, name, oldEmail, oldPhone, oldRole, oldPassword);
             throw new IllegalStateException(String.format("Can't update client's name in database: %s",
                     e.getMessage()));
         }
@@ -251,6 +258,7 @@ public class JdbcClinicService extends PersistentClinicService {
                     final String name = rs.getString("name");
                     final String email = rs.getString("email");
                     final String phone = rs.getString("phone");
+                    final String password = rs.getString("password");
                     final int petId = rs.getInt("petId");
                     final String petType = rs.getString("petType");
                     final String petName = rs.getString("petName");
@@ -261,7 +269,7 @@ public class JdbcClinicService extends PersistentClinicService {
 
                     final Role role = new Role(roleName);
                     role.setId(roleId);
-                    final Client client = super.addClient(position, name, email, phone, role);
+                    final Client client = super.addClient(position, name, email, phone, role, password);
                     client.setId(id);
                     if (petType != null) {
                         final Pet pet = super.setClientPet(client, petType, petName, petAge,

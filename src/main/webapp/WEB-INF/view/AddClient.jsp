@@ -30,6 +30,11 @@
     </div>
 
     <div>
+        <label for="password" class="element">Password:</label>
+        <input type="password" class="element text" id="password" name="password" value="">
+    </div>
+
+    <div>
         <label for="role" class="element">Role:</label>
         <select class="element" id="role" name="role">
             <c:forEach items="${roles}" var="role">

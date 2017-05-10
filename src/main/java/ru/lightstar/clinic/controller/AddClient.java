@@ -15,6 +15,7 @@ import ru.lightstar.clinic.form.AddClientForm;
 import ru.lightstar.clinic.model.Role;
 import ru.lightstar.clinic.persistence.MessageService;
 import ru.lightstar.clinic.persistence.RoleService;
+import ru.lightstar.clinic.security.SecurityUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -62,8 +63,9 @@ public class AddClient extends ClinicController {
     public String addClient(@ModelAttribute AddClientForm form, final RedirectAttributes redirectAttributes)
             throws ServiceException, NameException {
         final Role role = this.roleService.getRoleByName(form.getRole());
+
         this.clinicService.addClient(form.getPos() - 1, form.getName(), form.getEmail(), form.getPhone(),
-                role);
+                role, SecurityUtil.getHashedPassword(form.getPassword()));
         this.setMessage(redirectAttributes,  "Client added");
         return "redirect:/";
     }

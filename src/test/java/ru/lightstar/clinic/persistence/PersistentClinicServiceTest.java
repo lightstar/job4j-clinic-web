@@ -75,7 +75,8 @@ public abstract class PersistentClinicServiceTest extends Mockito {
     public void whenAddClientThenItAdds() throws ServiceException, NameException, SQLException {
         final Role role = new Role("client");
         role.setId(2);
-        this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", role);
+        this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", role,
+                "qwerty");
         final Client petya = this.clinicService.findClientByName("Petya");
         assertThat(petya.getId(), is(4));
         assertThat(petya.getName(), is("Petya"));
@@ -84,6 +85,7 @@ public abstract class PersistentClinicServiceTest extends Mockito {
         assertThat(petya.getPosition(), is(7));
         assertThat(petya.getRole().getName(), is("client"));
         assertThat(petya.getRole().getId(), is(2));
+        assertThat(petya.getPassword(), is("qwerty"));
     }
 
     /**
@@ -92,7 +94,8 @@ public abstract class PersistentClinicServiceTest extends Mockito {
     public void whenAddClientWithExceptionThenItDoNotAdds() throws ServiceException, NameException, SQLException {
         Throwable expectedException = null;
         try {
-            this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", new Role());
+            this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", new Role(),
+                    "qwerty");
         } catch (RuntimeException e) {
             expectedException = e;
         }
@@ -105,7 +108,8 @@ public abstract class PersistentClinicServiceTest extends Mockito {
      * Test correctness of <code>setClientPet</code> method.
      */
     public void whenSetClientPetThenItSets() throws ServiceException, NameException, SQLException {
-        this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", new Role());
+        this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", new Role(),
+                "qwerty");
         this.clinicService.setClientPet("Petya", "fish", "Beauty", 2, Sex.F);
 
         final Client petya = this.clinicService.findClientByName("Petya");
@@ -121,7 +125,8 @@ public abstract class PersistentClinicServiceTest extends Mockito {
      */
     public void whenSetClientPetWithExceptionThenItDoNotSets()
             throws ServiceException, NameException, SQLException {
-        this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", new Role());
+        this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", new Role(),
+                "qwerty");
 
         Throwable expectedException = null;
         try {
@@ -167,9 +172,10 @@ public abstract class PersistentClinicServiceTest extends Mockito {
         role.setId(2);
         final Role newRole = new Role("admin");
         newRole.setId(1);
-        this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", role);
+        this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", role,
+                "qwerty");
         this.clinicService.updateClient("Petya", "Sasha", "sasha@mail.ru", "456456",
-                newRole);
+                newRole, "123456");
 
         final Client vova = this.clinicService.findClientByName("Sasha");
         assertThat(vova.getId(), is(4));
@@ -179,6 +185,7 @@ public abstract class PersistentClinicServiceTest extends Mockito {
         assertThat(vova.getPosition(), is(7));
         assertThat(vova.getRole().getName(), is("admin"));
         assertThat(vova.getRole().getId(), is(1));
+        assertThat(vova.getPassword(), is("123456"));
     }
 
     /**
@@ -190,12 +197,13 @@ public abstract class PersistentClinicServiceTest extends Mockito {
         role.setId(2);
         final Role newRole = new Role("admin");
         newRole.setId(1);
-        this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", role);
+        this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", role,
+                "qwerty");
 
         Throwable expectedException = null;
         try {
             this.clinicService.updateClient("Petya", "Sasha", "sasha@mail.ru",
-                    "456456", newRole);
+                    "456456", newRole, "123456");
         } catch (RuntimeException e) {
             expectedException = e;
         }
@@ -210,13 +218,15 @@ public abstract class PersistentClinicServiceTest extends Mockito {
         assertThat(petya.getPosition(), is(7));
         assertThat(petya.getRole().getName(), is("client"));
         assertThat(petya.getRole().getId(), is(2));
+        assertThat(petya.getPassword(), is("qwerty"));
     }
 
     /**
      * Test correctness of <code>updateClientPet</code> method.
      */
     public void whenUpdateClientPetThenItUpdates() throws NameException, ServiceException, SQLException {
-        this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", new Role());
+        this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", new Role(),
+                "qwerty");
         this.clinicService.setClientPet("Petya", "fish", "Beauty", 2, Sex.F);
         this.clinicService.updateClientPet("Petya", "Summer", 3, Sex.M);
 
@@ -233,7 +243,8 @@ public abstract class PersistentClinicServiceTest extends Mockito {
      */
     public void whenUpdateClientPetWithExceptionThenItDoNotUpdates()
             throws NameException, ServiceException, SQLException {
-        this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", new Role());
+        this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", new Role(),
+                "qwerty");
         this.clinicService.setClientPet("Petya", "fish", "Beauty", 2, Sex.F);
 
         Throwable expectedException = null;
@@ -258,7 +269,8 @@ public abstract class PersistentClinicServiceTest extends Mockito {
      */
     @Test
     public void whenDeleteClientPetThenItDeletes() throws NameException, ServiceException, SQLException {
-        this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", new Role());
+        this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", new Role(),
+                "qwerty");
         this.clinicService.setClientPet("Petya", "fish", "Beauty", 2, Sex.F);
         this.clinicService.deleteClientPet("Petya");
 
@@ -272,7 +284,8 @@ public abstract class PersistentClinicServiceTest extends Mockito {
     @Test
     public void whenDeleteClientPetWithExceptionThenItDoNotDeletes()
             throws NameException, ServiceException, SQLException {
-        this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", new Role());
+        this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", new Role(),
+                "qwerty");
         this.clinicService.setClientPet("Petya", "fish", "Beauty", 2, Sex.F);
 
         Throwable expectedException = null;
@@ -296,7 +309,8 @@ public abstract class PersistentClinicServiceTest extends Mockito {
      * Test correctness of <code>deleteClient</code> method.
      */
     public void whenDeleteClientThenItDeletes() throws NameException, ServiceException, SQLException {
-        this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", new Role());
+        this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", new Role(),
+                "qwerty");
         this.clinicService.deleteClient("Petya");
 
         Throwable expectedException = null;
@@ -314,7 +328,8 @@ public abstract class PersistentClinicServiceTest extends Mockito {
      */
     public void whenDeleteClientWithExceptionThenItDoNotDeletes()
             throws NameException, ServiceException, SQLException {
-        this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", new Role());
+        this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", new Role(),
+                "qwerty");
 
         Throwable expectedException = null;
         try {
@@ -340,7 +355,8 @@ public abstract class PersistentClinicServiceTest extends Mockito {
      * @throws ServiceException shouldn't be thrown.
      */
     protected void addClientWithPet() throws NameException, ServiceException {
-        this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", new Role());
+        this.clinicService.addClient(7, "Petya", "petya@mail.ru", "123123", new Role(),
+                "qwerty");
         this.clinicService.setClientPet("Petya", "fish", "Beauty", 2, Sex.F);
     }
 }

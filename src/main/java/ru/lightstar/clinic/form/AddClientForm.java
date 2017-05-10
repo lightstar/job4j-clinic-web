@@ -34,6 +34,11 @@ public class AddClientForm {
     private String phone = "";
 
     /**
+     * Client's password.
+     */
+    private String password = "";
+
+    /**
      * Get client's name.
      *
      * @return client's name.
@@ -121,5 +126,23 @@ public class AddClientForm {
      */
     public void setPhone(final String phone) {
         this.phone = phone;
+    }
+
+    /**
+     * Get client's password.
+     *
+     * @return client's password.
+     */
+    public String getPassword() {
+        return this.password;
+    }
+
+    /**
+     * Set client's password.
+     *
+     * @param password client's password.
+     */
+    public void setPassword(final String password) {
+        this.password = password;
     }
 }

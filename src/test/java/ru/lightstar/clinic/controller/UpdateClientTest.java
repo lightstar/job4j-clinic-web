@@ -6,6 +6,7 @@ import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.model.Role;
 import ru.lightstar.clinic.pet.Pet;
+import ru.lightstar.clinic.security.SecurityUtil;
 
 import java.util.Arrays;
 
@@ -89,7 +90,8 @@ public class UpdateClientTest extends ControllerTest {
                     .param("newName", "Vova")
                     .param("newEmail", "vova@mail.ru")
                     .param("newPhone", "55555")
-                    .param("newRole", "admin"))
+                    .param("newRole", "admin")
+                    .param("newPassword", "qwerty"))
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/"))
                 .andExpect(redirectedUrl("/"))
@@ -98,7 +100,7 @@ public class UpdateClientTest extends ControllerTest {
         verify(this.mockRoleService, times(1)).getRoleByName("admin");
         verifyNoMoreInteractions(this.mockRoleService);
         verify(this.mockClinicService, times(1)).updateClient("Vasya","Vova",
-                "vova@mail.ru", "55555", adminRole);
+                "vova@mail.ru", "55555", adminRole, SecurityUtil.getHashedPassword("qwerty"));
         verifyNoMoreInteractions(this.mockClinicService);
     }
 

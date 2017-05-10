@@ -23,6 +23,7 @@ CREATE TABLE `client` (
   `email` varchar(255) NOT NULL DEFAULT '',
   `phone` varchar(255) NOT NULL DEFAULT '',
   `role_id` int(10) unsigned NOT NULL,
+  `password` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `position` (`position`),
   UNIQUE KEY `name` (`name`),

@@ -1,5 +1,7 @@
 <%--@elvariable id="prefix" type="java.lang.String"--%>
 
+<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -16,12 +18,30 @@
 <h2>
     ${pageScope.title}
 
-    <nav>
-        <a href="<c:url value='${prefix}/'/>"<c:if test="${pageScope.current == 'main'}"> class="current"</c:if>>Main</a>
-        <a href="<c:url value='${prefix}/client/pet'/>"<c:if test="${pageScope.current == 'pet'}"> class="current"</c:if>>Pets</a>
-        <a href="<c:url value='${prefix}/drug'/>"<c:if test="${pageScope.current == 'drug'}"> class="current"</c:if>>Drugs</a>
-        <a href="<c:url value='${prefix}/role'/>"<c:if test="${pageScope.current == 'role'}"> class="current"</c:if>>Roles</a>
-    </nav>
+    <c:if test="${prefix != null}">
+        <nav>
+            <a href="<c:url value='${prefix}/'/>"<c:if test="${pageScope.current == 'main'}"> class="current"</c:if>>Main</a>
+            <a href="<c:url value='${prefix}/pet'/>"<c:if test="${pageScope.current == 'pet'}"> class="current"</c:if>>Pets</a>
+            <a href="<c:url value='${prefix}/drug'/>"<c:if test="${pageScope.current == 'drug'}"> class="current"</c:if>>Drugs</a>
+            <a href="<c:url value='${prefix}/role'/>"<c:if test="${pageScope.current == 'role'}"> class="current"</c:if>>Roles</a>
+        </nav>
+    </c:if>
+
+    <c:if test="${prefix == null}">
+        <security:authorize access="isAuthenticated()">
+            <nav>
+                <a href="<c:url value='/'/>"<c:if test="${pageScope.current == 'main'}"> class="current"</c:if>>Main</a>
+                <security:authorize access="hasAnyRole('ROLE_MANAGER','ROLE_ADMIN')">
+                    <a href="<c:url value='/pet'/>"<c:if test="${pageScope.current == 'pet'}"> class="current"</c:if>>Pets</a>
+                    <a href="<c:url value='/drug'/>"<c:if test="${pageScope.current == 'drug'}"> class="current"</c:if>>Drugs</a>
+                    <security:authorize access="hasRole('ROLE_ADMIN')">
+                        <a href="<c:url value='/role'/>"<c:if test="${pageScope.current == 'role'}"> class="current"</c:if>>Roles</a>
+                    </security:authorize>
+                </security:authorize>
+                <a href="<c:url value='/logout'/>">Logout</a>
+            </nav>
+        </security:authorize>
+    </c:if>
 </h2>
 
 <c:if test="${sessionScope.error != null}">

@@ -34,6 +34,11 @@ public class UpdateClientForm {
     private String newPhone = "";
 
     /**
+     * Client's new password.
+     */
+    private String newPassword = "";
+
+    /**
      * Get client's name.
      * @return client's name.
      */
@@ -118,5 +123,23 @@ public class UpdateClientForm {
      */
     public void setNewPhone(final String newPhone) {
         this.newPhone = newPhone;
+    }
+
+    /**
+     * Get client's new password.
+     *
+     * @return client's new password.
+     */
+    public String getNewPassword() {
+        return this.newPassword;
+    }
+
+    /**
+     * Set client's new password.
+     *
+     * @param newPassword client's new password.
+     */
+    public void setNewPassword(final String newPassword) {
+        this.newPassword = newPassword;
     }
 }

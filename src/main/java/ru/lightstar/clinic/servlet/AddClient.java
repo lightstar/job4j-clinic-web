@@ -5,6 +5,7 @@ import ru.lightstar.clinic.exception.NameException;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.model.Role;
 import ru.lightstar.clinic.persistence.RoleService;
+import ru.lightstar.clinic.security.SecurityUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -63,7 +64,8 @@ public class AddClient extends ClinicServlet {
             final Role role = this.roleService.getRoleByName(request.getParameter("role"));
             this.clinicService.addClient(Integer.valueOf(request.getParameter("pos")) - 1,
                     request.getParameter("name"), request.getParameter("email"),
-                    request.getParameter("phone"), role);
+                    request.getParameter("phone"), role,
+                    SecurityUtil.getHashedPassword(request.getParameter("password")));
         } catch (NullPointerException | NumberFormatException e) {
             errorString = "Invalid request parameters";
         } catch (NameException | ServiceException e) {
@@ -83,7 +85,7 @@ public class AddClient extends ClinicServlet {
     private void checkParameters(final HttpServletRequest request) {
         if (request.getParameter("pos") == null || request.getParameter("name") == null ||
                 request.getParameter("email") == null || request.getParameter("phone") == null ||
-                request.getParameter("role") == null) {
+                request.getParameter("role") == null || request.getParameter("password") == null) {
             throw new NullPointerException();
         }
     }

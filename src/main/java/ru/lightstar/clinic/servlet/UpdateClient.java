@@ -6,6 +6,7 @@ import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.model.Role;
 import ru.lightstar.clinic.persistence.RoleService;
+import ru.lightstar.clinic.security.SecurityUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -68,7 +69,7 @@ public class UpdateClient extends ClinicServlet {
             final Role newRole = this.roleService.getRoleByName(request.getParameter("newRole"));
             this.clinicService.updateClient(request.getParameter("name"), request.getParameter("newName"),
                    request.getParameter("newEmail"), request.getParameter("newPhone"),
-                   newRole);
+                   newRole, SecurityUtil.getHashedPassword(request.getParameter("newPassword")));
         } catch (NullPointerException e) {
             errorString = "Invalid request parameters";
         } catch (NameException | ServiceException e) {
@@ -88,7 +89,7 @@ public class UpdateClient extends ClinicServlet {
     private void checkParameters(final HttpServletRequest request) {
         if (request.getParameter("name") == null || request.getParameter("newName") == null ||
                 request.getParameter("newEmail") == null || request.getParameter("newPhone") == null ||
-                request.getParameter("newRole") == null) {
+                request.getParameter("newRole") == null || request.getParameter("newPassword") == null) {
             throw new NullPointerException();
         }
     }

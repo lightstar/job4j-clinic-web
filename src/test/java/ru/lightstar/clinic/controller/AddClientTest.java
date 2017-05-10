@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.springframework.http.MediaType;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.model.Role;
+import ru.lightstar.clinic.security.SecurityUtil;
 
 import java.util.Arrays;
 
@@ -57,7 +58,8 @@ public class AddClientTest extends ControllerTest {
                     .param("pos", "2")
                     .param("email", "vova@mail.ru")
                     .param("phone", "123456")
-                    .param("role", "client"))
+                    .param("role", "client")
+                    .param("password", "qwerty"))
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/"))
                 .andExpect(redirectedUrl("/"))
@@ -67,7 +69,7 @@ public class AddClientTest extends ControllerTest {
         verifyNoMoreInteractions(this.mockRoleService);
 
         verify(this.mockClinicService, times(1)).addClient(1, "Vova",
-                "vova@mail.ru", "123456", clientRole);
+                "vova@mail.ru", "123456", clientRole, SecurityUtil.getHashedPassword("qwerty"));
         verifyNoMoreInteractions(this.mockClinicService);
     }
 

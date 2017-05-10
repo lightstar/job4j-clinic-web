@@ -15,7 +15,10 @@
 
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>classpath:spring-context.xml</param-value>
+        <param-value>
+            classpath:spring-context.xml
+            classpath:spring-security.xml
+        </param-value>
     </context-param>
 
     <!-- serving static content with default container servlet -->
@@ -119,7 +122,7 @@
 
     <servlet-mapping>
         <servlet-name>ShowPets</servlet-name>
-        <url-pattern>/servlets/client/pet</url-pattern>
+        <url-pattern>/servlets/pet</url-pattern>
     </servlet-mapping>
 
     <!-- drug servlets -->
@@ -225,7 +228,10 @@
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <init-param>
             <param-name>contextConfigLocation</param-name>
-            <param-value>classpath:spring-web-context.xml</param-value>
+            <param-value>
+                classpath:spring-web-context.xml
+                classpath:spring-security.xml
+            </param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
@@ -244,6 +250,16 @@
 
     <filter-mapping>
         <filter-name>CharacterEncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 

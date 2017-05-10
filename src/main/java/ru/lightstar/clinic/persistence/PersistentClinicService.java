@@ -63,13 +63,14 @@ public abstract class PersistentClinicService extends ClinicService {
      * @param oldEmail previous client's email.
      * @param oldPhone previous client's phone.
      * @param oldRole previous client's role.
+     * @param oldPassword previous client's hashed password.
      * @throws ServiceException shouldn't be thrown.
      * @throws NameException shouldn't be thrown.
      */
     protected void undoUpdateClient(final Client client, final String oldName, final String oldEmail,
-                                    final String oldPhone, final Role oldRole)
+                                    final String oldPhone, final Role oldRole, final String oldPassword)
             throws ServiceException, NameException {
-        super.updateClient(client, oldName, oldEmail, oldPhone, oldRole);
+        super.updateClient(client, oldName, oldEmail, oldPhone, oldRole, oldPassword);
     }
 
     /**

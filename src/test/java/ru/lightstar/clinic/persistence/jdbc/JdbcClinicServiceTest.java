@@ -58,6 +58,10 @@ public class JdbcClinicServiceTest extends PersistentClinicServiceTest {
         verify(this.jdbcMocker.getAddClientStatement(), times(1))
                 .setString(4, "123123");
         verify(this.jdbcMocker.getAddClientStatement(), times(1))
+                .setInt(5, 2);
+        verify(this.jdbcMocker.getAddClientStatement(), times(1))
+                .setString(6, "qwerty");
+        verify(this.jdbcMocker.getAddClientStatement(), times(1))
                 .executeUpdate();
         verify(this.jdbcMocker.getGeneratedKeyForAddClientResultSet(), times(1))
                 .getInt(1);
@@ -137,7 +141,9 @@ public class JdbcClinicServiceTest extends PersistentClinicServiceTest {
         verify(this.jdbcMocker.getUpdateClientStatement(), times(1))
                 .setInt(4, 1);
         verify(this.jdbcMocker.getUpdateClientStatement(), times(1))
-                .setString(5, "Petya");
+                .setString(5, "123456");
+        verify(this.jdbcMocker.getUpdateClientStatement(), times(1))
+                .setString(6, "Petya");
         verify(this.jdbcMocker.getUpdateClientStatement(), times(1))
                 .executeUpdate();
     }
