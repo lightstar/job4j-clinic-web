@@ -10,8 +10,10 @@ import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.DrugService;
 import ru.lightstar.clinic.exception.NameException;
 import ru.lightstar.clinic.exception.ServiceException;
+import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.persistence.MessageService;
 import ru.lightstar.clinic.persistence.RoleService;
+import ru.lightstar.clinic.security.SecurityUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
@@ -176,5 +178,55 @@ public abstract class ClinicController {
         if (request.getParameterMap().containsKey(name)) {
             redirectAttributes.addFlashAttribute(name, request.getParameter(name));
         }
+    }
+
+    /**
+     * Get client object using provided name.
+     * If client not found or access is denied by authorization rules, return <code>Client.NONE</code>.
+     *
+     * @param name client's name.
+     * @return client object or <code>Client.NONE</code>.
+     */
+    protected Client getClientFromNameParam(final String name) {
+        final Client client;
+
+        try {
+            client = this.clinicService.findClientByName(name);
+        } catch (ServiceException e) {
+            return Client.NONE;
+        }
+
+        if (!this.isAccessToClientPermitted(client)) {
+            return Client.NONE;
+        }
+
+        return client;
+    }
+
+    /**
+     * Check if access to provided client is permitted.
+     *
+     * @param client client object.
+     * @return <code>true</code> if access is permitted and <code>false</code> otherwise.
+     */
+    protected boolean isAccessToClientPermitted(final Client client) {
+        if (client instanceof Client.PlaceHolder) {
+            return !SecurityUtil.getAuthRole().equals("ROLE_CLIENT");
+        }
+
+        return (SecurityUtil.getAuthName().equals(client.getName()) ||
+                SecurityUtil.getAuthRole().equals("ROLE_ADMIN") ||
+                (SecurityUtil.getAuthRole().equals("ROLE_MANAGER") &&
+                    !client.getRole().getName().equals("admin")));
+    }
+
+    /**
+     * Check if access to role with provided name is permitted.
+     *
+     * @param name role's name.
+     * @return <code>true</code> if access is permitted and <code>false</code> otherwise.
+     */
+    protected boolean isAccessToRolePermitted(final String name) {
+        return SecurityUtil.getAuthRole().equals("ROLE_ADMIN") || name.equals("client");
     }
 }

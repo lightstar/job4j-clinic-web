@@ -11,6 +11,8 @@
         <intercept-url pattern="/css/**" access="permitAll"/>
         <intercept-url pattern="/js/**" access="permitAll"/>
         <intercept-url pattern="/old/**" access="permitAll"/>
+        <intercept-url pattern="/access-denied" access="permitAll"/>
+        <intercept-url pattern="/error" access="permitAll"/>
         <intercept-url pattern="/servlets/**" access="permitAll"/>
         <intercept-url pattern="/role" access="hasRole('ROLE_ADMIN')"/>
         <intercept-url pattern="/role/**" access="hasRole('ROLE_ADMIN')"/>
@@ -20,13 +22,15 @@
         <intercept-url pattern="/login" access="isAnonymous()"/>
         <intercept-url pattern="/**" access="isAuthenticated()"/>
 
+        <access-denied-handler error-page="/access-denied"/>
+
         <form-login login-page="/login"
                     default-target-url="/"
                     authentication-failure-url="/login?error"
                     username-parameter="login"
                     password-parameter="password"/>
         <logout logout-success-url="/login?logout"/>
-        <csrf disabled="true"/>
+        <csrf/>
     </http>
 
     <authentication-manager>

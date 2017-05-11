@@ -1,5 +1,6 @@
 <%--@elvariable id="prefix" type="java.lang.String"--%>
 <%--@elvariable id="clinicService" type="ru.lightstar.clinic.ClinicService"--%>
+<%--@elvariable id="_csrf" type="org.springframework.security.web.csrf.CsrfToken"--%>
 
 <%@ page language="java" pageEncoding="utf-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -57,6 +58,7 @@
     </div>
 
     <div>
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
         <input type="submit" class="button" value="Set">
         <input type="button" class="button" value="Cancel" onclick="document.location.href='<c:url value="${prefix}/"/>';">
     </div>

@@ -8,6 +8,8 @@ import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.pet.Pet;
 
 import static org.hamcrest.Matchers.is;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -28,6 +30,8 @@ public class DeleteMessageTest extends ControllerTest {
         when(this.mockClinicService.findClientByName("Vasya")).thenReturn(vasya);
 
         this.mockMvc.perform(post("/client/message/delete")
+                    .with(user("admin").roles("ADMIN"))
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .param("name", "Vasya")
                     .param("id", "1"))
@@ -50,6 +54,8 @@ public class DeleteMessageTest extends ControllerTest {
         when(this.mockClinicService.findClientByName("Vasya")).thenThrow(new ServiceException("Client not found"));
 
         this.mockMvc.perform(post("/client/message/delete")
+                    .with(user("admin").roles("ADMIN"))
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .param("name", "Vasya")
                     .param("id", "1"))

@@ -46,7 +46,16 @@ public class AddClient extends ClinicController {
      */
     @RequestMapping(method = RequestMethod.GET)
     public String showForm(final ModelMap model) {
-        model.addAttribute("roles", this.roleService.getAllRoles());
+        if (SecurityUtil.getAuthRole().equals("ROLE_CLIENT")) {
+            return "redirect:/";
+        }
+
+        if (SecurityUtil.getAuthRole().equals("ROLE_ADMIN")) {
+            model.addAttribute("roles", this.roleService.getAllRoles());
+        } else {
+            model.addAttribute("clientRoleOnly", true);
+        }
+
         return "AddClient";
     }
 
@@ -62,11 +71,15 @@ public class AddClient extends ClinicController {
     @RequestMapping(method = RequestMethod.POST)
     public String addClient(@ModelAttribute AddClientForm form, final RedirectAttributes redirectAttributes)
             throws ServiceException, NameException {
-        final Role role = this.roleService.getRoleByName(form.getRole());
+        if (SecurityUtil.getAuthRole().equals("ROLE_CLIENT") || !this.isAccessToRolePermitted(form.getRole())) {
+            return "redirect:/";
+        }
 
+        final Role role = this.roleService.getRoleByName(form.getRole());
         this.clinicService.addClient(form.getPos() - 1, form.getName(), form.getEmail(), form.getPhone(),
                 role, SecurityUtil.getHashedPassword(form.getPassword()));
         this.setMessage(redirectAttributes,  "Client added");
+
         return "redirect:/";
     }
 

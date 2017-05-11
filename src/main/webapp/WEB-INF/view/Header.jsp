@@ -1,4 +1,6 @@
 <%--@elvariable id="prefix" type="java.lang.String"--%>
+<%--@elvariable id="_csrf" type="org.springframework.security.web.csrf.CsrfToken"--%>
+<%--@elvariable id="me" type="java.lang.String"--%>
 
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 
@@ -20,44 +22,60 @@
 
     <c:if test="${prefix != null}">
         <nav>
-            <a href="<c:url value='${prefix}/'/>"<c:if test="${pageScope.current == 'main'}"> class="current"</c:if>>Main</a>
-            <a href="<c:url value='${prefix}/pet'/>"<c:if test="${pageScope.current == 'pet'}"> class="current"</c:if>>Pets</a>
-            <a href="<c:url value='${prefix}/drug'/>"<c:if test="${pageScope.current == 'drug'}"> class="current"</c:if>>Drugs</a>
-            <a href="<c:url value='${prefix}/role'/>"<c:if test="${pageScope.current == 'role'}"> class="current"</c:if>>Roles</a>
+            <a href="<c:url value='${prefix}/'/>"
+                    <c:if test="${pageScope.current == 'main'}"> class="current"</c:if>>Main</a>
+            <a href="<c:url value='${prefix}/pet'/>"
+                    <c:if test="${pageScope.current == 'pet'}"> class="current"</c:if>>Pets</a>
+            <a href="<c:url value='${prefix}/drug'/>"
+                    <c:if test="${pageScope.current == 'drug'}"> class="current"</c:if>>Drugs</a>
+            <a href="<c:url value='${prefix}/role'/>"
+                    <c:if test="${pageScope.current == 'role'}"> class="current"</c:if>>Roles</a>
         </nav>
     </c:if>
 
     <c:if test="${prefix == null}">
         <security:authorize access="isAuthenticated()">
             <nav>
-                <a href="<c:url value='/'/>"<c:if test="${pageScope.current == 'main'}"> class="current"</c:if>>Main</a>
+                <a href="<c:url value='/'/>"
+                        <c:if test="${pageScope.current == 'main'}"> class="current"</c:if>>Main</a>
                 <security:authorize access="hasAnyRole('ROLE_MANAGER','ROLE_ADMIN')">
-                    <a href="<c:url value='/pet'/>"<c:if test="${pageScope.current == 'pet'}"> class="current"</c:if>>Pets</a>
-                    <a href="<c:url value='/drug'/>"<c:if test="${pageScope.current == 'drug'}"> class="current"</c:if>>Drugs</a>
+                    <a href="<c:url value='/pet'/>"
+                            <c:if test="${pageScope.current == 'pet'}"> class="current"</c:if>>Pets</a>
+                    <a href="<c:url value='/drug'/>"
+                            <c:if test="${pageScope.current == 'drug'}"> class="current"</c:if>>Drugs</a>
                     <security:authorize access="hasRole('ROLE_ADMIN')">
-                        <a href="<c:url value='/role'/>"<c:if test="${pageScope.current == 'role'}"> class="current"</c:if>>Roles</a>
+                        <a href="<c:url value='/role'/>"
+                                <c:if test="${pageScope.current == 'role'}"> class="current"</c:if>>Roles</a>
                     </security:authorize>
                 </security:authorize>
-                <a href="<c:url value='/logout'/>">Logout</a>
+                <a href="#" onclick="logout('<c:url value="/logout"/>','${_csrf.parameterName}', '${_csrf.token}');">Logout</a>
             </nav>
         </security:authorize>
     </c:if>
 </h2>
 
-<c:if test="${sessionScope.error != null}">
-    <p class="error"><c:out value="${sessionScope.error}"/></p>
-    <c:remove var="error" scope="session" />
-</c:if>
+<div class="inner-content">
 
-<c:if test="${sessionScope.message != null}">
-    <p class="message"><c:out value="${sessionScope.message}"/></p>
-    <c:remove var="message" scope="session" />
-</c:if>
+<security:authorize access="isAuthenticated()">
+    <p class="auth">Hello, <b>${me}</b>!</p>
+</security:authorize>
 
-<c:if test="${requestScope.error != null}">
-    <p class="error"><c:out value="${requestScope.error}"/></p>
-</c:if>
+<div class="message-content">
+    <c:if test="${sessionScope.error != null}">
+        <p class="error"><c:out value="${sessionScope.error}"/></p>
+        <c:remove var="error" scope="session" />
+    </c:if>
 
-<c:if test="${requestScope.message != null}">
-    <p class="message"><c:out value="${requestScope.message}"/></p>
-</c:if>
+    <c:if test="${sessionScope.message != null}">
+        <p class="message"><c:out value="${sessionScope.message}"/></p>
+        <c:remove var="message" scope="session" />
+    </c:if>
+
+    <c:if test="${requestScope.error != null}">
+        <p class="error"><c:out value="${requestScope.error}"/></p>
+    </c:if>
+
+    <c:if test="${requestScope.message != null}">
+        <p class="message"><c:out value="${requestScope.message}"/></p>
+    </c:if>
+</div>

@@ -3,8 +3,12 @@ package ru.lightstar.clinic.controller;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import ru.lightstar.clinic.exception.ServiceException;
+import ru.lightstar.clinic.model.Client;
+import ru.lightstar.clinic.pet.Pet;
 
 import static org.hamcrest.Matchers.is;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -21,7 +25,12 @@ public class DeleteClientTest extends ControllerTest {
      */
     @Test
     public void whenDeleteClientThenItDeletes() throws Exception {
+        final Client vasya = new Client("Vasya", Pet.NONE, 0);
+        when(this.mockClinicService.findClientByName("Vasya")).thenReturn(vasya);
+
         this.mockMvc.perform(post("/client/delete")
+                    .with(user("admin").roles("ADMIN"))
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .param("name", "Vasya"))
                 .andExpect(status().isFound())
@@ -29,6 +38,7 @@ public class DeleteClientTest extends ControllerTest {
                 .andExpect(redirectedUrl("/"))
                 .andExpect(flash().attribute("message", is("Client deleted.")));
 
+        verify(this.mockClinicService, times(1)).findClientByName("Vasya");
         verify(this.mockClinicService, times(1)).deleteClient("Vasya");
         verifyNoMoreInteractions(this.mockClinicService);
     }
@@ -38,9 +48,13 @@ public class DeleteClientTest extends ControllerTest {
      */
     @Test
     public void whenDeleteClientWithServiceExceptionThenError() throws Exception {
+        final Client vasya = new Client("Vasya", Pet.NONE, 0);
+        when(this.mockClinicService.findClientByName("Vasya")).thenReturn(vasya);
         doThrow(new ServiceException("Can't delete client")).when(this.mockClinicService).deleteClient("Vasya");
 
         this.mockMvc.perform(post("/client/delete")
+                    .with(user("admin").roles("ADMIN"))
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .param("name", "Vasya"))
                 .andExpect(status().isFound())

@@ -4,12 +4,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.DrugService;
 import ru.lightstar.clinic.exception.NameException;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.form.SetClientPetForm;
+import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.persistence.MessageService;
 import ru.lightstar.clinic.persistence.RoleService;
 import ru.lightstar.clinic.pet.Sex;
@@ -37,10 +39,15 @@ public class SetClientPet extends ClinicController {
     /**
      * Show set client's pet form.
      *
+     * @param name client's name.
      * @return view name.
      */
     @RequestMapping(method = RequestMethod.GET)
-    public String showForm() {
+    public String showForm(@RequestParam final String name) {
+        if (this.getClientFromNameParam(name) == Client.NONE) {
+            return "redirect:/";
+        }
+
         return "SetClientPet";
     }
 
@@ -57,6 +64,10 @@ public class SetClientPet extends ClinicController {
     public String setClientPet(@ModelAttribute final SetClientPetForm form,
                                final RedirectAttributes redirectAttributes)
             throws ServiceException, NameException {
+        if (this.getClientFromNameParam(form.getName()) == Client.NONE) {
+            return "redirect:/";
+        }
+
         this.clinicService.setClientPet(form.getName(), form.getPetType(), form.getPetName(), form.getPetAge(),
                 form.getPetSex().toLowerCase().equals("m") ? Sex.M : Sex.F);
         this.setMessage(redirectAttributes,  "Pet was set");

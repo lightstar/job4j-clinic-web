@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -34,6 +35,7 @@ public class ShowMessagesTest extends ControllerTest {
         when(this.mockMessageService.getClientMessages(vasya)).thenReturn(messages);
 
         this.mockMvc.perform(get("/client/message")
+                    .with(user("admin").roles("ADMIN"))
                     .param("name", "Vasya"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("ShowMessages"))
@@ -60,6 +62,7 @@ public class ShowMessagesTest extends ControllerTest {
         when(this.mockClinicService.findClientByName("Vasya")).thenThrow(new ServiceException("Client not found"));
 
         this.mockMvc.perform(get("/client/message")
+                    .with(user("admin").roles("ADMIN"))
                     .param("name", "Vasya"))
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/"))

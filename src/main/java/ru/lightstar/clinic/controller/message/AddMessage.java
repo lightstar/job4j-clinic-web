@@ -46,15 +46,13 @@ public class AddMessage extends ClinicController {
      * @throws ServiceException thrown if can't add message.
      */
     @RequestMapping(method = RequestMethod.POST)
-    public String addMessage(@RequestParam("name") final String name,
-                             @RequestParam("text") final String text,
+    public String addMessage(@RequestParam final String name,
+                             @RequestParam final String text,
                              final RedirectAttributes redirectAttributes,
                              final HttpServletRequest request)
             throws ServiceException{
-        final Client client;
-        try {
-            client = this.clinicService.findClientByName(name);
-        } catch (ServiceException e) {
+        final Client client = this.getClientFromNameParam(name);
+        if (client == Client.NONE) {
             return "redirect:/";
         }
 

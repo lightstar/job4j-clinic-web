@@ -4,11 +4,14 @@ import org.junit.Test;
 import org.springframework.http.MediaType;
 import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.io.DummyOutput;
+import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.pet.Cat;
 import ru.lightstar.clinic.pet.Pet;
 import ru.lightstar.clinic.pet.Sex;
 
 import static org.hamcrest.Matchers.is;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -32,6 +35,7 @@ public class UpdateClientPetTest extends ControllerTest {
         when(this.mockClinicService.getClientPet("Vasya")).thenReturn(vasyaCat);
 
         this.mockMvc.perform(get("/client/pet/update")
+                    .with(user("admin").roles("ADMIN"))
                     .param("name", "Vasya"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("UpdateClientPet"))
@@ -52,6 +56,7 @@ public class UpdateClientPetTest extends ControllerTest {
         when(this.mockClinicService.getClientPet("Vasya")).thenThrow(new ServiceException("Pet not found"));
 
         this.mockMvc.perform(get("/client/pet/update")
+                    .with(user("admin").roles("ADMIN"))
                     .param("name", "Vasya"))
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/"))
@@ -66,7 +71,12 @@ public class UpdateClientPetTest extends ControllerTest {
      */
     @Test
     public void whenUpdateClientPetThenItUpdates() throws Exception {
+        final Client vasya = new Client("Vasya", Pet.NONE, 0);
+        when(this.mockClinicService.findClientByName("Vasya")).thenReturn(vasya);
+
         this.mockMvc.perform(post("/client/pet/update")
+                    .with(user("admin").roles("ADMIN"))
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .param("name", "Vasya")
                     .param("newName", "Barsik")
@@ -77,6 +87,7 @@ public class UpdateClientPetTest extends ControllerTest {
                 .andExpect(redirectedUrl("/"))
                 .andExpect(flash().attribute("message", is("Pet updated.")));
 
+        verify(this.mockClinicService, times(1)).findClientByName("Vasya");
         verify(this.mockClinicService, times(1)).updateClientPet("Vasya","Barsik",
                 6, Sex.M);
         verifyNoMoreInteractions(this.mockClinicService);
@@ -87,10 +98,14 @@ public class UpdateClientPetTest extends ControllerTest {
      */
     @Test
     public void whenUpdateClientPetWithServiceExceptionThenError() throws Exception {
+        final Client vasya = new Client("Vasya", Pet.NONE, 0);
+        when(this.mockClinicService.findClientByName("Vasya")).thenReturn(vasya);
         doThrow(new ServiceException("Can't update pet")).when(this.mockClinicService)
                 .updateClientPet("Vasya", "Barsik", 6, Sex.M);
 
         this.mockMvc.perform(post("/client/pet/update")
+                    .with(user("admin").roles("ADMIN"))
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .param("name", "Vasya")
                     .param("newName", "Barsik")

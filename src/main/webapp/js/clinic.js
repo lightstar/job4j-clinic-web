@@ -28,6 +28,9 @@ function validateForm(form) {
             } else if (element.attr("name") === "text") {
                 invalidField(errorElement, element, "Text is empty.");
                 isValid = false;
+            } else if (element.attr("name") === "password") {
+                invalidField(errorElement, element, "Password is empty.");
+                isValid = false;
             }
         }
 
@@ -64,7 +67,7 @@ function initErrorElement() {
     var errorElement = $(".error");
     if (errorElement.length === 0) {
         errorElement = $("<p class='error'></p>");
-        errorElement.insertAfter($('h2'));
+        $(".message-content").append(errorElement);
     }
     errorElement.empty();
     return errorElement;
@@ -79,24 +82,44 @@ function invalidField(errorElement, element, message) {
         .animate({ backgroundColor: initialColor }, 350);
 }
 
-function deleteClientPet(name) {
+function deleteClientPet(name, csrfParam, csrfToken) {
     if (!confirm("Really delete this client's pet?")) return;
-    submitForm({ name: name }, "client/pet/delete");
+
+    var params = { name: name };
+    params[csrfParam] = csrfToken;
+    submitForm(params, "client/pet/delete");
 }
 
-function deleteClient(name) {
+function deleteClient(name, csrfParam, csrfToken) {
     if (!confirm("Really delete this client?")) return;
-    submitForm({ name: name }, "client/delete");
+
+    var params = { name: name };
+    params[csrfParam] = csrfToken;
+    submitForm(params, "client/delete");
 }
 
-function deleteRole(name) {
+function deleteRole(name, csrfParam, csrfToken) {
     if (!confirm("Really delete this role?")) return;
-    submitForm({ name: name }, "role/delete");
+
+    var params = { name: name };
+    params[csrfParam] = csrfToken;
+    submitForm(params, "role/delete");
 }
 
-function deleteMessage(name, id) {
+function deleteMessage(name, id, csrfParam, csrfToken) {
     if (!confirm("Really delete this message?")) return;
-    submitForm({ name: name, id: id }, "message/delete");
+
+    var params = { name: name, id: id };
+    params[csrfParam] = csrfToken;
+    submitForm(params, "message/delete");
+}
+
+function logout(action, csrfParam, csrfToken) {
+    if (!confirm("Really logout?")) return;
+
+    var params = {};
+    params[csrfParam] = csrfToken;
+    submitForm(params, action);
 }
 
 function submitForm(params, action, method) {

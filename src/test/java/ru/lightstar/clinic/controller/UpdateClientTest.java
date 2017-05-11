@@ -11,6 +11,8 @@ import ru.lightstar.clinic.security.SecurityUtil;
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -39,6 +41,7 @@ public class UpdateClientTest extends ControllerTest {
         when(this.mockClinicService.findClientByName("Vasya")).thenReturn(vasya);
 
         this.mockMvc.perform(get("/client/update")
+                    .with(user("admin").roles("ADMIN"))
                     .param("name", "Vasya"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("UpdateClient"))
@@ -67,6 +70,7 @@ public class UpdateClientTest extends ControllerTest {
         when(this.mockClinicService.findClientByName("Vasya")).thenThrow(new ServiceException("Client not found"));
 
         this.mockMvc.perform(get("/client/update")
+                    .with(user("admin").roles("ADMIN"))
                     .param("name", "Vasya"))
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/"))
@@ -81,10 +85,14 @@ public class UpdateClientTest extends ControllerTest {
      */
     @Test
     public void whenUpdateClientThenItUpdates() throws Exception {
+        final Client vasya = new Client("Vasya", Pet.NONE, 0);
+        when(this.mockClinicService.findClientByName("Vasya")).thenReturn(vasya);
         final Role adminRole = new Role("admin");
         when(this.mockRoleService.getRoleByName("admin")).thenReturn(adminRole);
 
         this.mockMvc.perform(post("/client/update")
+                    .with(user("admin").roles("ADMIN"))
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .param("name", "Vasya")
                     .param("newName", "Vova")
@@ -99,6 +107,7 @@ public class UpdateClientTest extends ControllerTest {
 
         verify(this.mockRoleService, times(1)).getRoleByName("admin");
         verifyNoMoreInteractions(this.mockRoleService);
+        verify(this.mockClinicService, times(1)).findClientByName("Vasya");
         verify(this.mockClinicService, times(1)).updateClient("Vasya","Vova",
                 "vova@mail.ru", "55555", adminRole, SecurityUtil.getHashedPassword("qwerty"));
         verifyNoMoreInteractions(this.mockClinicService);
@@ -109,9 +118,13 @@ public class UpdateClientTest extends ControllerTest {
      */
     @Test
     public void whenUpdateClientWithServiceExceptionThenError() throws Exception {
+        final Client vasya = new Client("Vasya", Pet.NONE, 0);
+        when(this.mockClinicService.findClientByName("Vasya")).thenReturn(vasya);
         when(this.mockRoleService.getRoleByName("admin")).thenThrow(new ServiceException("Role not found"));
 
         this.mockMvc.perform(post("/client/update")
+                    .with(user("admin").roles("ADMIN"))
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .param("name", "Vasya")
                     .param("newName", "Vova")

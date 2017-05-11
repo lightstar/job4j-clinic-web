@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.springframework.dao.NonTransientDataAccessResourceException;
 
 import static org.hamcrest.Matchers.is;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -23,7 +24,8 @@ public class GlobalExceptionHandlerTest extends ControllerTest {
         when(this.mockClinicService.getAllClients())
                 .thenThrow(new NonTransientDataAccessResourceException("Database error"));
 
-        this.mockMvc.perform(get("/"))
+        this.mockMvc.perform(get("/")
+                    .with(user("admin").roles("ADMIN")))
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/error"))
                 .andExpect(redirectedUrl("/error"))
@@ -38,7 +40,8 @@ public class GlobalExceptionHandlerTest extends ControllerTest {
         when(this.mockClinicService.getAllClients())
                 .thenThrow(new RuntimeException("Some error"));
 
-        this.mockMvc.perform(get("/"))
+        this.mockMvc.perform(get("/")
+                    .with(user("admin").roles("ADMIN")))
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/error"))
                 .andExpect(redirectedUrl("/error"))

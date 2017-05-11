@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.hasEntry;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -34,7 +35,8 @@ public class ShowDrugsTest extends ControllerTest {
 
         when(this.mockDrugService.getAllDrugs()).thenReturn(drugs);
 
-        this.mockMvc.perform(get("/drug"))
+        this.mockMvc.perform(get("/drug")
+                    .with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("ShowDrugs"))
                 .andExpect(forwardedUrl("/WEB-INF/view/ShowDrugs.jsp"))

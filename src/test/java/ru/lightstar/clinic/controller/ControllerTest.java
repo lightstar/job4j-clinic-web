@@ -15,6 +15,8 @@ import ru.lightstar.clinic.DrugService;
 import ru.lightstar.clinic.persistence.MessageService;
 import ru.lightstar.clinic.persistence.RoleService;
 
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+
 /**
  * Base class for controller tests.
  *
@@ -22,7 +24,7 @@ import ru.lightstar.clinic.persistence.RoleService;
  * @since 0.0.1
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:spring-test-context.xml", "classpath:spring-web-context.xml"})
+@ContextConfiguration(locations = {"classpath:spring-test-context.xml", "classpath:spring-web-context.xml", "classpath:spring-security.xml"})
 @WebAppConfiguration
 public abstract class ControllerTest extends Mockito {
 
@@ -70,6 +72,9 @@ public abstract class ControllerTest extends Mockito {
         reset(this.mockDrugService);
         reset(this.mockRoleService);
         reset(this.mockMessageService);
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
+        this.mockMvc = MockMvcBuilders
+                .webAppContextSetup(this.webApplicationContext)
+                .apply(springSecurity())
+                .build();
     }
 }

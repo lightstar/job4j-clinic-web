@@ -1,6 +1,7 @@
 <%--@elvariable id="prefix" type="java.lang.String"--%>
 <%--@elvariable id="drugService" type="ru.lightstar.clinic.DrugService"--%>
 <%--@elvariable id="drugs" type="java.util.Map<ru.lightstar.clinic.drug.Drug,java.lang.Integer>"--%>
+<%--@elvariable id="_csrf" type="org.springframework.security.web.csrf.CsrfToken"--%>
 
 <%@ page language="java" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -20,6 +21,7 @@
         </c:forEach>
     </select>
 
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
     <input type="submit" class="button" value="Add">
 </form>
 

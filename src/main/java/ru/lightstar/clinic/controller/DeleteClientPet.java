@@ -9,6 +9,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.DrugService;
 import ru.lightstar.clinic.exception.ServiceException;
+import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.persistence.MessageService;
 import ru.lightstar.clinic.persistence.RoleService;
 
@@ -43,9 +44,13 @@ public class DeleteClientPet extends ClinicController {
      * @throws ServiceException thrown if can't delete client's pet.
      */
     @RequestMapping(method = RequestMethod.POST)
-    public String deleteClientPet(@RequestParam("name") final String name, final RedirectAttributes redirectAttributes,
+    public String deleteClientPet(@RequestParam final String name, final RedirectAttributes redirectAttributes,
                                   final HttpServletRequest request)
             throws ServiceException {
+        if (this.getClientFromNameParam(name) == Client.NONE) {
+            return "redirect:/";
+        }
+
         this.clinicService.deleteClientPet(name);
         this.setMessage(redirectAttributes,  "Pet deleted");
         return this.redirectToForm(request);

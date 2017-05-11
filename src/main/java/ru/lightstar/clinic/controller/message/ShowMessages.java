@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.DrugService;
 import ru.lightstar.clinic.controller.ClinicController;
-import ru.lightstar.clinic.exception.ServiceException;
 import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.persistence.MessageService;
 import ru.lightstar.clinic.persistence.RoleService;
@@ -40,11 +39,9 @@ public class ShowMessages extends ClinicController {
      * @return view name.
      */
     @RequestMapping(method = RequestMethod.GET)
-    public String show(@RequestParam("name") final String name, final ModelMap model) {
-        final Client client;
-        try {
-            client = this.clinicService.findClientByName(name);
-        } catch (ServiceException e) {
+    public String show(@RequestParam final String name, final ModelMap model) {
+        final Client client = this.getClientFromNameParam(name);
+        if (client == Client.NONE) {
             return "redirect:/";
         }
 

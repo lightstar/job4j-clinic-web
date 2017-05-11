@@ -1,5 +1,6 @@
 <%--@elvariable id="prefix" type="java.lang.String"--%>
 <%--@elvariable id="roles" type="java.util.List<ru.lightstar.clinic.model.Role>"--%>
+<%--@elvariable id="_csrf" type="org.springframework.security.web.csrf.CsrfToken"--%>
 
 <%@ page language="java" pageEncoding="utf-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -8,13 +9,13 @@
 <c:set var="current" value="main" scope="page"/>
 <%@include file="Header.jsp" %>
 
-<c:if test="${roles.size() == 0}">
+<c:if test="${empty roles && !clientRoleOnly}">
     <p>
         Add some roles before adding clients.
     </p>
 </c:if>
 
-<c:if test="${roles.size() > 0}">
+<c:if test="${not empty roles || clientRoleOnly}">
 <c:url value='${prefix}/client/add' var="action">
     <c:param name="pos" value="${param.pos}"/>
 </c:url>
@@ -34,6 +35,7 @@
         <input type="password" class="element text" id="password" name="password" value="">
     </div>
 
+    <c:if test="${!clientRoleOnly}">
     <div>
         <label for="role" class="element">Role:</label>
         <select class="element" id="role" name="role">
@@ -45,6 +47,7 @@
             </c:forEach>
         </select>
     </div>
+    </c:if>
 
     <div>
         <label for="email" class="element">Email:</label>
@@ -57,6 +60,10 @@
     </div>
 
     <div>
+        <c:if test="${clientRoleOnly}">
+            <input type="hidden" name="role" value="client" />
+        </c:if>
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
         <input type="submit" class="button" value="Add">
         <input type="button" class="button" value="Cancel" onclick="document.location.href='<c:url value="${prefix}/"/>';">
     </div>

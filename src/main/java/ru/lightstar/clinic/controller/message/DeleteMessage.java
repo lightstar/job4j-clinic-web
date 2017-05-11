@@ -46,13 +46,11 @@ public class DeleteMessage extends ClinicController {
      * @throws ServiceException thrown if can't delete message.
      */
     @RequestMapping(method = RequestMethod.POST)
-    public String deleteMessage(@RequestParam("name") final String name, @RequestParam("id") final int id,
+    public String deleteMessage(@RequestParam final String name, @RequestParam final int id,
                                 final RedirectAttributes redirectAttributes, final HttpServletRequest request)
             throws ServiceException {
-        final Client client;
-        try {
-            client = this.clinicService.findClientByName(name);
-        } catch (ServiceException e) {
+        final Client client = this.getClientFromNameParam(name);
+        if (client == Client.NONE) {
             return "redirect:/";
         }
 

@@ -373,7 +373,7 @@ public class ClinicServlet extends HttpServlet {
             builder.append("<table style='border: 1px solid black;'>");
             for (int i = 0; i < clients.length; i++) {
                 final Client client = clients[i];
-                if (client == null) {
+                if (client instanceof Client.PlaceHolder) {
                     builder.append("<tr><td style='border: 1px solid black;'>").
                             append(String.format("%d. VACANT.", i + 1)).
                             append("</td></tr>");

@@ -13,6 +13,7 @@ import ru.lightstar.clinic.form.FilterForm;
 import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.persistence.MessageService;
 import ru.lightstar.clinic.persistence.RoleService;
+import ru.lightstar.clinic.security.SecurityUtil;
 
 /**
  * <code>ShowClients</code> controller.
@@ -43,6 +44,10 @@ public class ShowClients extends ClinicController {
      */
     @RequestMapping(method = RequestMethod.GET)
     public String show(@ModelAttribute final FilterForm filter, final ModelMap model) {
+        if (SecurityUtil.getAuthRole().equals("ROLE_CLIENT")) {
+            model.addAttribute("noFilter", true);
+        }
+
         Client[] clients = null;
 
         if (!filter.isEmpty()) {
@@ -63,7 +68,42 @@ public class ShowClients extends ClinicController {
             clients = this.clinicService.getAllClients();
         }
 
-        model.addAttribute("clients", clients);
+        model.addAttribute("clients", this.filterPermittedClients(clients));
         return "ShowClients";
+    }
+
+    /**
+     * Count clients with permitted access in array.
+     *
+     * @param clients clients array.
+     * @return count of clients with permitted access.
+     */
+    private int countPermittedClients(final Client[] clients) {
+        int countPermittedClients = 0;
+        for (final Client client : clients) {
+            if (this.isAccessToClientPermitted(client)) {
+                countPermittedClients++;
+            }
+        }
+        return countPermittedClients;
+    }
+
+    /**
+     * Filter clients array leaving clients with permitted access only.
+     *
+     * @param clients clients array.
+     * @return array of clients with permitted access.
+     */
+    private Client[] filterPermittedClients(final Client[] clients) {
+        final Client[] permittedClients = new Client[this.countPermittedClients(clients)];
+
+        int index = 0;
+        for (final Client client : clients) {
+            if (this.isAccessToClientPermitted(client)) {
+                permittedClients[index++] = client;
+            }
+        }
+
+        return permittedClients;
     }
 }

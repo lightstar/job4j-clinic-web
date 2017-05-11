@@ -1,5 +1,6 @@
 <%--@elvariable id="prefix" type="java.lang.String"--%>
 <%--@elvariable id="roles" type="java.util.List<ru.lightstar.clinic.model.Role>"--%>
+<%--@elvariable id="_csrf" type="org.springframework.security.web.csrf.CsrfToken"--%>
 
 <%@ page language="java" pageEncoding="utf-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -8,7 +9,7 @@
 <c:set var="current" value="main" scope="page"/>
 <%@include file="Header.jsp" %>
 
-<c:if test="${roles.size() > 0}">
+<c:if test="${not empty roles || currentRoleOnly}">
 <c:url value='${prefix}/client/update' var="action">
     <c:param name="name" value="${param.name}"/>
 </c:url>
@@ -24,6 +25,7 @@
         <input type="password" class="element text" id="newPassword" name="newPassword" value="">
     </div>
 
+    <c:if test="${!currentRoleOnly}">
     <div>
         <label for="newRole" class="element">Role:</label>
         <select class="element" id="newRole" name="newRole">
@@ -35,6 +37,7 @@
             </c:forEach>
         </select>
     </div>
+    </c:if>
 
     <div>
         <label for="newEmail" class="element">Email:</label>
@@ -49,6 +52,10 @@
     </div>
 
     <div>
+        <c:if test="${currentRoleOnly}">
+            <input type="hidden" name="newRole" value="${requestScope.newRole}" />
+        </c:if>
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
         <input type="submit" class="button" value="Update">
         <input type="button" class="button" value="Cancel" onclick="document.location.href='<c:url value="${prefix}/"/>';">
     </div>

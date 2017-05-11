@@ -24,8 +24,16 @@ import java.util.List;
 @Service("authentication-provider")
 public class ClinicAuthenticationProvider implements AuthenticationProvider {
 
+    /**
+     * Clinic service bean.
+     */
     private final ClinicService clinicService;
 
+    /**
+     * Constructs <code>ClinicAuthenticationProvider</code> object.
+     *
+     * @param clinicService clinic service bean.
+     */
     @Autowired
     public ClinicAuthenticationProvider(final ClinicService clinicService) {
         this.clinicService = clinicService;

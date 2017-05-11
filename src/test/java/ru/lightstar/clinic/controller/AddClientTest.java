@@ -9,6 +9,8 @@ import ru.lightstar.clinic.security.SecurityUtil;
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -30,7 +32,8 @@ public class AddClientTest extends ControllerTest {
         final Role clientRole = new Role("client");
         when(this.mockRoleService.getAllRoles()).thenReturn(Arrays.asList(adminRole, clientRole));
 
-        this.mockMvc.perform(get("/client/add"))
+        this.mockMvc.perform(get("/client/add")
+                    .with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("AddClient"))
                 .andExpect(forwardedUrl("/WEB-INF/view/AddClient.jsp"))
@@ -53,6 +56,8 @@ public class AddClientTest extends ControllerTest {
         when(this.mockRoleService.getRoleByName("client")).thenReturn(clientRole);
 
         this.mockMvc.perform(post("/client/add")
+                    .with(user("admin").roles("ADMIN"))
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .param("name", "Vova")
                     .param("pos", "2")
@@ -81,6 +86,8 @@ public class AddClientTest extends ControllerTest {
         when(this.mockRoleService.getRoleByName("client")).thenThrow(new ServiceException("Role not found"));
 
         this.mockMvc.perform(post("/client/add")
+                    .with(user("admin").roles("ADMIN"))
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .param("name", "Vova")
                     .param("pos", "2")
@@ -99,7 +106,9 @@ public class AddClientTest extends ControllerTest {
     @Test
     public void whenAddClientWithInvalidParametersThenError() throws Exception {
         this.mockMvc.perform(post("/client/add")
-                    .param("pos", "aaa"))
+                .with(user("admin").roles("ADMIN"))
+                .with(csrf())
+                .param("pos", "aaa"))
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/client/add?pos=aaa"))
                 .andExpect(redirectedUrl("/client/add?pos=aaa"))

@@ -8,6 +8,7 @@ import ru.lightstar.clinic.pet.Pet;
 
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.arrayWithSize;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -26,10 +27,10 @@ public class ShowPetsTest extends ControllerTest {
     public void whenShowThenResult() throws Exception {
         final Pet cat = new Cat("Murka", new DummyOutput());
         final Pet dog = new Dog("Bobik", new DummyOutput());
-
         when(this.mockClinicService.getAllPets()).thenReturn(new Pet[]{cat, dog});
 
-        this.mockMvc.perform(get("/pet"))
+        this.mockMvc.perform(get("/pet")
+                    .with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("ShowPets"))
                 .andExpect(forwardedUrl("/WEB-INF/view/ShowPets.jsp"))

@@ -9,6 +9,7 @@ import ru.lightstar.clinic.pet.Cat;
 import ru.lightstar.clinic.pet.Pet;
 
 import static org.hamcrest.Matchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -27,10 +28,10 @@ public class ShowClientsTest extends ControllerTest {
     public void whenShowThenResult() throws Exception {
         final Client vasya = new Client("Vasya", Pet.NONE, 0);
         final Client vova = new Client("Vova", Pet.NONE, 1);
-
         when(this.mockClinicService.getAllClients()).thenReturn(new Client[]{vasya, vova});
 
-        this.mockMvc.perform(get("/"))
+        this.mockMvc.perform(get("/")
+                    .with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("ShowClients"))
                 .andExpect(forwardedUrl("/WEB-INF/view/ShowClients.jsp"))
@@ -47,10 +48,10 @@ public class ShowClientsTest extends ControllerTest {
     @Test
     public void whenShowWithFilterByClientThenResult() throws Exception {
         final Client vasya = new Client("Vasya", Pet.NONE, 0);
-
         when(this.mockClinicService.findClientByName("Vasya")).thenReturn(vasya);
 
         this.mockMvc.perform(get("/")
+                    .with(user("admin").roles("ADMIN"))
                     .param("filterType", "client")
                     .param("filterName", "Vasya"))
                 .andExpect(status().isOk())
@@ -71,6 +72,7 @@ public class ShowClientsTest extends ControllerTest {
         when(this.mockClinicService.findClientByName("Vasya")).thenThrow(new ServiceException("Client not found"));
 
         this.mockMvc.perform(get("/")
+                    .with(user("admin").roles("ADMIN"))
                     .param("filterType", "client")
                     .param("filterName", "Vasya"))
                 .andExpect(status().isOk())
@@ -89,10 +91,10 @@ public class ShowClientsTest extends ControllerTest {
     public void whenShowWithFilterByPetThenResult() throws Exception {
         final Client vasya = new Client("Vasya", new Cat("Murka", new DummyOutput()), 0);
         final Client vova = new Client("Vova", new Bird("Murka", new DummyOutput()), 1);
-
         when(this.mockClinicService.findClientsByPetName("Murka")).thenReturn(new Client[]{vasya, vova});
 
         this.mockMvc.perform(get("/")
+                    .with(user("admin").roles("ADMIN"))
                     .param("filterType", "pet")
                     .param("filterName", "Murka"))
                 .andExpect(status().isOk())

@@ -9,8 +9,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.lightstar.clinic.ClinicService;
 import ru.lightstar.clinic.DrugService;
 import ru.lightstar.clinic.exception.ServiceException;
+import ru.lightstar.clinic.model.Client;
 import ru.lightstar.clinic.persistence.MessageService;
 import ru.lightstar.clinic.persistence.RoleService;
+import ru.lightstar.clinic.security.SecurityUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -43,9 +45,13 @@ public class DeleteClient extends ClinicController {
      * @throws ServiceException thrown if can't delete client.
      */
     @RequestMapping(method = RequestMethod.POST)
-    public String deleteClient(@RequestParam("name") final String name, final RedirectAttributes redirectAttributes,
+    public String deleteClient(@RequestParam final String name, final RedirectAttributes redirectAttributes,
                                final HttpServletRequest request)
             throws ServiceException {
+        if (name.equals(SecurityUtil.getAuthName()) || this.getClientFromNameParam(name) == Client.NONE) {
+            return "redirect:/";
+        }
+
         this.clinicService.deleteClient(name);
         this.setMessage(redirectAttributes,  "Client deleted");
         return this.redirectToForm(request);

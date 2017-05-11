@@ -1,5 +1,6 @@
 <%--@elvariable id="prefix" type="java.lang.String"--%>
 <%--@elvariable id="roles" type="java.util.List<ru.lightstar.clinic.model.Role>"--%>
+<%--@elvariable id="_csrf" type="org.springframework.security.web.csrf.CsrfToken"--%>
 
 <%@ page language="java" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -8,9 +9,12 @@
 <c:set var="current" value="role" scope="page"/>
 <%@include file="Header.jsp" %>
 
-<form action="<c:url value='${prefix}/role/add'/>" method="post" class="above-list" onsubmit="return validateForm(this);">
+<form action="<c:url value='${prefix}/role/add'/>" method="post" class="above-list"
+      onsubmit="return validateForm(this);">
     <label for="name">Name:</label>
     <input type="text" id="name" name="name" value="<c:out value='${param.name}'/>"/>
+
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
     <input type="submit" class="button" value="Add">
 </form>
 
@@ -32,7 +36,8 @@
                     <c:out value="${role.name}"/>
                 </td>
                 <td>
-                    <a href="#" onclick="deleteRole('<c:out value="${role.name}"/>');">Delete</a>
+                    <a href="#" onclick="deleteRole('<c:out value="${role.name}"/>',
+                            '${_csrf.parameterName}', '${_csrf.token}');">Delete</a>
                 </td>
             </tr>
         </c:forEach>

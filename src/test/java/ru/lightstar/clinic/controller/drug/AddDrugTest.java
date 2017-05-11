@@ -6,6 +6,8 @@ import ru.lightstar.clinic.controller.ControllerTest;
 import ru.lightstar.clinic.exception.ServiceException;
 
 import static org.hamcrest.Matchers.is;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -23,6 +25,8 @@ public class AddDrugTest extends ControllerTest {
     @Test
     public void whenAddDrugThenItAdds() throws Exception {
         this.mockMvc.perform(post("/drug/add")
+                    .with(user("admin").roles("ADMIN"))
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .param("name", "aspirin"))
                 .andExpect(status().isFound())
@@ -42,6 +46,8 @@ public class AddDrugTest extends ControllerTest {
         doThrow(new ServiceException("Can't add drug")).when(this.mockDrugService).addDrug("aspirin");
 
         this.mockMvc.perform(post("/drug/add")
+                    .with(user("admin").roles("ADMIN"))
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .param("name", "aspirin"))
                 .andExpect(status().isFound())

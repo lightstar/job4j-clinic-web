@@ -7,6 +7,7 @@ import ru.lightstar.clinic.model.Role;
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -27,7 +28,8 @@ public class ShowRolesTest extends ControllerTest {
         final Role clientRole = new Role("client");
         when(this.mockRoleService.getAllRoles()).thenReturn(Arrays.asList(adminRole, clientRole));
 
-        this.mockMvc.perform(get("/role"))
+        this.mockMvc.perform(get("/role")
+                    .with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("ShowRoles"))
                 .andExpect(forwardedUrl("/WEB-INF/view/ShowRoles.jsp"))

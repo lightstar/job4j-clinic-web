@@ -47,15 +47,17 @@ public class UpdateClient extends ClinicController {
      * @return view name.
      */
     @RequestMapping(method = RequestMethod.GET)
-    public String showForm(@RequestParam("name") final String name, final ModelMap model) {
-        final Client client;
-        try {
-            client = this.clinicService.findClientByName(name);
-        } catch (ServiceException e) {
+    public String showForm(@RequestParam final String name, final ModelMap model) {
+        final Client client = this.getClientFromNameParam(name);
+        if (client == Client.NONE) {
             return "redirect:/";
         }
 
-        model.addAttribute("roles", this.roleService.getAllRoles());
+        if (SecurityUtil.getAuthRole().equals("ROLE_ADMIN")) {
+            model.addAttribute("roles", this.roleService.getAllRoles());
+        } else {
+            model.addAttribute("currentRoleOnly", true);
+        }
 
         this.addToModelIfAbsent(model, "newName", client.getName());
         this.addToModelIfAbsent(model, "newEmail", client.getEmail());
@@ -78,6 +80,15 @@ public class UpdateClient extends ClinicController {
     public String updateClient(@ModelAttribute final UpdateClientForm form,
                                final RedirectAttributes redirectAttributes)
             throws ServiceException, NameException {
+        final Client client = this.getClientFromNameParam(form.getName());
+        if (client == Client.NONE) {
+            return "redirect:/";
+        }
+
+        if (!this.isAccessToRolePermitted(form.getNewRole()) &&
+                !form.getNewRole().equals(client.getRole().getName())) {
+            return "redirect:/";
+        }
 
         final Role newRole = this.roleService.getRoleByName(form.getNewRole());
         this.clinicService.updateClient(form.getName(), form.getNewName(),

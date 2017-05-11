@@ -11,6 +11,8 @@ import ru.lightstar.clinic.pet.Cat;
 import ru.lightstar.clinic.pet.Pet;
 
 import static org.hamcrest.Matchers.is;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -28,7 +30,8 @@ public class GiveDrugTest extends ControllerTest {
      */
     @Test
     public void whenShowFormThenItShows() throws Exception {
-        this.mockMvc.perform(get("/drug/give"))
+        this.mockMvc.perform(get("/drug/give")
+                    .with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("GiveDrug"))
                 .andExpect(forwardedUrl("/WEB-INF/view/GiveDrug.jsp"));
@@ -45,6 +48,8 @@ public class GiveDrugTest extends ControllerTest {
         when(this.mockDrugService.takeDrug("aspirin")).thenReturn(aspirin);
 
         this.mockMvc.perform(post("/drug/give")
+                    .with(user("admin").roles("ADMIN"))
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .param("name", "aspirin")
                     .param("clientName", "Vasya"))
@@ -68,6 +73,8 @@ public class GiveDrugTest extends ControllerTest {
         when(this.mockClinicService.getClientPet("Vasya")).thenThrow(new ServiceException("Can't get pet"));
 
         this.mockMvc.perform(post("/drug/give")
+                    .with(user("admin").roles("ADMIN"))
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .param("name", "aspirin")
                     .param("clientName", "Vasya"))

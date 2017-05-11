@@ -13,6 +13,10 @@ body {
     margin: 0 auto;
 }
 
+.inner-content {
+    margin-top: 10px;
+}
+
 h2 {
     position: relative;
     background-color: burlywood;

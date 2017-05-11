@@ -3,9 +3,13 @@ package ru.lightstar.clinic.controller;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import ru.lightstar.clinic.exception.ServiceException;
+import ru.lightstar.clinic.model.Client;
+import ru.lightstar.clinic.pet.Pet;
 import ru.lightstar.clinic.pet.Sex;
 
 import static org.hamcrest.Matchers.is;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -23,10 +27,18 @@ public class SetClientPetTest extends ControllerTest {
      */
     @Test
     public void whenShowFormThenItShows() throws Exception {
-        this.mockMvc.perform(get("/client/pet/set"))
+        final Client vova = new Client("Vova", Pet.NONE, 0);
+        when(this.mockClinicService.findClientByName("Vova")).thenReturn(vova);
+
+        this.mockMvc.perform(get("/client/pet/set")
+                    .with(user("admin").roles("ADMIN"))
+                    .param("name", "Vova"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("SetClientPet"))
                 .andExpect(forwardedUrl("/WEB-INF/view/SetClientPet.jsp"));
+
+        verify(this.mockClinicService, times(1)).findClientByName("Vova");
+        verifyNoMoreInteractions(this.mockClinicService);
     }
 
     /**
@@ -34,7 +46,12 @@ public class SetClientPetTest extends ControllerTest {
      */
     @Test
     public void whenSetClientPetThenItSets() throws Exception {
+        final Client vova = new Client("Vova", Pet.NONE, 0);
+        when(this.mockClinicService.findClientByName("Vova")).thenReturn(vova);
+
         this.mockMvc.perform(post("/client/pet/set")
+                    .with(user("admin").roles("ADMIN"))
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .param("name", "Vova")
                     .param("petType", "dog")
@@ -46,6 +63,7 @@ public class SetClientPetTest extends ControllerTest {
                 .andExpect(redirectedUrl("/"))
                 .andExpect(flash().attribute("message", is("Pet was set.")));
 
+        verify(this.mockClinicService, times(1)).findClientByName("Vova");
         verify(this.mockClinicService, times(1)).setClientPet("Vova",
                 "dog", "Bobik", 5, Sex.M);
         verifyNoMoreInteractions(this.mockClinicService);
@@ -56,10 +74,14 @@ public class SetClientPetTest extends ControllerTest {
      */
     @Test
     public void whenAddClientWithServiceExceptionThenError() throws Exception {
+        final Client vova = new Client("Vova", Pet.NONE, 0);
+        when(this.mockClinicService.findClientByName("Vova")).thenReturn(vova);
         when(this.mockClinicService.setClientPet("Vova", "dog", "Bobik", 5, Sex.M))
                 .thenThrow(new ServiceException("Can't set pet"));
 
         this.mockMvc.perform(post("/client/pet/set")
+                    .with(user("admin").roles("ADMIN"))
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .param("name", "Vova")
                     .param("petType", "dog")

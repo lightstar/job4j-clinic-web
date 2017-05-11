@@ -6,6 +6,8 @@ import ru.lightstar.clinic.controller.ControllerTest;
 import ru.lightstar.clinic.exception.ServiceException;
 
 import static org.hamcrest.Matchers.is;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -23,6 +25,8 @@ public class DeleteRoleTest extends ControllerTest {
     @Test
     public void whenDeleteRoleThenItDeletes() throws Exception {
         this.mockMvc.perform(post("/role/delete")
+                    .with(user("admin").roles("ADMIN"))
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .param("name", "client"))
                 .andExpect(status().isFound())
@@ -42,6 +46,8 @@ public class DeleteRoleTest extends ControllerTest {
         doThrow(new ServiceException("Can't delete role")).when(this.mockRoleService).deleteRole("client");
 
         this.mockMvc.perform(post("/role/delete")
+                    .with(user("admin").roles("ADMIN"))
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .param("name", "client"))
                 .andExpect(status().isFound())
