@@ -28,7 +28,7 @@ public class HibernateRoleService implements RoleService {
     /**
      * HQL used to get all roles from database.
      */
-    public static final String ALL_ROLES_HQL = "from Role";
+    public static final String ALL_ROLES_HQL = "from Role order by id";
 
     /**
      * HQL used to get role by name from database.

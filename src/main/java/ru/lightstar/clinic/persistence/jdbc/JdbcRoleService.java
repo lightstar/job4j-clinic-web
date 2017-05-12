@@ -20,7 +20,7 @@ public class JdbcRoleService extends JdbcService implements RoleService {
      * SQL used to get all roles from database.
      */
     public static final String ALL_ROLES_SQL =
-            "SELECT * FROM role";
+            "SELECT * FROM role ORDER BY id";
 
     /**
      * SQL used to get role by name from database.
