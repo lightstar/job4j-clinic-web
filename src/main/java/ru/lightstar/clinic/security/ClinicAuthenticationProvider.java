@@ -48,7 +48,7 @@ public class ClinicAuthenticationProvider implements AuthenticationProvider {
         final String password = SecurityUtil.getHashedPassword(authentication.getCredentials().toString());
 
         try {
-            final Client client = clinicService.findClientByName(login);
+            final Client client = this.clinicService.findClientByName(login);
 
             if (!client.getPassword().equals(password)) {
                 return null;
