@@ -44,7 +44,9 @@ public class DbTool {
         System.out.println();
         System.out.println("Clients:");
         for (final Client client : clinicService.getAllClients()) {
-            if (client != null) {
+            if (client instanceof Client.PlaceHolder) {
+                System.out.println(String.format("%d. VACANT.", client.getPosition() + 1));
+            } else {
                 System.out.println(String.format("%s, email: %s, phone: %s, role: %s.", client, client.getEmail(),
                         client.getPhone(), client.getRole().getName()));
                 for (final Message message : messageService.getClientMessages(client)) {
